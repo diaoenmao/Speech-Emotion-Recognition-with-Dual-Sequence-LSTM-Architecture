@@ -1,7 +1,7 @@
 import os
 import numpy as np
 import pandas as pd
-
+import wave
 
 PATH_TO_DATA = '/scratch/speech/IEMOCAP_full_release/'
 
@@ -18,7 +18,7 @@ if __name__ == '__main__':
 	for x in range(5):
 		session_path = PATH_TO_DATA + 'Session' + str(x+1)
 		label_path = session_path  + '/dialog/EmoEvaluation'
-		audio_path = session_path + '/sentences/'
+		audio_path = session_path + '/sentences/wav/'
 		files = [label_path + '/' + f for f in os.listdir(label_path) if os.path.isfile(os.path.join(label_path,f)) and f[0] != '.']
 		print_list(files)
 		for file in files:
@@ -31,7 +31,7 @@ if __name__ == '__main__':
 					elif line.strip() == '':
 						get_next_line = True
 			for utterance in lines:
-				audio_paths.append(audio_path + utterance[1])
+				audio_paths.append(audio_path + utterance[1][:14] + '/' + utterance[1] + '.wav')
 				categorical_emotion.append(utterance[2])
 				print(utterance)
 				scores = utterance[3][1:-1].split(', ')
@@ -40,6 +40,10 @@ if __name__ == '__main__':
 				average_dominance.append(float(scores[2]))
 	for i in range(10):
 		print(audio_paths[i], categorical_emotion[i], average_valence[i], average_activation[i], average_dominance[i])
+		f = wave.open(audio_paths[i],'r')
+		print(f.getframerate())
+		f.close()
 	print(len(audio_paths), len(categorical_emotion), len(average_valence), len(average_activation), len(average_dominance))
 	df = pd.DataFrame(list(zip(audio_paths, categorical_emotion, average_valence, average_activation, average_dominance)), columns=['file', 'emotion', 'valence', 'activation', 'dominance'])
-	print(df)
+	df.to_csv('/scratch/rpc21/Speech-Emotion-Analysis/src/preprocessing/audio_paths_labels.csv')
+	print('wrote to csv')
