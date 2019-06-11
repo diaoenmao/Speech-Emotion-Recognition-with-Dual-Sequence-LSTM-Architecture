@@ -45,5 +45,5 @@ if __name__ == '__main__':
 		f.close()
 	print(len(audio_paths), len(categorical_emotion), len(average_valence), len(average_activation), len(average_dominance))
 	df = pd.DataFrame(list(zip(audio_paths, categorical_emotion, average_valence, average_activation, average_dominance)), columns=['file', 'emotion', 'valence', 'activation', 'dominance'])
-	df.to_csv('/scratch/rpc21/Speech-Emotion-Analysis/src/preprocessing/audio_paths_labels.csv')
+	df.to_csv('/scratch/rpc21/Speech-Emotion-Analysis/src/preprocessing/audio_paths_labels.csv',index=False)
 	print('wrote to csv')
