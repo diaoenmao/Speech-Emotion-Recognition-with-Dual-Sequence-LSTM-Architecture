@@ -1,10 +1,9 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import torch.optim as optim
-from torch.nn.utils.rnn import pack_padded_sequence, pad_sequence
 
 torch.manual_seed(1)
+
 
 class GRUAudio(nn.Module):
 
