@@ -41,12 +41,12 @@ for x in train_input:
 
 for y in train_target:
     target = target.tolist()
-    target.removeList(y) #error is removing a list from a list, same as above ### FIX!
+    removeList(target, y) #error is removing a list from a list, same as above ### FIX!
     target = np.array(target)
 
 for z in train_seq_length:
     seq_length = seq_length.tolist()
-    seq_length.removeList(z)
+    removeList(seq_length, z)
     seq_length = np.array(seq_length)
 
 #test_input = np.setdiff1d(input, train_input)
