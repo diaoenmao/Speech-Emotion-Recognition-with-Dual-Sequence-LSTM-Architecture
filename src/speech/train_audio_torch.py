@@ -1,6 +1,4 @@
 import torch
-import torch.nn as nn
-import torch.nn.functional as F
 import torch.optim as optim
 import numpy as np
 
@@ -10,11 +8,14 @@ from torch.utils.data import DataLoader
 from SE_audio_torch import GRUAudio
 from process_audio_torch import IEMOCAP, my_collate
 
-model = GRUAudio(39, 200, 2, 0.7, 5)
-#loss_function = nn.NLLLoss()
+# Initialize our GRU model with 39 features, hidden_dim=200, num_layers=2, droupout=0.7, num_labels=5
+model = GRUAudio(num_features=39, hidden_dim=200, num_layers=2, dropout_rate=0.7, num_labels=5)
+
+# Use Adam as the optimizer with learning rate 0.01 to make it fast for testing purposes
 optimizer = optim.Adam(model.parameters(), lr=0.01)
 
-training_data = IEMOCAP(True)
+# Load the training data
+training_data = IEMOCAP(train=True)
 train_loader = DataLoader(dataset=training_data, batch_size=128, shuffle=True, collate_fn=my_collate, num_workers=0)
 
 # # See what the scores are before training
@@ -25,14 +26,18 @@ train_loader = DataLoader(dataset=training_data, batch_size=128, shuffle=True, c
 #     tag_scores = model(inputs)
 #     print(tag_scores)
 
+# Perform 10 epochs
 for epoch in range(10):  # again, normally you would NOT do 300 epochs, it is toy data
     print("===================================" + str(epoch) + "==============================================")
     for input, target, seq_length in train_loader:
 
-        input = pad_sequence(sequences=input,batch_first=True)
+        # pad input sequence to make all the same length
+        input = pad_sequence(sequences=input, batch_first=True)
 
+        # make input a packed padded sequence
         input = pack_padded_sequence(input, lengths=seq_length, batch_first=True, enforce_sorted=False)
 
+        # convert target to a tensor from a numpy array
         target = torch.from_numpy(np.array(target))
 
         # Step 1. Remember that Pytorch accumulates gradients.
