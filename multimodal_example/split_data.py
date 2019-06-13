@@ -24,6 +24,14 @@ def removeArray(L, arr):
     #else:
     #    raise ValueError('array not found in list.')
 
+def removeList(L, list):
+    ind = 0
+    size = len(L)
+    while ind != size and not L[ind] == list:
+        ind += 1
+    if ind != size:
+        L.pop(ind)
+
 for x in train_input:
     input = input.tolist()
     #if x in input:
@@ -33,12 +41,12 @@ for x in train_input:
 
 for y in train_target:
     target = target.tolist()
-    target.remove(y)
+    target.removeList(y) #error is removing a list from a list, same as above ### FIX!
     target = np.array(target)
 
 for z in train_seq_length:
     seq_length = seq_length.tolist()
-    seq_length.remove(z)
+    seq_length.removeList(z)
     seq_length = np.array(seq_length)
 
 #test_input = np.setdiff1d(input, train_input)
