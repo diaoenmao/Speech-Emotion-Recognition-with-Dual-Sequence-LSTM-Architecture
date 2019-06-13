@@ -1,4 +1,4 @@
-:import pickle
+import pickle
 import numpy as np
 pickle_in = open('/scratch/speech/IEMOCAP_dictionary.pkl','rb')
 data=pickle.load(pickle_in)
