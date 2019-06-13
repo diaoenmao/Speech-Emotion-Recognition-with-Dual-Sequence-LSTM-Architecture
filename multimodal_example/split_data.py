@@ -14,7 +14,7 @@ train_input = input[rand]
 train_target = target[rand]
 train_seq_length = seq_length[rand]
 
-for x in train_input:
+for x in train_input.tolist():
     input = input.tolist()
     input.remove(x)
     input = np.array(input)
