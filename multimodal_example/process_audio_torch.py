@@ -31,6 +31,7 @@ def my_collate(batch):
 
 
 dataset = IEMOCAP()
+print(next(dataset))
 train_loader = DataLoader(dataset=dataset, batch_size=128, shuffle=True, collate_fn=my_collate, num_workers=0)
 for i, sample in enumerate(train_loader):
     if i < 3:
