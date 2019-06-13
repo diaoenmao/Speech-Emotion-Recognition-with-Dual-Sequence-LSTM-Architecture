@@ -17,6 +17,8 @@ optimizer = optim.Adam(model.parameters(), lr=0.01)
 training_data = IEMOCAP(True)
 train_loader = DataLoader(dataset=training_data, batch_size=128, shuffle=True, collate_fn=my_collate, num_workers=0)
 
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
 # # See what the scores are before training
 # # Note that element i,j of the output is the score for tag j for word i.
 # # Here we don't need to train, so the code is wrapped in torch.no_grad()
@@ -34,6 +36,9 @@ for epoch in range(10):  # again, normally you would NOT do 300 epochs, it is to
         input = pack_padded_sequence(input, lengths=seq_length, batch_first=True, enforce_sorted=False)
 
         target = torch.from_numpy(np.array(target))
+
+        input = input.to(device)
+        target = target.to(device)
         # Step 1. Remember that Pytorch accumulates gradients.
         # We need to clear them out before each instance
         model.zero_grad()
