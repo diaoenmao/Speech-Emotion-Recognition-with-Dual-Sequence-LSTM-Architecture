@@ -14,10 +14,22 @@ train_input = input[rand]
 train_target = target[rand]
 train_seq_length = seq_length[rand]
 
-for x in train_input.tolist():
-    input = input.tolist()
-    input.remove(x)
-    input = np.array(input)
+def removeArray(L, arr):
+    ind = 0
+    size = len(L)
+    while ind != size and not np.array_equal(L[ind], arr):
+        ind += 1
+    if ind != size:
+        L.pop(ind)
+    else:
+        raise ValueError('array not found in list.')
+
+for x in train_input:
+    #input = input.tolist()
+    #if x in input:
+    #    input.remove(x)
+    #input = np.array(input)
+    removeArray(input, x)
 
 for y in train_target:
     target = target.tolist()
