@@ -14,12 +14,9 @@ train_input = input[rand]
 train_target = target[rand]
 train_seq_length = seq_length[rand]
 
-test_input = [element for element in input if element not in train_input]
-test_input = np.array(test_input)
-test_target = [element for element in input if element not in train_target]
-test_target = np.array(test_target)
-test_seq_length = [element for element in input if element not in train_seq_length]
-test_seq_length = np.array(test_seq_length)
+test_input = np.setdiff1d(input, train_input)
+test_target = np.setdiff1d(target, train_target)
+test_seq_length = np.setdiff1d(seq_length, train_seq_length)
 
 train_sample = {"input": train_input, "target": train_target, "seq_length": train_seq_length}
 test_sample = {"input": input, "target": target, "seq_length": seq_length}
