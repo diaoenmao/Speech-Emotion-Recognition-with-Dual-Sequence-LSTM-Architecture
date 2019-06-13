@@ -25,11 +25,11 @@ def removeArray(L, arr):
         raise ValueError('array not found in list.')
 
 for x in train_input:
-    #input = input.tolist()
+    input = input.tolist()
     #if x in input:
     #    input.remove(x)
-    #input = np.array(input)
     removeArray(input, x)
+    input = np.array(input)
 
 for y in train_target:
     target = target.tolist()
