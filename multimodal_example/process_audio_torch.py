@@ -4,9 +4,9 @@ from torch.utils.data import Dataset, DataLoader
 
 class IEMOCAP(Dataset):
     def __init__(self):
-        pickle_in = open('/scratch/speech/dataset.pkl','rb')
+        pickle_in = open('/scratch/speech/IEMOCAP_dictionary_5.pkl','rb')
         data = pickle.load(pickle_in)
-        self.seq_len = data["seq_len"]
+        self.seq_len = data["seq_length"]
         self.input = data["input"]
         self.target = data["target"]
 
@@ -21,3 +21,6 @@ class IEMOCAP(Dataset):
 
 dataset = IEMOCAP()
 train_loader = DataLoader(dataset=dataset, batch_size=128, shuffle=True, num_workers=0)
+for i, sample in enumerate(train_loader):
+    if (i < 3):
+        print(sample)
