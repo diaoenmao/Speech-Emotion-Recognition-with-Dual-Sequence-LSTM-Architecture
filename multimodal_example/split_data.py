@@ -15,13 +15,19 @@ train_target = target[rand]
 train_seq_length = seq_length[rand]
 
 for x in train_input:
+    input = input.tolist()
     input.remove(x)
+    input = np.array(input)
 
 for y in train_target:
+    target = target.tolist()
     target.remove(y)
+    target = np.array(target)
 
 for z in train_seq_length:
+    seq_length = seq_length.tolist()
     seq_length.remove(z)
+    seq_length = np.array(seq_length)
 
 #test_input = np.setdiff1d(input, train_input)
 #test_target = np.setdiff1d(target, train_target)
