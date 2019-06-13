@@ -34,6 +34,7 @@ for epoch in range(10):  # again, normally you would NOT do 300 epochs, it is to
         input = pack_padded_sequence(input, lengths=seq_length, batch_first=True, enforce_sorted=False)
 
         target = torch.from_numpy(np.array(target))
+
         # Step 1. Remember that Pytorch accumulates gradients.
         # We need to clear them out before each instance
         model.zero_grad()
