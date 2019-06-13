@@ -21,8 +21,8 @@ def removeArray(L, arr):
         ind += 1
     if ind != size:
         L.pop(ind)
-    else:
-        raise ValueError('array not found in list.')
+    #else:
+    #    raise ValueError('array not found in list.')
 
 for x in train_input:
     input = input.tolist()
