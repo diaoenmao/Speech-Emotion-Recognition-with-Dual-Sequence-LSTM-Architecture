@@ -15,11 +15,12 @@ class GRUAudio(nn.Module):
         self.dropout_rate = dropout_rate
         self.num_labels = num_labels
 
-        self.gru = nn.GRU(self.num_features, self.hidden_dim, self.num_layers, batch_first=True, dropout = self.dropout_rate)
+        self.gru = nn.GRU(self.num_features, self.hidden_dim, self.num_layers, batch_first=True, dropout=self.dropout_rate)
         self.classification = nn.Linear(self.hidden_dim, self.num_labels)
 
     def forward(self, input, target):
-        out = self.gru(input)
+        hidden = torch.randn(1, 128, 200)
+        out, hn = self.gru(input, hidden)
         out = self.classification(out)
         loss = F.cross_entropy(out, target)
         return out, loss
