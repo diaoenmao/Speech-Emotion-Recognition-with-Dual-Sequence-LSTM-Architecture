@@ -10,7 +10,7 @@ from torch.utils.data import DataLoader
 from SE_audio_torch import GRUAudio
 from process_audio_torch import IEMOCAP, my_collate
 
-model = GRUAudio(39, 200, 1, 0.7, 4)
+model = GRUAudio(39, 200, 2, 0.7, 5)
 #loss_function = nn.NLLLoss()
 optimizer = optim.Adam(model.parameters(), lr=0.01)
 
