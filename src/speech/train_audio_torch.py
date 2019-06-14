@@ -64,6 +64,11 @@ for epoch in range(10):  # again, normally you would NOT do 300 epochs, it is to
         optimizer.step()
 
     print("End of Epoch Loss: ", loss)
+    print(model.state_dict())
+
+torch.save(model.state_dict(), '/scratch/speech/models/classification/classifier.torch.pt')
+
+
 
 # # See what the scores are after training
 # with torch.no_grad():

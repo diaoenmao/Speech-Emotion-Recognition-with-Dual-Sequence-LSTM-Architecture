@@ -4,8 +4,7 @@ from sklearn.model_selection import train_test_split
 file = open('./IEMOCAP_dictionary_5.pkl', 'rb')
 data = pickle.load(file)
 
-input_train, input_test, target_train, target_test, seq_length_train, seq_length_test =
-    train_test_split(data["input"], data["target"], data["seq_length"], test_size=0.2, random_state=42)
+input_train, input_test, target_train, target_test, seq_length_train, seq_length_test = train_test_split(data["input"], data["target"], data["seq_length"], test_size=0.2, random_state=42)
 
 print(input_train.shape, input_test.shape, target_train.shape, target_test.shape, seq_length_train.shape, seq_length_test.shape)
 
