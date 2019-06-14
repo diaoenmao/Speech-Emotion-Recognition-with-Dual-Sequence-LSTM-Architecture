@@ -7,7 +7,7 @@ from torch.utils.data import DataLoader
 from SE_audio_torch import GRUAudio
 from process_audio_torch import IEMOCAP, my_collate
 
-model = GRUAudio(num_features=39, hidden_dim=200, num_layers=2, dropout_rate=0.7, num_labels=5, batch_size=1)
+model = GRUAudio(num_features=39, hidden_dim=400, num_layers=2, dropout_rate=0.7, num_labels=5, batch_size=1)
 model = model.cuda()
 model.load_state_dict(torch.load('/scratch/speech/models/classification/classifier.torch.pt'))
 model.eval()
