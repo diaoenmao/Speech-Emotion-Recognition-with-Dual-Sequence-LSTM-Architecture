@@ -40,7 +40,7 @@ for epoch in range(10):  # again, normally you would NOT do 300 epochs, it is to
     for j, (input, target, seq_length) in enumerate(train_loader):
         print("==============================Batch " + str(j) + "=============================================")
         # pad input sequence to make all the same length
-#        pdb.set_trace()
+        pdb.set_trace()
 
         input = pad_sequence(sequences=input, batch_first=True)
 
