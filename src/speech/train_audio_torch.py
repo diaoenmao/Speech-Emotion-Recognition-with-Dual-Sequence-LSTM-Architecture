@@ -8,6 +8,8 @@ from torch.utils.data import DataLoader
 from SE_audio_torch import GRUAudio
 from process_audio_torch import IEMOCAP, my_collate
 
+from tqdm import tqdm
+
 # Initialize our GRU model with 39 features, hidden_dim=200, num_layers=2, droupout=0.7, num_labels=5
 model = GRUAudio(num_features=39, hidden_dim=200, num_layers=2, dropout_rate=0.7, num_labels=5)
 
@@ -29,8 +31,8 @@ train_loader = DataLoader(dataset=training_data, batch_size=128, shuffle=True, c
 # Perform 10 epochs
 for epoch in range(10):  # again, normally you would NOT do 300 epochs, it is toy data
     print("===================================" + str(epoch) + "==============================================")
-    for input, target, seq_length in train_loader:
-
+    for j, (input, target, seq_length) in enumerate(train_loader):
+        print("==============================Batch " + str(j) + "=============================================")
         # pad input sequence to make all the same length
         input = pad_sequence(sequences=input, batch_first=True)
 
@@ -47,7 +49,7 @@ for epoch in range(10):  # again, normally you would NOT do 300 epochs, it is to
         # Step 3. Run our forward pass.
         out, loss = model(input, target)
 
-
+        print("Loss:", loss)
         # Step 4. Compute the loss, gradients, and update the parameters by
         #  calling optimizer.step()
         loss.backward()

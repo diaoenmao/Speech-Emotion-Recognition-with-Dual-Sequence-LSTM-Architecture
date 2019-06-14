@@ -19,9 +19,9 @@ class IEMOCAP(Dataset):
         return len(self.input)
 
     def __getitem__(self, index):
-        sample = {'input': torch.from_numpy(self.input[index]),
+        sample = {'input': torch.from_numpy(self.input[index]).float(),
                   'target': self.target[index],
-                  'seq_length': torch.from_numpy(self.seq_length[index])}
+                  'seq_length': torch.from_numpy(self.seq_length[index]).float()}
         return sample
 
 
@@ -32,6 +32,6 @@ def my_collate(batch):
     return [input, target, seq_length]
 
 
-dataset = IEMOCAP()
-sample = dataset[10]
-train_loader = DataLoader(dataset=dataset, batch_size=128, shuffle=True, collate_fn=my_collate, num_workers=0)
+#dataset = IEMOCAP()
+#sample = dataset[10]
+#train_loader = DataLoader(dataset=dataset, batch_size=128, shuffle=True, collate_fn=my_collate, num_workers=0)
