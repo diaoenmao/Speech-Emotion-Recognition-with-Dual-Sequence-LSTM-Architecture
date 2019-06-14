@@ -12,7 +12,7 @@ from tqdm import tqdm
 
 # Initialize our GRU model with 39 features, hidden_dim=200, num_layers=2, droupout=0.7, num_labels=5
 model = GRUAudio(num_features=39, hidden_dim=200, num_layers=2, dropout_rate=0.7, num_labels=5)
-
+model = model.cuda()
 # Use Adam as the optimizer with learning rate 0.01 to make it fast for testing purposes
 optimizer = optim.Adam(model.parameters(), lr=0.01)
 
