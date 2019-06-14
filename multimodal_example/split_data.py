@@ -1,5 +1,6 @@
 import pickle
 import numpy as np
+from numpy import *
 
 pickle_in = open('/scratch/speech/IEMOCAP_dictionary_5.pkl', 'rb')
 data = pickle.load(pickle_in)
@@ -17,7 +18,7 @@ train_seq_length = seq_length[rand]
 def removeArray(L, arr):
     ind = 0
     size = len(L)
-    while ind != size and not np.array_equal(L[ind], arr):
+    while ind != size and not np.array_equal(L[ind], arr).all():
         ind += 1
     if ind != size:
         L.pop(ind)
@@ -27,16 +28,25 @@ def removeArray(L, arr):
 def removeList(L, list):
     ind = 0
     size = len(L)
-    while ind != size and not L[ind] == list:
+    while ind != size and not (L[ind] == list).all():
         ind += 1
     if ind != size:
         L.pop(ind)
 
+#input = map(tuple, input)
+#train_input2 = map(tuple, train_input)
+#input = set(input)
+#train_input2 = set(train_input2)
+#test_input = input - train_input2
+#test_input = np.array(list(test_input))
+
 for x in train_input:
     input = input.tolist()
     #if x in input:
-    #    input.remove(x)
+        #input.remove(x)
     removeArray(input, x)
+    #input = map(tuple, input)
+    #input = set(input)
     input = np.array(input)
 
 for y in train_target:
