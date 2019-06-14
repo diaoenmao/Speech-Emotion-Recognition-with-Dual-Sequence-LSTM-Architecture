@@ -41,18 +41,14 @@ for epoch in range(10):  # again, normally you would NOT do 300 epochs, it is to
         print("==============================Batch " + str(j) + "=============================================")
         # pad input sequence to make all the same length
 #        pdb.set_trace()
-        input = [x.cuda() for x in input]
+
         input = pad_sequence(sequences=input, batch_first=True)
-        
-        seq_length = [x[0] for x in seq_length]
-        seq_length = torch.from_numpy(np.array(seq_length))
-        seq_length = seq_length.to(device)
+
+        # seq_length = seq_length.to(device)
         # make input a packed padded sequence
 #        pdb.set_trace()
         input = pack_padded_sequence(input, lengths=seq_length, batch_first=True, enforce_sorted=False)
 
-        # convert target to a tensor from a numpy array
-        target = torch.from_numpy(np.array(target))
 
         # Step 1. Remember that Pytorch accumulates gradients.
         # We need to clear them out before each instance
