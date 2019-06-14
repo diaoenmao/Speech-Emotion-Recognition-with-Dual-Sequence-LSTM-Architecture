@@ -33,7 +33,7 @@ class GRUAudio(nn.Module):
 #        print(out, out.shape)
         if train:
             out, _ = pad_packed_sequence(out, batch_first=True)
-#        pdb.set_trace()
+        pdb.set_trace()
         print("gru", out.shape)
         out = self.classification(out)
         print("linear", out.shape)
