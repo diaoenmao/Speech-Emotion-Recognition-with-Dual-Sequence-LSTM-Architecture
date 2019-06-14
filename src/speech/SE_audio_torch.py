@@ -27,12 +27,12 @@ class GRUAudio(nn.Module):
         target = target.to(self.device)
         hidden = torch.randn(2, self.batch_size, 200)
         hidden = hidden.to(self.device)
-        pdb.set_trace()
         out, hn = self.gru(input, hidden)
-        pdb.set_trace()
 #        print(out, out.shape)
-        if train:
-            hn, _ = pad_packed_sequence(hn, batch_first=True)
+        #if train:
+        #    hn, _ = pad_packed_sequence(hn, batch_first=True)
+        hn=hn.permute([1,0,2])
+        hn=hn.reshape(self.batch_size,-1)
         pdb.set_trace()
         out = self.classification(hn)
         pdb.set_trace()
