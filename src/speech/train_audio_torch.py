@@ -8,11 +8,17 @@ from torch.utils.data import DataLoader
 from SE_audio_torch import GRUAudio
 from process_audio_torch import IEMOCAP, my_collate
 
+import pdb
 from tqdm import tqdm
+
+# Detect the device
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # Initialize our GRU model with 39 features, hidden_dim=200, num_layers=2, droupout=0.7, num_labels=5
 model = GRUAudio(num_features=39, hidden_dim=200, num_layers=2, dropout_rate=0.7, num_labels=5)
-model = model.cuda()
+model.cuda()
+#pdb.set_trace()
+
 # Use Adam as the optimizer with learning rate 0.01 to make it fast for testing purposes
 optimizer = optim.Adam(model.parameters(), lr=0.01)
 
@@ -34,9 +40,15 @@ for epoch in range(10):  # again, normally you would NOT do 300 epochs, it is to
     for j, (input, target, seq_length) in enumerate(train_loader):
         print("==============================Batch " + str(j) + "=============================================")
         # pad input sequence to make all the same length
+#        pdb.set_trace()
+        input = [x.cuda() for x in input]
         input = pad_sequence(sequences=input, batch_first=True)
-
+        
+        seq_length = [x[0] for x in seq_length]
+        seq_length = torch.from_numpy(np.array(seq_length))
+        seq_length = seq_length.to(device)
         # make input a packed padded sequence
+#        pdb.set_trace()
         input = pack_padded_sequence(input, lengths=seq_length, batch_first=True, enforce_sorted=False)
 
         # convert target to a tensor from a numpy array
