@@ -33,7 +33,7 @@ class GRUAudio(nn.Module):
         #    hn, _ = pad_packed_sequence(hn, batch_first=True)
         hn=hn.permute([1,0,2])
         hn=hn.reshape(self.batch_size,-1)
-        pdb.set_trace()
+        #pdb.set_trace()
         out = self.classification(hn)
         pdb.set_trace()
         loss = F.cross_entropy(out, target)
