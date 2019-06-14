@@ -1,3 +1,4 @@
+import pdb
 import pickle
 import numpy as np
 import torch
@@ -12,3 +13,14 @@ model.eval()
 
 testing_data = IEMOCAP(train=True)
 test_loader = DataLoader(dataset=testing_data, batch_size=1, shuffle=True, collate_fn=my_collate, num_workers=0)
+
+correct = 0
+for test_case, target, _ in test_loader:
+    out, loss = model(test_case)
+    pdb.set_trace()
+    index = torch.argmax(out)
+    if target[index] == 1:
+        correct += 1
+
+accuracy = correct * 1.0/ len(testing_data)
+print("accuracy:", accuracy)
