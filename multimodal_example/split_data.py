@@ -28,7 +28,7 @@ def removeArray(L, arr):
 def removeList(L, list):
     ind = 0
     size = len(L)
-    while ind != size and not (L[ind] == list).all():
+    while ind != size and L[ind] != list:
         ind += 1
     if ind != size:
         L.pop(ind)
@@ -40,26 +40,28 @@ def removeList(L, list):
 #test_input = input - train_input2
 #test_input = np.array(list(test_input))
 
+input = input.tolist()
 for x in train_input:
-    input = input.tolist()
     #if x in input:
         #input.remove(x)
     removeArray(input, x)
     #input = map(tuple, input)
     #input = set(input)
-    input = np.array(input)
+
+input = np.array(input)
 
 target = target.tolist()
-print(target)
 for y in train_target:
     removeList(target, y) #error is removing a list from a list, same as above ### FIX!
 
 target = np.array(target)
 
+seq_length = seq_length.tolist()
+
 for z in train_seq_length:
-    seq_length = seq_length.tolist()
     removeList(seq_length, z)
-    seq_length = np.array(seq_length)
+
+seq_length = np.array(seq_length)
 
 #test_input = np.setdiff1d(input, train_input)
 #test_target = np.setdiff1d(target, train_target)
