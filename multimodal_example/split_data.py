@@ -18,7 +18,7 @@ train_seq_length = seq_length[rand]
 def removeArray(L, arr):
     ind = 0
     size = len(L)
-    while ind != size and not np.array_equal(L[ind], arr).all():
+    while ind != size and not np.array_equal(L[ind], arr):
         ind += 1
     if ind != size:
         L.pop(ind)
@@ -49,10 +49,12 @@ for x in train_input:
     #input = set(input)
     input = np.array(input)
 
+target = target.tolist()
+print(target)
 for y in train_target:
-    target = target.tolist()
     removeList(target, y) #error is removing a list from a list, same as above ### FIX!
-    target = np.array(target)
+
+target = np.array(target)
 
 for z in train_seq_length:
     seq_length = seq_length.tolist()
