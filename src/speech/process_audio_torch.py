@@ -1,7 +1,7 @@
 import torch
 import pickle
+import numpy as np
 from torch.utils.data import Dataset, DataLoader
-
 
 class IEMOCAP(Dataset):
     def __init__(self, train=True):
@@ -26,9 +26,13 @@ class IEMOCAP(Dataset):
 
 
 def my_collate(batch):
-    input = [item['input'] for item in batch]
-    target = [item['target'] for item in batch]
-    seq_length = [item['seq_length'] for item in batch]
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    input = [item['input'].to(device) for item in batch]
+    # input = [x.cuda() for x in input]
+    target = torch.from_numpy(np.array([item['target'] for item in batch]))
+    seq_length = torch.from_numpy(np.array([item['seq_length'][0] for item in batch]))
+    # seq_length = [x[0] for x in seq_length]
+    # seq_length = torch.from_numpy(np.array(seq_length))
     return [input, target, seq_length]
 
 
