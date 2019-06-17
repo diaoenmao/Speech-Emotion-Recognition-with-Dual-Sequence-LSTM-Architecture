@@ -9,7 +9,7 @@ torch.manual_seed(1)
 
 class GRUAudio(nn.Module):
 
-    def __init__(self, num_features, hidden_dim, num_layers, dropout_rate, num_labels,batch_size):
+    def __init__(self, num_features, hidden_dim, num_layers, dropout_rate, num_labels, batch_size):
         super(GRUAudio, self).__init__()
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.num_features = num_features
