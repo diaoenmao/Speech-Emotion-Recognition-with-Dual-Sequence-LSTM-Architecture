@@ -14,8 +14,8 @@ def init_parser():
     parser = argparse.ArgumentParser(description='Train and test your model as specified by the parameters you enter')
     parser.add_argument('--dataset', '-d', default='IEMOCAP', type=str,
                         help='IEMOCAP or Berlin (Berlin support still coming). IEMOCAP is default', dest='dataset')
-    # parser.add_argument('--num_layers', default=2, type=int, dest='num_layers')
-    # parser.add_argument('--hidden_dim', default=[200, 200], action='append', type=int, dest='hidden_dim_list')
+    parser.add_argument('--num_layers', default=2, type=int, dest='num_layers')
+    parser.add_argument('--hidden_dim', '-hd', default=200, type=int, dest='hidden_dim')
     parser.add_argument('-dropout_rate', '-dr', default=0.0, type=float,
                         help='Specify the dropout rate to use in range [0.0,1.0]. 0.0 is default', dest='dr')
     parser.add_argument('-batch_size', '-b', default=512, type=int,
@@ -31,8 +31,8 @@ def init_parser():
 
 
 def train_model(args):
-    model = GRUAudio(num_features=39, hidden_dim=200, num_layers=2, dropout_rate=args.dr, num_labels=5,
-                     batch_size=args.batch_size)
+    model = GRUAudio(num_features=39, hidden_dim=args.hidden_dim, num_layers=2, dropout_rate=args.dr, num_labels=5,
+                     batch_size=args.batch_size, bidirectional=args.bidirectional)
     model.cuda()
 
     # Use Adam as the optimizer with learning rate 0.01 to make it fast for testing purposes
@@ -75,11 +75,12 @@ def train_model(args):
         print("End of Epoch Loss: ", losses)
         # print(model.state_dict())
         if (epoch + 1) % 5 == 0:
-            checkpoint_path = '/scratch/speech/models/classification/{}_dr_{}_e_{}_bs_{}_bi_{}_lr_{}_chkpt_{}.pt'.format(
-                args.dataset, args.dr, args.num_epochs, args.batch_size, args.bidirectional, args.lr, str(epoch + 1))
+            checkpoint_path = '/scratch/speech/models/classification/{}_hd_{}_dr_{}_e_{}_bs_{}_bi_{}_lr_{}_chkpt_{}.pt'.format(
+                args.dataset, args.hidden_dim, args.dr, args.num_epochs, args.batch_size, args.bidirectional, args.lr, str(epoch + 1))
             torch.save(model.state_dict(), checkpoint_path)
 
-    model_path = '/scratch/speech/models/classification/{}_dr_{}_e_{}_bs_{}_bi_{}_lr_{}.pt'.format(args.dataset,
+    model_path = '/scratch/speech/models/classification/{}_hd_{}_dr_{}_e_{}_bs_{}_bi_{}_lr_{}.pt'.format(args.dataset,
+                                                                                                   args.hidden_dim,
                                                                                                    args.dr,
                                                                                                    args.num_epochs,
                                                                                                    args.batch_size,
@@ -89,21 +90,23 @@ def train_model(args):
 
 
 def test_model(args):
-    model_path = '/scratch/speech/models/classification/{}_dr_{}_e_{}_bs_{}_bi_{}_lr_{}.pt'.format(args.dataset,
+    model_path = '/scratch/speech/models/classification/{}_hd_{}_dr_{}_e_{}_bs_{}_bi_{}_lr_{}.pt'.format(args.dataset,
+                                                                                                   args.hidden_dim,
                                                                                                    args.dr,
                                                                                                    args.num_epochs,
                                                                                                    args.batch_size,
                                                                                                    args.bidirectional,
                                                                                                    args.lr)
 
-    stats_path = '/scratch/speech/models/classification/{}_dr_{}_e_{}_bs_{}_bi_{}_lr_{}.txt'.format(args.dataset,
+    stats_path = '/scratch/speech/models/classification/{}_hd_{}_dr_{}_e_{}_bs_{}_bi_{}_lr_{}.txt'.format(args.dataset,
+                                                                                                   args.hidden_dim,
                                                                                                    args.dr,
                                                                                                    args.num_epochs,
                                                                                                    args.batch_size,
                                                                                                    args.bidirectional,
                                                                                                    args.lr)
 
-    model = GRUAudio(num_features=39, hidden_dim=200, num_layers=2, dropout_rate=0.7, num_labels=5, batch_size=1)
+    model = GRUAudio(num_features=39, hidden_dim=args.hidden_dim, num_layers=2, dropout_rate=args.dr, num_labels=5, batch_size=1, bidirectional=args.bidirectional)
     model = model.cuda()
     model.load_state_dict(torch.load(model_path))
     model.eval()
