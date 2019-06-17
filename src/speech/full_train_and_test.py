@@ -14,7 +14,7 @@ def init_parser():
     parser = argparse.ArgumentParser(description='Train and test your model as specified by the parameters you enter')
     parser.add_argument('--dataset', '-d', default='IEMOCAP', type=str,
                         help='IEMOCAP or Berlin (Berlin support still coming). IEMOCAP is default', dest='dataset')
-    parser.add_argument('--num_layers', default=2, type=int, dest='num_layers')
+    parser.add_argument('--num_layers', '-nl',default=2, type=int, dest='num_layers')
     parser.add_argument('--hidden_dim', '-hd', default=200, type=int, dest='hidden_dim')
     parser.add_argument('-dropout_rate', '-dr', default=0.0, type=float,
                         help='Specify the dropout rate to use in range [0.0,1.0]. 0.0 is default', dest='dr')
@@ -31,7 +31,7 @@ def init_parser():
 
 
 def train_model(args):
-    model = GRUAudio(num_features=39, hidden_dim=args.hidden_dim, num_layers=2, dropout_rate=args.dr, num_labels=5,
+    model = GRUAudio(num_features=39, hidden_dim=args.hidden_dim, num_layers=args.num_layers, dropout_rate=args.dr, num_labels=5,
                      batch_size=args.batch_size, bidirectional=args.bidirectional)
     model.cuda()
 
@@ -90,44 +90,41 @@ def train_model(args):
 
 
 def test_model(args):
-    model_path = '/scratch/speech/models/classification/{}_hd_{}_dr_{}_e_{}_bs_{}_bi_{}_lr_{}.pt'.format(args.dataset,
+    model_path = '/scratch/speech/models/classification/{}_hd_{}_dr_{}_e_{}_bs_{}_bi_{}_lr_{}_nl_{}.pt'.format(args.dataset,
                                                                                                    args.hidden_dim,
                                                                                                    args.dr,
                                                                                                    args.num_epochs,
                                                                                                    args.batch_size,
                                                                                                    args.bidirectional,
-                                                                                                   args.lr)
+                                                                                                   args.lr,
+                                                                                                   args.num_layers)
 
-    stats_path = '/scratch/speech/models/classification/{}_hd_{}_dr_{}_e_{}_bs_{}_bi_{}_lr_{}.txt'.format(args.dataset,
+    stats_path = '/scratch/speech/models/classification/{}_hd_{}_dr_{}_e_{}_bs_{}_bi_{}_lr_{}_nl_{}.txt'.format(args.dataset,
                                                                                                    args.hidden_dim,
                                                                                                    args.dr,
                                                                                                    args.num_epochs,
                                                                                                    args.batch_size,
                                                                                                    args.bidirectional,
-                                                                                                   args.lr)
+                                                                                                   args.lr,
+                                                                                                   args.num_layers)
 
-    model = GRUAudio(num_features=39, hidden_dim=args.hidden_dim, num_layers=2, dropout_rate=args.dr, num_labels=5, batch_size=1, bidirectional=args.bidirectional)
+    model = GRUAudio(num_features=39, hidden_dim=args.hidden_dim, num_layers=2, dropout_rate=args.dr, num_labels=5, batch_size=256, bidirectional=args.bidirectional)
     model = model.cuda()
     model.load_state_dict(torch.load(model_path))
     model.eval()
 
     testing_data = IEMOCAP(train=False)
-    test_loader = DataLoader(dataset=testing_data, batch_size=1, shuffle=True, collate_fn=my_collate, num_workers=0)
+    test_loader = DataLoader(dataset=testing_data, batch_size=256, shuffle=True, collate_fn=my_collate, num_workers=0)
     print("Loading successful")
 
     correct = 0
     print(len(test_loader))
-    for i, (test_case, target, _) in enumerate(test_loader):
-        if i % 100 == 0:
-            print(i)
-        test_case = test_case[0]
-        test_case = test_case.reshape(1, test_case.shape[0], test_case.shape[1])
+    for test_case, target, seq_length in test_loader:
+        test_case = pad_sequence(sequences=test_case, batch_first=True)
+        test_case = pack_padded_sequence(test_case, lengths=seq_length, batch_first=True, enforce_sorted=False)
         out, loss = model(test_case, target, False)
-        #    pdb.set_trace()
+        pdb.set_trace()
         index = torch.argmax(out)
-        print(index)
-        #  pdb.set_trace()
-        #    print("sample:",i)
         if target[0][index] == 1:
             #       print("Success!!")
             correct += 1
