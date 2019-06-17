@@ -9,7 +9,7 @@ from process_audio_torch import IEMOCAP, my_collate
 
 model = GRUAudio(num_features=39, hidden_dim=200, num_layers=2, dropout_rate=0.7, num_labels=5, batch_size=1)
 model = model.cuda()
-model.load_state_dict(torch.load('/scratch/speech/models/classification/classifier.pt'))
+model.load_state_dict(torch.load('/scratch/speech/models/classification/classifier_epoch_30.pt'))
 model.eval()
 
 testing_data = IEMOCAP(train=False)
@@ -26,7 +26,7 @@ for i, (test_case, target, _) in enumerate(test_loader):
     out, loss = model(test_case,target,False)
 #    pdb.set_trace()
     index = torch.argmax(out)
-    print(index)
+#    print(index)
   #  pdb.set_trace()
 #    print("sample:",i)
     if target[0][index] == 1:
