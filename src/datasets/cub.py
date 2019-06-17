@@ -4,7 +4,7 @@ import shutil
 import torch
 from torch.utils.data import Dataset
 from PIL import Image
-from utils import makedir_exist_ok
+from ..utils import makedir_exist_ok
 from .folder import ImageFolder
 from .utils import download_url, check_integrity
 
