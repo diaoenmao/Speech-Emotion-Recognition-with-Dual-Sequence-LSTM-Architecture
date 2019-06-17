@@ -75,17 +75,18 @@ def train_model(args):
         print("End of Epoch Loss: ", losses)
         # print(model.state_dict())
         if (epoch + 1) % 5 == 0:
-            checkpoint_path = '/scratch/speech/models/classification/{}_hd_{}_dr_{}_e_{}_bs_{}_bi_{}_lr_{}_chkpt_{}.pt'.format(
-                args.dataset, args.hidden_dim, args.dr, args.num_epochs, args.batch_size, args.bidirectional, args.lr, str(epoch + 1))
+            checkpoint_path = '/scratch/speech/models/classification/{}_hd_{}_dr_{}_e_{}_bs_{}_bi_{}_lr_{}_nl_{}_chkpt_{}.pt'.format(
+                args.dataset, args.hidden_dim, args.dr, args.num_epochs, args.batch_size, args.bidirectional, args.lr, args.num_layers, str(epoch + 1))
             torch.save(model.state_dict(), checkpoint_path)
 
-    model_path = '/scratch/speech/models/classification/{}_hd_{}_dr_{}_e_{}_bs_{}_bi_{}_lr_{}.pt'.format(args.dataset,
+    model_path = '/scratch/speech/models/classification/{}_hd_{}_dr_{}_e_{}_bs_{}_bi_{}_lr_{}_nl_{}.pt'.format(args.dataset,
                                                                                                    args.hidden_dim,
                                                                                                    args.dr,
                                                                                                    args.num_epochs,
                                                                                                    args.batch_size,
                                                                                                    args.bidirectional,
-                                                                                                   args.lr)
+                                                                                                   args.lr,
+                                                                                                   args.num_layers)
     torch.save(model.state_dict(), model_path)
 
 
