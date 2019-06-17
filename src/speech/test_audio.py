@@ -33,5 +33,5 @@ for i, (test_case, target, _) in enumerate(test_loader):
  #       print("Success!!")
         correct += 1
 
-accuracy = correct * 1.0/ len(testing_data)
+accuracy = correct * 1.0 / len(testing_data)
 print("accuracy:", accuracy)
