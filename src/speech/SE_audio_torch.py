@@ -9,7 +9,7 @@ torch.manual_seed(1)
 
 class GRUAudio(nn.Module):
 
-    def __init__(self, num_features, hidden_dim, num_layers, dropout_rate, num_labels, batch_size):
+    def __init__(self, num_features, hidden_dim, num_layers, dropout_rate, num_labels, batch_size, bidirectional=False):
         super(GRUAudio, self).__init__()
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.num_features = num_features
@@ -18,22 +18,23 @@ class GRUAudio(nn.Module):
         self.dropout_rate = dropout_rate
         self.num_labels = num_labels
         self.batch_size = batch_size
-
-        self.gru = nn.GRU(self.num_features, self.hidden_dim, self.num_layers, batch_first=True, dropout=self.dropout_rate).to(self.device)
-        self.classification = nn.Linear(self.hidden_dim * self.num_layers, self.num_labels).to(self.device)
+        self.bidirectional = bidirectional
+        self.num_directions = 1 + self.bidirectional
+        
+        self.gru = nn.GRU(self.num_features, self.hidden_dim, self.num_layers, batch_first=True, dropout=self.dropout_rate, bidirectional=self.bidirectional).to(self.device)
+        self.classification = nn.Linear(self.hidden_dim * self.num_layers * self.num_directions, self.num_labels).to(self.device)
 #        self.softmax = nn.Softmax()
 
     def forward(self, input, target, train=True):
         input = input.to(self.device)
         target = target.to(self.device)
-        hidden = torch.randn(2, self.batch_size, 200)
+        hidden = torch.randn(self.num_layers * self.num_directions, self.batch_size, self.hidden_dim)
         hidden = hidden.to(self.device)
         out, hn = self.gru(input, hidden)
 #        print(out, out.shape)
         #if train:
         #    hn, _ = pad_packed_sequence(hn, batch_first=True)
-        hn=hn.permute([1,0,2])
-#        pdb.set_trace()
+        hn = hn.permute([1,0,2])
         hn=hn.reshape(hn.shape[0],-1)
 #        pdb.set_trace()
         out = self.classification(hn)
