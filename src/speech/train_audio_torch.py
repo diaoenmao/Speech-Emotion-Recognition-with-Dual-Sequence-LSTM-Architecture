@@ -15,7 +15,7 @@ from tqdm import tqdm
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # Initialize our GRU model with 39 features, hidden_dim=200, num_layers=2, droupout=0.7, num_labels=5
-model = GRUAudio(num_features=39, hidden_dim=400, num_layers=2, dropout_rate=0.7, num_labels=5, batch_size=128)
+model = GRUAudio(num_features=39, hidden_dim=200, num_layers=2, dropout_rate=0.7, num_labels=5, batch_size=128)
 model.cuda()
 #pdb.set_trace()
 
@@ -35,10 +35,11 @@ train_loader = DataLoader(dataset=training_data, batch_size=128, shuffle=True, c
 #     print(tag_scores)
 
 # Perform 10 epochs
-for epoch in range(10):  # again, normally you would NOT do 300 epochs, it is toy data
+for epoch in range(2):  # again, normally you would NOT do 300 epochs, it is toy data
     print("===================================" + str(epoch) + "==============================================")
+    losses = 0
     for j, (input, target, seq_length) in enumerate(train_loader):
-        print("==============================Batch " + str(j) + "=============================================")
+        #print("==============================Batch " + str(j) + "=============================================")
         # pad input sequence to make all the same length
         #pdb.set_trace()
 
@@ -56,15 +57,16 @@ for epoch in range(10):  # again, normally you would NOT do 300 epochs, it is to
 
         # Step 3. Run our forward pass.
         out, loss = model(input, target)
-
-        print("Loss:", loss)
+        
+        losses += loss.item()
+        #print("Loss:", loss)
         # Step 4. Compute the loss, gradients, and update the parameters by
         #  calling optimizer.step()
         loss.backward()
         optimizer.step()
 
-    print("End of Epoch Loss: ", loss)
-    print(model.state_dict())
+    print("End of Epoch Loss: ", losses)
+    #print(model.state_dict())
 
 torch.save(model.state_dict(), '/scratch/speech/models/classification/classifier.pt')
 

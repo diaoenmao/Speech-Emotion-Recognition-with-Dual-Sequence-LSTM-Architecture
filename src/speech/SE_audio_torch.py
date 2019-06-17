@@ -20,7 +20,8 @@ class GRUAudio(nn.Module):
         self.batch_size = batch_size
 
         self.gru = nn.GRU(self.num_features, self.hidden_dim, self.num_layers, batch_first=True, dropout=self.dropout_rate).to(self.device)
-        self.classification = nn.Linear(self.hidden_dim, self.num_labels).to(self.device)
+        self.classification = nn.Linear(self.hidden_dim * self.num_layers, self.num_labels).to(self.device)
+#        self.softmax = nn.Softmax()
 
     def forward(self, input, target, train=True):
         input = input.to(self.device)
@@ -32,9 +33,11 @@ class GRUAudio(nn.Module):
         #if train:
         #    hn, _ = pad_packed_sequence(hn, batch_first=True)
         hn=hn.permute([1,0,2])
-        hn=hn.reshape(self.batch_size,-1)
-        #pdb.set_trace()
+#        pdb.set_trace()
+        hn=hn.reshape(hn.shape[0],-1)
+#        pdb.set_trace()
         out = self.classification(hn)
-        pdb.set_trace()
-        loss = F.cross_entropy(out, target)
+#        out = self.softmax(out)
+#        pdb.set_trace()
+        loss = F.cross_entropy(out, torch.max(target, 1)[1])
         return out, loss
