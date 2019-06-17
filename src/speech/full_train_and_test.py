@@ -66,14 +66,14 @@ def train_model(args):
             # Step 3. Run our forward pass.
             out, loss = model(input, target)
 
-            losses += loss.item()
-
+            losses += loss.item()*target.shape[0]
+ #           print("shape:",target.shape[0])
             # Step 4. Compute the loss, gradients, and update the parameters by
             #  calling optimizer.step()
             loss.backward()
             optimizer.step()
 
-        print("End of Epoch Loss: ", losses)
+        print("End of Epoch Mean Loss: ", losses/len(training_data))
         # print(model.state_dict())
         if (epoch + 1) % 5 == 0:
             checkpoint_path = '/scratch/speech/models/classification/{}_hd_{}_dr_{}_e_{}_bs_{}_bi_{}_lr_{}_nl_{}_chkpt_{}.pt'.format(
@@ -120,6 +120,7 @@ def test_model(args):
     print("Loading successful")
 
     correct = 0
+    losses=0
     print(len(test_loader))
     print(len(testing_data))
     for test_case, target, seq_length in test_loader:
@@ -127,12 +128,16 @@ def test_model(args):
         test_case = pack_padded_sequence(test_case, lengths=seq_length, batch_first=True, enforce_sorted=False)
         out, loss = model(test_case, target, False)
         index = torch.argmax(out,dim=1)
-        target_index=torch.argmax(target,dim=1)
-        temp= target_index==index
-        correct+=sum(temp).item()
+        target_index=torch.argmax(target,dim=1).to(device)
+#        pdb.set_trace()
+        losses+=loss.item()*index.shape[0] 
+#        print("shape:",target.shape[0])
+        correct+=sum(index==target_index).item()
 
     accuracy = correct * 1.0 / len(testing_data)
+    losses=losses/len(testing_data)
     print("accuracy:", accuracy)
+    print("mean loss:",losses) 
     with open(stats_path, 'w+') as f:
         f.write("Accuracy of the model is: {}".format(accuracy))
         print(stats_path)
