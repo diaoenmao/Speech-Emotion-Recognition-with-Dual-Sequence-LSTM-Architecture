@@ -36,9 +36,7 @@ class AttGRU(nn.Module):
 #        hn = hn.permute([1,0,2])
 #        hn=hn.reshape(hn.shape[0],-1)
 #        pdb.set_trace()
-
-		out,_=pad_packed_sequence(out,batch_first=True)
-
+		out , _ =pad_packed_sequence(out,batch_first=True)
 		alpha=F.softmax(torch.matmul(out,self.u))
 		pdb.set_trace()
 		input_linear=torch.sum(torch.matmul(alpha,out),dim=1)
