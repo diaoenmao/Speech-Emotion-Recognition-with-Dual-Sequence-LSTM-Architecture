@@ -38,7 +38,7 @@ for epoch in range(5):  # again, normally you would NOT do 300 epochs, it is toy
         model.zero_grad()
 
         # Step 3. Run our forward pass.
-        out, loss = model(input, target)
+        out, loss = model(input, target,seq_length)
         
         losses += loss.item() * target.shape[0]
         #print("Loss:", loss)
