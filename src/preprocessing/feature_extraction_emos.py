@@ -30,14 +30,19 @@ def load_paths_and_labels():
 
 
 def extract_features(args, dataframe):
+    emotions = ['hap', 'exc', 'sad', 'ang', 'neu']
     input = []
     target = []
     for file, emotion, valence, activation, dominance in dataframe.values:
-        cmd = 'SMILExtract -C {} -I {} -csvoutput {} -headercsv 0'.format(args.config_path, file, out_file)
-        os.system(cmd)
-        df = pd.read_csv(out_file, delimiter=';').iloc[:,1:]
-        input.append(df.values)
-        target.append(emotion)
+        if emotion in emotions:
+            cmd = 'SMILExtract -C {} -I {} -csvoutput {} -headercsv 0'.format(args.config_path, file, out_file)
+            os.system(cmd)
+            df = pd.read_csv(out_file, delimiter=';').iloc[:,1:]
+            input.append(df.values)
+            if emotion == 'exc':
+                target.append('hap')
+            else:
+                target.append(emotion)
     input = np.array(input)
     target = np.array(target)
     return input, target
