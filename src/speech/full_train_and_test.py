@@ -79,17 +79,6 @@ def train_model(args):
                 args.dataset, args.hidden_dim, args.dr, args.num_epochs, args.batch_size, args.bidirectional, args.lr, str(epoch + 1))
             torch.save(model.state_dict(), checkpoint_path)
 
-    model_path = '/scratch/speech/models/classification/{}_hd_{}_dr_{}_e_{}_bs_{}_bi_{}_lr_{}.pt'.format(args.dataset,
-                                                                                                   args.hidden_dim,
-                                                                                                   args.dr,
-                                                                                                   args.num_epochs,
-                                                                                                   args.batch_size,
-                                                                                                   args.bidirectional,
-                                                                                                   args.lr)
-    torch.save(model.state_dict(), model_path)
-
-
-def test_model(args):
     model_path = '/scratch/speech/models/classification/{}_hd_{}_dr_{}_e_{}_bs_{}_bi_{}_lr_{}_nl_{}.pt'.format(args.dataset,
                                                                                                    args.hidden_dim,
                                                                                                    args.dr,
@@ -98,23 +87,35 @@ def test_model(args):
                                                                                                    args.bidirectional,
                                                                                                    args.lr,
                                                                                                    args.num_layers)
+    torch.save(model.state_dict(), model_path)
 
-    stats_path = '/scratch/speech/models/classification/{}_hd_{}_dr_{}_e_{}_bs_{}_bi_{}_lr_{}_nl_{}.txt'.format(args.dataset,
+
+def test_model(args):
+    model_path = '/scratch/speech/models/classification/{}_hd_{}_dr_{}_e_{}_bs_{}_bi_{}_lr_{}.pt'.format(args.dataset,
                                                                                                    args.hidden_dim,
                                                                                                    args.dr,
                                                                                                    args.num_epochs,
                                                                                                    args.batch_size,
                                                                                                    args.bidirectional,
-                                                                                                   args.lr,
-                                                                                                   args.num_layers)
+                                                                                                   args.lr)
+                                                                                                   #args.num_layers)
 
-    model = GRUAudio(num_features=39, hidden_dim=args.hidden_dim, num_layers=2, dropout_rate=args.dr, num_labels=5, batch_size=256, bidirectional=args.bidirectional)
+    stats_path = '/scratch/speech/models/classification/classifier_stats.txt'.format(args.dataset,
+                                                                                                   args.hidden_dim,
+                                                                                                   args.dr,
+                                                                                                   args.num_epochs,
+                                                                                                   args.batch_size,
+                                                                                                   args.bidirectional,
+                                                                                                   args.lr)
+                                                                                                   #args.num_layers)
+
+    model = GRUAudio(num_features=39, hidden_dim=args.hidden_dim, num_layers=args.num_layers, dropout_rate=args.dr, num_labels=5, batch_size=args.batch_size, bidirectional=args.bidirectional)
     model = model.cuda()
     model.load_state_dict(torch.load(model_path))
     model.eval()
 
     testing_data = IEMOCAP(train=False)
-    test_loader = DataLoader(dataset=testing_data, batch_size=256, shuffle=True, collate_fn=my_collate, num_workers=0)
+    test_loader = DataLoader(dataset=testing_data, batch_size=1, shuffle=True, collate_fn=my_collate, num_workers=0)
     print("Loading successful")
 
     correct = 0
@@ -123,7 +124,6 @@ def test_model(args):
         test_case = pad_sequence(sequences=test_case, batch_first=True)
         test_case = pack_padded_sequence(test_case, lengths=seq_length, batch_first=True, enforce_sorted=False)
         out, loss = model(test_case, target, False)
-        pdb.set_trace()
         index = torch.argmax(out)
         if target[0][index] == 1:
             #       print("Success!!")
@@ -131,11 +131,11 @@ def test_model(args):
 
     accuracy = correct * 1.0 / len(testing_data)
     print("accuracy:", accuracy)
-    with open(stats_path, 'w+') as f:
-        f.write("Accuracy of the model is: {}".format(accuracy))
+    with open(stats_path, 'a+') as f:
+        f.write("{}\t{}\t{}\t{}\t{}\t{}\{}t\{}\n".format(args.dataset, args.hidden_dim, args.dr, args.num_epochs, args.batch_size, args.bidirectional, args.lr, args.num_layers))
 
 
 if __name__ == '__main__':
     cl_arguments = init_parser()
-    train_model(cl_arguments)
+#    train_model(cl_arguments)
     test_model(cl_arguments)
