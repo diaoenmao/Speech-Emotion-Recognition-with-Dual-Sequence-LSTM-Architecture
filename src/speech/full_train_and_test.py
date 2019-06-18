@@ -135,7 +135,7 @@ def test_model(args):
     losses=losses/len(testing_data)
     print("accuracy:", accuracy)
     with open(stats_path, 'a+') as f:
-        f.write("{}\t{}\t{}\t{}\t{}\t{}\{}t\{}\t{}\n".format(args.dataset, args.hidden_dim, args.dr, args.num_epochs, args.batch_size, args.bidirectional, args.lr, args.num_layers, accuracy))
+        f.write("{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n".format(args.dataset, args.hidden_dim, args.dr, args.num_epochs, args.batch_size, args.bidirectional, args.lr, args.num_layers, accuracy))
 
 
 if __name__ == '__main__':
