@@ -1,7 +1,8 @@
 import torch
 import pickle
 import numpy as np
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import Dataset
+
 
 class IEMOCAP(Dataset):
     def __init__(self, train=True):
@@ -35,7 +36,6 @@ def my_collate(batch):
     # seq_length = torch.from_numpy(np.array(seq_length))
     return [input, target, seq_length]
 
-
-#dataset = IEMOCAP()
-#sample = dataset[10]
-#train_loader = DataLoader(dataset=dataset, batch_size=128, shuffle=True, collate_fn=my_collate, num_workers=0)
+# dataset = IEMOCAP()
+# sample = dataset[10]
+# train_loader = DataLoader(dataset=dataset, batch_size=128, shuffle=True, collate_fn=my_collate, num_workers=0)
