@@ -15,7 +15,7 @@ from tqdm import tqdm
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # Initialize our GRU model with 39 features, hidden_dim=200, num_layers=2, droupout=0.7, num_labels=5
-model = GRUAudio(num_features=39, hidden_dim=200, num_layers=2, dropout_rate=0.0, num_labels=5, batch_size=256)
+model = AttGRU(num_features=39, hidden_dim=200, num_layers=2, dropout_rate=0.0, num_labels=5, batch_size=256)
 model.cuda()
 
 optimizer = optim.Adam(model.parameters(), lr=0.001)
@@ -25,11 +25,11 @@ train_loader = DataLoader(dataset=training_data, batch_size=256, shuffle=True, c
 
 
 # Perform 10 epochs
-for epoch in range(10):  # again, normally you would NOT do 300 epochs, it is toy data
+for epoch in range(5):  # again, normally you would NOT do 300 epochs, it is toy data
     print("===================================" + str(epoch) + "==============================================")
     losses = 0
     for j, (input, target, seq_length) in enumerate(train_loader):
-        print("==============================Batch " + str(j) + "=============================================")
+#        print("==============================Batch " + str(j) + "=============================================")
 
         input = pad_sequence(sequences=input, batch_first=True)
 
