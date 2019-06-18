@@ -38,14 +38,14 @@ def extract_features(args, dataframe):
         df = pd.read_csv(out_file, delimiter=';').iloc[:,1:]
         input.append(df.values)
         target.append(emotion)
-    input = np.array(input)
-    target = np.array(target)
+#    input = np.array(input)
+#    target = np.array(target)
     return input, target
 
 
 def extract_features_ts(args, dataframe):
     input, target = extract_features(args, dataframe)
-    seq_length = np.array([x.shape[0] for x in input])
+    seq_length = [x.shape[0] for x in input]
     return input, target, seq_length
 
 
