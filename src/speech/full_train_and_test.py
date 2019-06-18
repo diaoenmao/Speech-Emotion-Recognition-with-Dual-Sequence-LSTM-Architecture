@@ -87,7 +87,7 @@ def train_model(args, model_path):
     torch.save(model.state_dict(), model_path)
 
 
-def test_model(args, model_path, stats_path):
+def test_model(args, model_path, stats_path, checkpoint):
     model = GRUAudio(num_features=39, hidden_dim=args.hidden_dim, num_layers=args.num_layers, dropout_rate=args.dr,
                      num_labels=5, batch_size=args.batch_size, bidirectional=args.bidirectional)
     model = model.cuda()
@@ -115,9 +115,9 @@ def test_model(args, model_path, stats_path):
     print("loss:", losses)
     with open(stats_path, 'a+') as f:
         f.write(
-            "{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n".format(args.dataset, args.hidden_dim, args.dr, args.num_epochs,
+            "{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n".format(args.dataset, args.hidden_dim, args.dr, args.num_epochs,
                                                               args.batch_size, args.bidirectional, args.lr,
-                                                              args.num_layers, accuracy, losses))
+                                                              args.num_layers, checkpoint, accuracy, losses))
 
 
 def build_model_path(args, checkpoint=False, check_number=0):
@@ -153,6 +153,6 @@ if __name__ == '__main__':
     if args.test_checkpoints:
         for checkpoint in range(5, args.num_epochs+1, 5):
             model_path = build_model_path(args, True, checkpoint)
-            test_model(args, model_path, stats_path='/scratch/speech/models/classification/checkpoint_stats.txt')
+            test_model(args, model_path, stats_path='/scratch/speech/models/classification/checkpoint_stats.txt', checkpoint=checkpoint)
     if args.test:
-        test_model(args, model_path, stats_path='/speech/models/classification/classifier_stat.txt')
+        test_model(args, model_path, stats_path='/speech/models/classification/classifier_stat.txt', checkpoint=args.num_epochs)
