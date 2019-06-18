@@ -26,16 +26,16 @@ def init_parser():
 
 
 def load_paths_and_labels():
-    return pd.read_csv('audio_paths_labels.csv')
+    return pd.read_csv('/scratch/speech/datasets/audio_paths_labels.csv')
 
 
 def extract_features(args, dataframe):
     input = []
     target = []
-    for file, emotion, valence, activation, dominance in dataframe:
+    for file, emotion, valence, activation, dominance in dataframe.values:
         cmd = 'SMILExtract -C {} -I {} -csvoutput {} -headercsv 0'.format(args.config_path, file, out_file)
         os.system(cmd)
-        df = pd.read_csv(out_file)
+        df = pd.read_csv(out_file, delimiter=';').iloc[:,1:]
         input.append(df.values)
         target.append(emotion)
     input = np.array(input)
@@ -46,6 +46,7 @@ def extract_features(args, dataframe):
 def extract_features_ts(args, dataframe):
     input, target = extract_features(args, dataframe)
     seq_length = np.array([x.shape[0] for x in input])
+    pdb.set_trace()
     return input, target, seq_length
 
 
@@ -70,13 +71,12 @@ def save(args, dataset):
         pickle.dump(dataset, f)
     with open(DATASET_PATH + args.dataset_name + '_train.pkl', 'wb') as f:
         pickle.dump(train, f)
-    with open(DATASET_PATH + args.dataset_name + 'test.pkl', 'wb') as f:
+    with open(DATASET_PATH + args.dataset_name + '_test.pkl', 'wb') as f:
         pickle.dump(test, f)
 
 
 if __name__ == '__main__':
     args = init_parser()
-    pdb.set_trace()
     dataframe = load_paths_and_labels()
     pdb.set_trace()
     if args.time_series:
@@ -85,4 +85,5 @@ if __name__ == '__main__':
     else:
         input, target = extract_features(args, dataframe)
         dataset = {'input': input, 'target': target}
+    pdb.set_trace()
     save(args, dataset)
