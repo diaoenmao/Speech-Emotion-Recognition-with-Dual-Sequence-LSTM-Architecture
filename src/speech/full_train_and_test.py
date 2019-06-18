@@ -95,7 +95,7 @@ def test_model(args, model_path, stats_path, checkpoint):
     model.eval()
 
     testing_data = IEMOCAP(train=False)
-    test_loader = DataLoader(dataset=testing_data, batch_size=1, shuffle=True, collate_fn=my_collate, num_workers=0)
+    test_loader = DataLoader(dataset=testing_data, batch_size=256, shuffle=True, collate_fn=my_collate, num_workers=0)
     print("Loading successful")
 
     print(len(testing_data))
