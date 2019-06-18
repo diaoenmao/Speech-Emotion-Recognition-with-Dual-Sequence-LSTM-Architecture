@@ -26,7 +26,7 @@ def init_parser():
 
 
 def load_paths_and_labels():
-    return pd.read_csv('audio_paths_labels.csv')
+    return pd.read_csv('/scratch/speech/datasets/audio_paths_labels.csv')
 
 
 def extract_features(args, dataframe):
