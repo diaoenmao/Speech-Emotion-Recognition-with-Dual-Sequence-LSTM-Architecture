@@ -6,6 +6,7 @@ from torch.utils.data import DataLoader
 
 from SE_audio_torch import GRUAudio
 from process_audio_torch import IEMOCAP, my_collate
+import pdb
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -65,18 +66,18 @@ def train_model(args):
             # Step 3. Run our forward pass.
             out, loss = model(input, target)
 
-            losses += loss.item()
-
+            losses += loss.item()*target.shape[0]
+ #           print("shape:",target.shape[0])
             # Step 4. Compute the loss, gradients, and update the parameters by
             #  calling optimizer.step()
             loss.backward()
             optimizer.step()
 
-        print("End of Epoch Loss: ", losses)
+        print("End of Epoch Mean Loss: ", losses/len(training_data))
         # print(model.state_dict())
         if (epoch + 1) % 5 == 0:
-            checkpoint_path = '/scratch/speech/models/classification/{}_hd_{}_dr_{}_e_{}_bs_{}_bi_{}_lr_{}_chkpt_{}.pt'.format(
-                args.dataset, args.hidden_dim, args.dr, args.num_epochs, args.batch_size, args.bidirectional, args.lr, str(epoch + 1))
+            checkpoint_path = '/scratch/speech/models/classification/{}_hd_{}_dr_{}_e_{}_bs_{}_bi_{}_lr_{}_nl_{}_chkpt_{}.pt'.format(
+                args.dataset, args.hidden_dim, args.dr, args.num_epochs, args.batch_size, args.bidirectional, args.lr, args.num_layers, str(epoch + 1))
             torch.save(model.state_dict(), checkpoint_path)
 
     model_path = '/scratch/speech/models/classification/{}_hd_{}_dr_{}_e_{}_bs_{}_bi_{}_lr_{}_nl_{}.pt'.format(args.dataset,
@@ -119,20 +120,22 @@ def test_model(args):
     print("Loading successful")
 
     correct = 0
+    losses=0
     print(len(test_loader))
+    print(len(testing_data))
     for test_case, target, seq_length in test_loader:
         test_case = pad_sequence(sequences=test_case, batch_first=True)
         test_case = pack_padded_sequence(test_case, lengths=seq_length, batch_first=True, enforce_sorted=False)
         out, loss = model(test_case, target, False)
-        index = torch.argmax(out)
-        if target[0][index] == 1:
-            #       print("Success!!")
-            correct += 1
-
+        index = torch.argmax(out,dim=1)
+        target_index=torch.argmax(target,dim=1).to(device)
+        losses+=loss.item()*index.shape[0] 
+        correct+=sum(index==target_index).item()
     accuracy = correct * 1.0 / len(testing_data)
+    losses=losses/len(testing_data)
     print("accuracy:", accuracy)
     with open(stats_path, 'a+') as f:
-        f.write("{}\t{}\t{}\t{}\t{}\t{}\{}t\{}\n".format(args.dataset, args.hidden_dim, args.dr, args.num_epochs, args.batch_size, args.bidirectional, args.lr, args.num_layers))
+        f.write("{}\t{}\t{}\t{}\t{}\t{}\{}t\{}\t{}\n".format(args.dataset, args.hidden_dim, args.dr, args.num_epochs, args.batch_size, args.bidirectional, args.lr, args.num_layers, accuracy))
 
 
 if __name__ == '__main__':
