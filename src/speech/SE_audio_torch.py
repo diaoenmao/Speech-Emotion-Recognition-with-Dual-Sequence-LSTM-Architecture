@@ -28,7 +28,7 @@ class GRUAudio(nn.Module):
 
     #        self.softmax = nn.Softmax()
 
-    def forward(self, input, target, train=True):
+    def forward(self, input, target, train=True, seq_length=False):
         input = input.to(self.device)
         target = target.to(self.device)
         hidden = torch.randn(self.num_layers * self.num_directions, self.batch_size, self.hidden_dim)
