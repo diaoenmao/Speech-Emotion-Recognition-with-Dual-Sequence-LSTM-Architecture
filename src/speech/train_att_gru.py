@@ -15,8 +15,7 @@ from tqdm import tqdm
 # Detect the device
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-# Initialize our GRU model with 39 features, hidden_dim=200, num_layers=2, droupout=0.7, num_labels=5
-model = ATT(num_features=39, hidden_dim=250, num_layers=2, dropout_rate=0, num_labels=5, batch_size=128,bidirectional=True)
+model = ATT(num_features=39, hidden_dim=250, num_layers=1, dropout_rate=0, num_labels=4, batch_size=128,bidirectional=True)
 model.cuda()
 
 optimizer = optim.SGD(model.parameters(), lr=0.001)
@@ -25,14 +24,14 @@ training_data = IEMOCAP(train=True)
 train_loader = DataLoader(dataset=training_data, batch_size=128, shuffle=True, collate_fn=my_collate, num_workers=0)
 
 print(model.parameters)
-scheduler=cos(optimizer, 10)
+scheduler=cos(optimizer, 50)
 loss_summary=[]
 f=open('/scratch/speech/models/classification/att_classifier.txt',"w+")
 # Perform 10 epochs
 for epoch in range(10):  # again, normally you would NOT do 300 epochs, it is toy data
     print("===================================" + str(epoch) + "==============================================")
     losses = 0
-#    scheduler.step()
+    scheduler.step()
     for j, (input, target, seq_length) in enumerate(train_loader):
 #        print("==============================Batch " + str(j) + "=============================================")
 
