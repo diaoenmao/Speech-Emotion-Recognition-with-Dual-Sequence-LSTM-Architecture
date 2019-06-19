@@ -8,6 +8,7 @@ from SE_audio_torch import GRUAudio
 from attention import AttGRU, MeanPool
 from lstm_audio import LSTM_Audio
 from process_audio_torch import IEMOCAP, my_collate
+from torch.optim.lr_scheduler import MultiStepLR
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -45,6 +46,7 @@ def train_model(args, model_path):
 
     # Use Adam as the optimizer with learning rate 0.01 to make it fast for testing purposes
     optimizer = optim.Adam(model.parameters(), lr=args.lr)
+    scheduler = MultiStepLR(optimizer=optimizer,milestones=[20, 50, 80], gamma=0.3)
 
     # Load the training data
     training_data = IEMOCAP(train=True)
@@ -77,7 +79,7 @@ def train_model(args, model_path):
             # Step 4. Compute the loss, gradients, and update the parameters by
             #  calling optimizer.step()
             loss.backward()
-            optimizer.step()
+            scheduler.step()
 
         print("End of Epoch Mean Loss: ", losses / len(training_data))
         # print(model.state_dict())
