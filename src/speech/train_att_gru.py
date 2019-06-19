@@ -16,19 +16,19 @@ from tqdm import tqdm
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # Initialize our GRU model with 39 features, hidden_dim=200, num_layers=2, droupout=0.7, num_labels=5
-model = MeanPool(num_features=39, hidden_dim=200, num_layers=2, dropout_rate=0.0, num_labels=5, batch_size=256)
+model = MeanPool(num_features=39, hidden_dim=200, num_layers=2, dropout_rate=0, num_labels=5, batch_size=512)
 model.cuda()
 
-optimizer = optim.Adam(model.parameters(), lr=0.0001)
+optimizer = optim.Adam(model.parameters(), lr=0.0005)
 
 training_data = IEMOCAP(train=True)
-train_loader = DataLoader(dataset=training_data, batch_size=256, shuffle=True, collate_fn=my_collate, num_workers=0)
+train_loader = DataLoader(dataset=training_data, batch_size=512, shuffle=True, collate_fn=my_collate, num_workers=0)
 
 scheduler=cos(optimizer, 50)
 loss_summary=[]
 f=open('/scratch/speech/models/classification/att_classifier.txt',"w+")
 # Perform 10 epochs
-for epoch in range(50):  # again, normally you would NOT do 300 epochs, it is toy data
+for epoch in range(30):  # again, normally you would NOT do 300 epochs, it is toy data
     print("===================================" + str(epoch) + "==============================================")
     losses = 0
     for j, (input, target, seq_length) in enumerate(train_loader):
@@ -52,10 +52,10 @@ for epoch in range(50):  # again, normally you would NOT do 300 epochs, it is to
 
     print("End of Epoch Mean Loss: ", losses / len(training_data))
     loss_summary.append((epoch,losses))
-    f.write(str(epoch)+" : "+ str(losses)+"\n")
+    f.write(str(epoch)+" : "+ str(losses/len(training_data))+"\n")
     if (epoch + 1) % 10 == 0:
-        torch.save(model.state_dict(), '/scratch/speech/models/classification/att_classifier_epoch_' + str(epoch+1) + '.pt')
-#        print(model.state_dict())
+        torch.save(model.state_dict(), '/scratch/speech/models/classification/meanpool_classifier_epoch_' + str(epoch+1) + '.pt')
+        print('/scratch/speech/models/classification/meanpool_classifier_epoch_' + str(epoch+1) + '.pt')
 
 torch.save(model.state_dict(), '/scratch/speech/models/classification/att_classifier.pt')
 

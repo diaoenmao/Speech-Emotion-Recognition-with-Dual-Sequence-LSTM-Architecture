@@ -43,7 +43,7 @@ class AttGRU(nn.Module):
         mask=mask.to(self.device)
 
         x=torch.matmul(out,self.u)
-        x=x.masked_fill_(mask,-1e10)
+        x=x.masked_fill_(mask,-1e18)
         alpha=F.softmax(x,dim=1)
 
         input_linear=torch.sum(torch.matmul(alpha,out),dim=1)
@@ -82,7 +82,7 @@ class MeanPool(nn.Module):
 
         out=torch.mean(out,dim=1)
 
-        pdb.set_trace()
+#        pdb.set_trace()
 
         out = self.classification(out)
         
