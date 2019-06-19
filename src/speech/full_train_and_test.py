@@ -128,14 +128,14 @@ def test_model(args, model_path, stats_path, checkpoint):
     print("loss:", losses)
     with open(stats_path, 'a+') as f:
         f.write(
-            "{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n".format(args.dataset, args.hidden_dim, args.dr, args.num_epochs,
+            "{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n".format(args.dataset, args.hidden_dim, args.dr, args.num_epochs,
                                                               args.batch_size, args.bidirectional, args.lr,
-                                                              args.num_layers, checkpoint, accuracy, losses))
+                                                              args.num_layers, checkpoint, accuracy, losses, args.model))
 
 
 def build_model_path(args, checkpoint=False, check_number=0):
     if checkpoint:
-        return '/scratch/speech/models/classification/{}_hd_{}_dr_{}_e_{}_bs_{}_bi_{}_lr_{}_chkpt_{}.pt'.format(
+        return '/scratch/speech/models/classification/{}_hd_{}_dr_{}_e_{}_bs_{}_bi_{}_lr_{}_chkpt_{}_m_{}.pt'.format(
             args.dataset,
             args.hidden_dim,
             args.dr,
@@ -143,8 +143,9 @@ def build_model_path(args, checkpoint=False, check_number=0):
             args.batch_size,
             args.bidirectional,
             args.lr,
-            check_number)
-    return '/scratch/speech/models/classification/{}_hd_{}_dr_{}_e_{}_bs_{}_bi_{}_lr_{}_nl_{}.pt'.format(
+            check_number,
+            args.model)
+    return '/scratch/speech/models/classification/{}_hd_{}_dr_{}_e_{}_bs_{}_bi_{}_lr_{}_nl_{}_m_{}.pt'.format(
         args.dataset,
         args.hidden_dim,
         args.dr,
@@ -152,7 +153,8 @@ def build_model_path(args, checkpoint=False, check_number=0):
         args.batch_size,
         args.bidirectional,
         args.lr,
-        args.num_layers)
+        args.num_layers,
+        args.model)
 
 
 if __name__ == '__main__':
