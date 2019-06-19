@@ -5,17 +5,18 @@ import numpy as np
 from torch.nn.utils.rnn import pack_padded_sequence, pad_sequence
 from torch.utils.data import DataLoader
 from  torch.optim.lr_scheduler import CosineAnnealingLR as cos
-from attention import AttGRU
+from attention import AttGRU, MeanPool
 from process_audio_torch import IEMOCAP, my_collate
 
 import pdb
 from tqdm import tqdm
 
+
 # Detect the device
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # Initialize our GRU model with 39 features, hidden_dim=200, num_layers=2, droupout=0.7, num_labels=5
-model = AttGRU(num_features=39, hidden_dim=200, num_layers=2, dropout_rate=0.0, num_labels=5, batch_size=256)
+model = MeanPool(num_features=39, hidden_dim=200, num_layers=2, dropout_rate=0.0, num_labels=5, batch_size=256)
 model.cuda()
 
 optimizer = optim.Adam(model.parameters(), lr=0.0001)
