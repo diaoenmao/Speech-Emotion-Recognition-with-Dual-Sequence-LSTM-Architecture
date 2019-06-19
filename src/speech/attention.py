@@ -91,5 +91,3 @@ class MeanPool(nn.Module):
 
         loss = F.cross_entropy(out, torch.max(target, 1)[1])
         return out, loss
-
-

@@ -24,6 +24,7 @@ optimizer = optim.Adam(model.parameters(), lr=0.0005)
 training_data = IEMOCAP(train=True)
 train_loader = DataLoader(dataset=training_data, batch_size=256, shuffle=True, collate_fn=my_collate, num_workers=0)
 
+
 scheduler=cos(optimizer, 10)
 loss_summary=[]
 f=open('/scratch/speech/models/classification/att_classifier.txt',"w+")

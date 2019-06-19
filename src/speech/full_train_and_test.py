@@ -5,7 +5,10 @@ from torch.nn.utils.rnn import pad_sequence, pack_padded_sequence
 from torch.utils.data import DataLoader
 
 from SE_audio_torch import GRUAudio
+from attention import AttGRU, MeanPool
+from lstm_audio import LSTM_Audio
 from process_audio_torch import IEMOCAP, my_collate
+from torch.optim.lr_scheduler import MultiStepLR
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -14,6 +17,7 @@ def init_parser():
     parser = argparse.ArgumentParser(description='Train and test your model as specified by the parameters you enter')
     parser.add_argument('--dataset', '-d', default='IEMOCAP', type=str,
                         help='IEMOCAP or Berlin (Berlin support still coming). IEMOCAP is default', dest='dataset')
+    parser.add_argument('--model', '-m', default='gru', type=str, help='gru, att_gru, lstm, or mean_pool_gru', dest='model')
     parser.add_argument('--num_layers', '-nl', default=2, type=int, dest='num_layers')
     parser.add_argument('--hidden_dim', '-hd', default=200, type=int, dest='hidden_dim')
     parser.add_argument('-dropout_rate', '-dr', default=0.0, type=float,
@@ -37,13 +41,12 @@ def init_parser():
 
 
 def train_model(args, model_path):
-    model = GRUAudio(num_features=39, hidden_dim=args.hidden_dim, num_layers=args.num_layers, dropout_rate=args.dr,
-                     num_labels=4,
-                     batch_size=args.batch_size, bidirectional=args.bidirectional)
+    model = get_model(args)
     model.cuda()
 
     # Use Adam as the optimizer with learning rate 0.01 to make it fast for testing purposes
     optimizer = optim.Adam(model.parameters(), lr=args.lr)
+    scheduler = MultiStepLR(optimizer=optimizer,milestones=[20, 50, 80], gamma=0.3)
 
     # Load the training data
     training_data = IEMOCAP(train=True)
@@ -70,13 +73,13 @@ def train_model(args, model_path):
             model.zero_grad()
 
             # Step 3. Run our forward pass.
-            out, loss = model(input, target)
+            out, loss = model(input, target, seq_length=seq_length)
 
             losses += loss.item() * target.shape[0]
             # Step 4. Compute the loss, gradients, and update the parameters by
             #  calling optimizer.step()
             loss.backward()
-            optimizer.step()
+            scheduler.step()
 
         print("End of Epoch Mean Loss: ", losses / len(training_data))
         # print(model.state_dict())
@@ -87,9 +90,25 @@ def train_model(args, model_path):
     torch.save(model.state_dict(), model_path)
 
 
-def test_model(args, model_path, stats_path, checkpoint):
-    model = GRUAudio(num_features=39, hidden_dim=args.hidden_dim, num_layers=args.num_layers, dropout_rate=args.dr,
+def get_model(args):
+    if args.model == 'gru':
+        return GRUAudio(num_features=39, hidden_dim=args.hidden_dim, num_layers=args.num_layers, dropout_rate=args.dr,
                      num_labels=4, batch_size=args.batch_size, bidirectional=args.bidirectional)
+    elif args.model == 'att_gru':
+        return AttGRU(num_features=39, hidden_dim=args.hidden_dim, num_layers=args.num_layers, dropout_rate=args.dr,
+                        num_labels=4, batch_size=args.batch_size, bidirectional=args.bidirectional)
+    elif args.model == 'mean_pool_gru':
+        return MeanPool(num_features=39, hidden_dim=args.hidden_dim, num_layers=args.num_layers, dropout_rate=args.dr,
+                        num_labels=4, batch_size=args.batch_size, bidirectional=args.bidirectional)
+    elif args.model == 'lstm':
+        return LSTM_Audio(num_features=39, hidden_dim=args.hidden_dim, num_layers=args.num_layers, dropout_rate=args.dr,
+                        num_labels=4, batch_size=args.batch_size, bidirectional=args.bidirectional)
+    else:
+        return GRUAudio(num_features=39, hidden_dim=args.hidden_dim, num_layers=args.num_layers, dropout_rate=args.dr,
+                        num_labels=4, batch_size=args.batch_size, bidirectional=args.bidirectional)
+
+def test_model(args, model_path, stats_path, checkpoint):
+    model = get_model(args)
     model = model.cuda()
     model.load_state_dict(torch.load(model_path))
     model.eval()
@@ -104,7 +123,7 @@ def test_model(args, model_path, stats_path, checkpoint):
     for test_case, target, seq_length in test_loader:
         test_case = pad_sequence(sequences=test_case, batch_first=True)
         test_case = pack_padded_sequence(test_case, lengths=seq_length, batch_first=True, enforce_sorted=False)
-        out, loss = model(test_case, target, False)
+        out, loss = model(test_case, target, train=False, seq_length=seq_length)
         index = torch.argmax(out, dim=1)
         target_index = torch.argmax(target, dim=1).to(device)
         losses += loss.item() * index.shape[0]
@@ -115,14 +134,14 @@ def test_model(args, model_path, stats_path, checkpoint):
     print("loss:", losses)
     with open(stats_path, 'a+') as f:
         f.write(
-            "{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n".format(args.dataset, args.hidden_dim, args.dr, args.num_epochs,
+            "{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n".format(args.dataset, args.hidden_dim, args.dr, args.num_epochs,
                                                               args.batch_size, args.bidirectional, args.lr,
-                                                              args.num_layers, checkpoint, accuracy, losses))
+                                                              args.num_layers, checkpoint, accuracy, losses, args.model))
 
 
 def build_model_path(args, checkpoint=False, check_number=0):
     if checkpoint:
-        return '/scratch/speech/models/classification/{}_hd_{}_dr_{}_e_{}_bs_{}_bi_{}_lr_{}_chkpt_{}.pt'.format(
+        return '/scratch/speech/models/classification/{}_hd_{}_dr_{}_e_{}_bs_{}_bi_{}_lr_{}_chkpt_{}_m_{}.pt'.format(
             args.dataset,
             args.hidden_dim,
             args.dr,
@@ -130,8 +149,9 @@ def build_model_path(args, checkpoint=False, check_number=0):
             args.batch_size,
             args.bidirectional,
             args.lr,
-            check_number)
-    return '/scratch/speech/models/classification/{}_hd_{}_dr_{}_e_{}_bs_{}_bi_{}_lr_{}_nl_{}.pt'.format(
+            check_number,
+            args.model)
+    return '/scratch/speech/models/classification/{}_hd_{}_dr_{}_e_{}_bs_{}_bi_{}_lr_{}_nl_{}_m_{}.pt'.format(
         args.dataset,
         args.hidden_dim,
         args.dr,
@@ -139,7 +159,8 @@ def build_model_path(args, checkpoint=False, check_number=0):
         args.batch_size,
         args.bidirectional,
         args.lr,
-        args.num_layers)
+        args.num_layers,
+        args.model)
 
 
 if __name__ == '__main__':
