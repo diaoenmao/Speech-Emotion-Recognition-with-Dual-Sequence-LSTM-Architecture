@@ -36,13 +36,13 @@ def extract_features(args, dataframe):
         cmd = 'SMILExtract -C {} -I {} -csvoutput {} -headercsv 0'.format(args.config_path, file, out_file)
         os.system(cmd)
         if args.time_series:
-            df = pd.read_csv(out_file, delimiter=';').iloc[:,2:]
+            df = pd.read_csv(out_file, delimiter=';').iloc[:, 2:]
         else:
-            df = pd.read_csv(out_file, delimiter=';').iloc[:,1:]
+            df = pd.read_csv(out_file, delimiter=';').iloc[:, 1:]
         input.append(df.values)
         target.append(emotion)
-#    input = np.array(input)
-#    target = np.array(target)
+    #    input = np.array(input)
+    #    target = np.array(target)
     return input, target
 
 
@@ -79,7 +79,7 @@ def save(args, dataset):
 
 if __name__ == '__main__':
     args = init_parser()
-    dataframe = load_paths_and_labels().head()
+    dataframe = load_paths_and_labels()
     if args.time_series:
         input, target, seq_length = extract_features_ts(args, dataframe)
         dataset = {'input': input, 'target': target, 'seq_length': seq_length}
