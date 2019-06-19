@@ -23,6 +23,7 @@ class GRUAudio(nn.Module):
 
         self.gru = nn.GRU(self.num_features, self.hidden_dim, self.num_layers, batch_first=True,
                           dropout=self.dropout_rate, bidirectional=self.bidirectional).to(self.device)
+        
         self.classification = nn.Linear(self.hidden_dim * self.num_layers * self.num_directions, self.num_labels).to(
             self.device)
 
