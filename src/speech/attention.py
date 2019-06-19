@@ -21,9 +21,10 @@ class AttGRU(nn.Module):
         self.bidirectional = bidirectional
         self.num_directions = 1 + self.bidirectional
 
-        self.u=nn.Parameter(torch.zeros((self.num_directions*self.hidden_dim)), requires_grad=True)
-        
-        self.gru = nn.GRU(self.num_features, self.hidden_dim, self.num_layers, batch_first=True, dropout=self.dropout_rate, bidirectional=self.bidirectional).to(self.device)
+        self.u = nn.Parameter(torch.zeros((self.num_directions * self.hidden_dim)), requires_grad=True)
+
+        self.gru = nn.GRU(self.num_features, self.hidden_dim, self.num_layers, batch_first=True,
+                          dropout=self.dropout_rate, bidirectional=self.bidirectional).to(self.device)
         self.classification = nn.Linear(self.hidden_dim * self.num_directions, self.num_labels).to(self.device)
 
     def forward(self, input, target, train=True, seq_length=False):
@@ -33,25 +34,26 @@ class AttGRU(nn.Module):
         hidden = hidden.to(self.device)
         out, hn = self.gru(input, hidden)
 
-        out , _ =pad_packed_sequence(out,batch_first=True)
+        out, _ = pad_packed_sequence(out, batch_first=True)
 
-        mask=[]
-#        pdb.set_trace()
+        mask = []
+        #        pdb.set_trace()
         for i in range(len(seq_length)):
-            mask.append([0]*int(seq_length[i].item())+[1]*int(out.shape[1]-seq_length[i].item()))
-        mask=torch.ByteTensor(mask)
-        mask=mask.to(self.device)
+            mask.append([0] * int(seq_length[i].item()) + [1] * int(out.shape[1] - seq_length[i].item()))
+        mask = torch.ByteTensor(mask)
+        mask = mask.to(self.device)
 
-        x=torch.matmul(out,self.u)
-        x=x.masked_fill_(mask,-1e18)
-        alpha=F.softmax(x,dim=1)
+        x = torch.matmul(out, self.u)
+        x = x.masked_fill_(mask, -1e18)
+        alpha = F.softmax(x, dim=1)
 
-        input_linear=torch.sum(torch.matmul(alpha,out),dim=1)
+        input_linear = torch.sum(torch.matmul(alpha, out), dim=1)
         out = self.classification(input_linear)
-        
+
         loss = F.cross_entropy(out, torch.max(target, 1)[1])
-#        print(self.u[10])
+        #        print(self.u[10])
         return out, loss
+
 
 class MeanPool(nn.Module):
     def __init__(self, num_features, hidden_dim, num_layers, dropout_rate, num_labels, batch_size, bidirectional=False):
@@ -66,9 +68,10 @@ class MeanPool(nn.Module):
         self.bidirectional = bidirectional
         self.num_directions = 1 + self.bidirectional
 
-        #self.u=nn.Parameter(torch.randn(self.num_directions*self.hidden_dim)).to(self.device)
-        
-        self.gru = nn.GRU(self.num_features, self.hidden_dim, self.num_layers, batch_first=True, dropout=self.dropout_rate, bidirectional=self.bidirectional).to(self.device)
+        # self.u=nn.Parameter(torch.randn(self.num_directions*self.hidden_dim)).to(self.device)
+
+        self.gru = nn.GRU(self.num_features, self.hidden_dim, self.num_layers, batch_first=True,
+                          dropout=self.dropout_rate, bidirectional=self.bidirectional).to(self.device)
         self.classification = nn.Linear(self.hidden_dim * self.num_directions, self.num_labels).to(self.device)
 
     def forward(self, input, target, train=True, seq_length=False):
@@ -78,14 +81,13 @@ class MeanPool(nn.Module):
         hidden = hidden.to(self.device)
         out, hn = self.gru(input, hidden)
 
-        out , _ =pad_packed_sequence(out,batch_first=True)
+        out, _ = pad_packed_sequence(out, batch_first=True)
 
-        out=torch.mean(out,dim=1)
+        out = torch.mean(out, dim=1)
 
-#        pdb.set_trace()
+        #        pdb.set_trace()
 
         out = self.classification(out)
-        
+
         loss = F.cross_entropy(out, torch.max(target, 1)[1])
         return out, loss
-
