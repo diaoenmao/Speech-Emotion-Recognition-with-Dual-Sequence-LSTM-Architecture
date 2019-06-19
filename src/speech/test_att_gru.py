@@ -10,14 +10,14 @@ from process_audio_torch import IEMOCAP, my_collate
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
-model = ATT(num_features=39, hidden_dim=200, num_layers=2, dropout_rate=0,
-                     num_labels=5, batch_size=512)
+model = ATT(num_features=39, hidden_dim=250, num_layers=2, dropout_rate=0,
+                     num_labels=5, batch_size=256,bidirectional=True)
 model = model.cuda()
-model.load_state_dict(torch.load("/scratch/speech/models/classification/meanpool_classifier_epoch_50.pt"))
+model.load_state_dict(torch.load("/scratch/speech/models/classification/deep_att_classifier_epoch_10.pt"))
 model.eval()
 
 testing_data = IEMOCAP(train=False)
-test_loader = DataLoader(dataset=testing_data, batch_size=512, shuffle=True, collate_fn=my_collate, num_workers=0)
+test_loader = DataLoader(dataset=testing_data, batch_size=256, shuffle=True, collate_fn=my_collate, num_workers=0)
 print("Loading successful")
 
 print(len(testing_data))

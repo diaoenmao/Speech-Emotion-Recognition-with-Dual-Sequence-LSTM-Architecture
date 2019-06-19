@@ -16,15 +16,15 @@ from tqdm import tqdm
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # Initialize our GRU model with 39 features, hidden_dim=200, num_layers=2, droupout=0.7, num_labels=5
-model = ATT(num_features=39, hidden_dim=200, num_layers=2, dropout_rate=0, num_labels=5, batch_size=256)
+model = ATT(num_features=39, hidden_dim=250, num_layers=2, dropout_rate=0, num_labels=5, batch_size=128,bidirectional=True)
 model.cuda()
 
-optimizer = optim.Adam(model.parameters(), lr=0.0005)
+optimizer = optim.SGD(model.parameters(), lr=0.001)
 
 training_data = IEMOCAP(train=True)
-train_loader = DataLoader(dataset=training_data, batch_size=256, shuffle=True, collate_fn=my_collate, num_workers=0)
+train_loader = DataLoader(dataset=training_data, batch_size=128, shuffle=True, collate_fn=my_collate, num_workers=0)
 
-
+print(model.parameters)
 scheduler=cos(optimizer, 10)
 loss_summary=[]
 f=open('/scratch/speech/models/classification/att_classifier.txt',"w+")
@@ -32,7 +32,7 @@ f=open('/scratch/speech/models/classification/att_classifier.txt',"w+")
 for epoch in range(10):  # again, normally you would NOT do 300 epochs, it is toy data
     print("===================================" + str(epoch) + "==============================================")
     losses = 0
-    scheduler.step()
+#    scheduler.step()
     for j, (input, target, seq_length) in enumerate(train_loader):
 #        print("==============================Batch " + str(j) + "=============================================")
 
@@ -61,5 +61,5 @@ for epoch in range(10):  # again, normally you would NOT do 300 epochs, it is to
 
 torch.save(model.state_dict(), '/scratch/speech/models/classification/deep_att_classifier.pt')
 
-f.write(" ".join(loss_summary))
+#f.write(" ".join(loss_summary))
 f.close()
