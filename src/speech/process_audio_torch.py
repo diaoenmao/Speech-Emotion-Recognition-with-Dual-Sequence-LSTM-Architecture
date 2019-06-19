@@ -8,9 +8,9 @@ class IEMOCAP(Dataset):
     def __init__(self, train=True):
         pickle_in = ''
         if train:
-            pickle_in = open('/scratch/speech/IEMOCAP_dictionary_5_train.pkl', 'rb')
+            pickle_in = open('/scratch/speech/datasets/IEMOCAP_39_FOUR_EMO_train.pkl', 'rb')
         else:
-            pickle_in = open('/scratch/speech/IEMOCAP_dictionary_5_test.pkl', 'rb')
+            pickle_in = open('/scratch/speech/datasets/IEMOCAP_39_FOUR_EMO_test.pkl', 'rb')
         data = pickle.load(pickle_in)
         self.seq_length = data["seq_length"]
         self.input = data["input"]

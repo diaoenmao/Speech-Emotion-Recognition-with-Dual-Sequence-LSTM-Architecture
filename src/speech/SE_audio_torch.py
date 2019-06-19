@@ -20,10 +20,13 @@ class GRUAudio(nn.Module):
         self.batch_size = batch_size
         self.bidirectional = bidirectional
         self.num_directions = 1 + self.bidirectional
-        
-        self.gru = nn.GRU(self.num_features, self.hidden_dim, self.num_layers, batch_first=True, dropout=self.dropout_rate, bidirectional=self.bidirectional).to(self.device)
-        self.classification = nn.Linear(self.hidden_dim * self.num_layers * self.num_directions, self.num_labels).to(self.device)
-#        self.softmax = nn.Softmax()
+
+        self.gru = nn.GRU(self.num_features, self.hidden_dim, self.num_layers, batch_first=True,
+                          dropout=self.dropout_rate, bidirectional=self.bidirectional).to(self.device)
+        self.classification = nn.Linear(self.hidden_dim * self.num_layers * self.num_directions, self.num_labels).to(
+            self.device)
+
+    #        self.softmax = nn.Softmax()
 
     def forward(self, input, target, train=True):
         input = input.to(self.device)
@@ -31,14 +34,14 @@ class GRUAudio(nn.Module):
         hidden = torch.randn(self.num_layers * self.num_directions, self.batch_size, self.hidden_dim)
         hidden = hidden.to(self.device)
         out, hn = self.gru(input, hidden)
-#        print(out, out.shape)
-        #if train:
+        #        print(out, out.shape)
+        # if train:
         #    hn, _ = pad_packed_sequence(hn, batch_first=True)
-        hn = hn.permute([1,0,2])
-        hn=hn.reshape(hn.shape[0],-1)
-#        pdb.set_trace()
+        hn = hn.permute([1, 0, 2])
+        hn = hn.reshape(hn.shape[0], -1)
+        #        pdb.set_trace()
         out = self.classification(hn)
-#        out = self.softmax(out)
-#        pdb.set_trace()
+        #        out = self.softmax(out)
+        #        pdb.set_trace()
         loss = F.cross_entropy(out, torch.max(target, 1)[1])
         return out, loss
