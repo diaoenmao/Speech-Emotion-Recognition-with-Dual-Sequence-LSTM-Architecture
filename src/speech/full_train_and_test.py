@@ -38,7 +38,7 @@ def init_parser():
 
 def train_model(args, model_path):
     model = GRUAudio(num_features=39, hidden_dim=args.hidden_dim, num_layers=args.num_layers, dropout_rate=args.dr,
-                     num_labels=5,
+                     num_labels=4,
                      batch_size=args.batch_size, bidirectional=args.bidirectional)
     model.cuda()
 
@@ -89,7 +89,7 @@ def train_model(args, model_path):
 
 def test_model(args, model_path, stats_path, checkpoint):
     model = GRUAudio(num_features=39, hidden_dim=args.hidden_dim, num_layers=args.num_layers, dropout_rate=args.dr,
-                     num_labels=5, batch_size=args.batch_size, bidirectional=args.bidirectional)
+                     num_labels=4, batch_size=args.batch_size, bidirectional=args.bidirectional)
     model = model.cuda()
     model.load_state_dict(torch.load(model_path))
     model.eval()
