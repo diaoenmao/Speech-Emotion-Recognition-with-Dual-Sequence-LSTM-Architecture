@@ -4,13 +4,13 @@ from torch import optim
 from torch.nn.utils.rnn import pad_sequence, pack_padded_sequence
 from torch.utils.data import DataLoader
 
-from attention import AttGRU
+from attention import AttGRU, MeanPool
 from process_audio_torch import IEMOCAP, my_collate
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
-model = AttGRU(num_features=39, hidden_dim=200, num_layers=2, dropout_rate=0,
+model = MeanPool(num_features=39, hidden_dim=200, num_layers=2, dropout_rate=0,
                      num_labels=5, batch_size=256)
 model = model.cuda()
 model.load_state_dict(torch.load("/scratch/speech/models/classification/att_classifier_epoch_20.pt"))
