@@ -1,7 +1,8 @@
+import pdb
 import pickle
 import numpy as np
 
-pickle_in = open('/scratch/speech/datasets/IEMOCAP_39_FOUR_EMO_full.pkl', 'rb')
+pickle_in = open('/scratch/speech/datasets/IEMOCAP_39_FOUR_EMO_test.pkl', 'rb')
 data = pickle.load(pickle_in)
 new_list = []
 index = []
@@ -12,8 +13,9 @@ for i, t in enumerate(data["target"]):
         index.append(i)
     except:
         continue
-new_input = data["input"][index]
-new_seq_length = data["seq_length"][index]
+#pdb.set_trace()
+new_input = np.array(data["input"])[index]
+new_seq_length = np.array(data["seq_length"])[index]
 sample = {"input": new_input, "seq_length": new_seq_length, "target": np.array(new_list)}
-with open('/scratch/speech/datasets/IEMOCAP_39_FOUR_EMO_full.pkl', 'wb') as f:
+with open('/scratch/speech/datasets/IEMOCAP_39_FOUR_EMO_test.pkl', 'wb') as f:
     pickle.dump(sample, f)

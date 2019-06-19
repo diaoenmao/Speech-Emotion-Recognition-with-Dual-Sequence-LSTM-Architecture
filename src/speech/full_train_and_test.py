@@ -155,4 +155,4 @@ if __name__ == '__main__':
             model_path = build_model_path(args, True, checkpoint)
             test_model(args, model_path, stats_path='/scratch/speech/models/classification/checkpoint_stats.txt', checkpoint=checkpoint)
     if args.test:
-        test_model(args, model_path, stats_path='/speech/models/classification/classifier_stat.txt', checkpoint=args.num_epochs)
+        test_model(args, model_path, stats_path='/scratch/speech/models/classification/classifier_stats.txt', checkpoint=args.num_epochs)
