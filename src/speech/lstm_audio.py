@@ -2,7 +2,7 @@ import torch
 from torch import nn
 from torch.nn.utils.rnn import pad_packed_sequence
 import torch.nn.functional as F
-
+import pdb
 
 class LSTM_Audio(nn.Module):
     def __init__(self, num_features, hidden_dim, num_layers, dropout_rate, num_labels, batch_size, bidirectional=False):
@@ -26,9 +26,10 @@ class LSTM_Audio(nn.Module):
     def forward(self, input, target, seq_length, train=True):
         input = input.to(self.device)
         target = target.to(self.device)
-        hidden = torch.zeros(self.num_layers * self.num_directions, self.batch_size, self.hidden_dim)
-        hidden = hidden.to(self.device)
-        out, hn = self.lstm(input, hidden)
+        #hidden = torch.zeros(self.num_layers * self.num_directions, self.batch_size, self.hidden_dim)
+        #hidden = hidden.to(self.device)
+#        pdb.set_trace()
+        out, hn = self.lstm(input)
 
         out, _ = pad_packed_sequence(out, batch_first=True)
 
