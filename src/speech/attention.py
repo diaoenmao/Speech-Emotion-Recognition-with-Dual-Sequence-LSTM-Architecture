@@ -21,7 +21,7 @@ class AttGRU(nn.Module):
         self.bidirectional = bidirectional
         self.num_directions = 1 + self.bidirectional
 
-        self.u=nn.Parameter(torch.randn(self.num_directions*self.hidden_dim)).to(self.device)
+        self.u=nn.Parameter(torch.zeros((self.num_directions*self.hidden_dim)), requires_grad=True)
         
         self.gru = nn.GRU(self.num_features, self.hidden_dim, self.num_layers, batch_first=True, dropout=self.dropout_rate, bidirectional=self.bidirectional).to(self.device)
         self.classification = nn.Linear(self.hidden_dim * self.num_directions, self.num_labels).to(self.device)
@@ -36,8 +36,9 @@ class AttGRU(nn.Module):
         out , _ =pad_packed_sequence(out,batch_first=True)
 
         mask=[]
-        for i in len(seq_length):
-            mask.append([0]*seq_length[i]+[1]*(out.shape[1]-seq_length[i]))
+#        pdb.set_trace()
+        for i in range(len(seq_length)):
+            mask.append([0]*int(seq_length[i].item())+[1]*int(out.shape[1]-seq_length[i].item()))
         mask=torch.ByteTensor(mask)
         mask=mask.to(self.device)
 
@@ -49,6 +50,7 @@ class AttGRU(nn.Module):
         out = self.classification(input_linear)
         
         loss = F.cross_entropy(out, torch.max(target, 1)[1])
+#        print(self.u[10])
         return out, loss
 
 class MeanPool(nn.Module):
