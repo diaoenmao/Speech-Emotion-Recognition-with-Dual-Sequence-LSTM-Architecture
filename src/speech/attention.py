@@ -82,7 +82,7 @@ class MeanPool(nn.Module):
 
         out=torch.mean(out,dim=1)
 
-        pdb.set_trace()
+#        pdb.set_trace()
 
         out = self.classification(out)
         
