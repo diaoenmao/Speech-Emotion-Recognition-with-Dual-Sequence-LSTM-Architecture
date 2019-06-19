@@ -35,11 +35,14 @@ def extract_features(args, dataframe):
     for file, emotion, valence, activation, dominance in dataframe.values:
         cmd = 'SMILExtract -C {} -I {} -csvoutput {} -headercsv 0'.format(args.config_path, file, out_file)
         os.system(cmd)
-        df = pd.read_csv(out_file, delimiter=';').iloc[:,1:]
+        if args.time_series:
+            df = pd.read_csv(out_file, delimiter=';').iloc[:, 2:]
+        else:
+            df = pd.read_csv(out_file, delimiter=';').iloc[:, 1:]
         input.append(df.values)
         target.append(emotion)
-#    input = np.array(input)
-#    target = np.array(target)
+    #    input = np.array(input)
+    #    target = np.array(target)
     return input, target
 
 
