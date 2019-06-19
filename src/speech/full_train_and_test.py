@@ -5,6 +5,7 @@ from torch.nn.utils.rnn import pad_sequence, pack_padded_sequence
 from torch.utils.data import DataLoader
 
 from SE_audio_torch import GRUAudio
+from attention import AttGRU, MeanPool
 from process_audio_torch import IEMOCAP, my_collate
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -14,6 +15,7 @@ def init_parser():
     parser = argparse.ArgumentParser(description='Train and test your model as specified by the parameters you enter')
     parser.add_argument('--dataset', '-d', default='IEMOCAP', type=str,
                         help='IEMOCAP or Berlin (Berlin support still coming). IEMOCAP is default', dest='dataset')
+    parser.add_argument('--model', '-m', default='gru', type=str, help='gru, att_gru, or mean_pool_gru', dest='model')
     parser.add_argument('--num_layers', '-nl', default=2, type=int, dest='num_layers')
     parser.add_argument('--hidden_dim', '-hd', default=200, type=int, dest='hidden_dim')
     parser.add_argument('-dropout_rate', '-dr', default=0.0, type=float,
@@ -37,9 +39,7 @@ def init_parser():
 
 
 def train_model(args, model_path):
-    model = GRUAudio(num_features=39, hidden_dim=args.hidden_dim, num_layers=args.num_layers, dropout_rate=args.dr,
-                     num_labels=4,
-                     batch_size=args.batch_size, bidirectional=args.bidirectional)
+    model = get_model(args)
     model.cuda()
 
     # Use Adam as the optimizer with learning rate 0.01 to make it fast for testing purposes
@@ -87,9 +87,22 @@ def train_model(args, model_path):
     torch.save(model.state_dict(), model_path)
 
 
-def test_model(args, model_path, stats_path, checkpoint):
-    model = GRUAudio(num_features=39, hidden_dim=args.hidden_dim, num_layers=args.num_layers, dropout_rate=args.dr,
+def get_model(args):
+    if args.model == 'gru':
+        return GRUAudio(num_features=39, hidden_dim=args.hidden_dim, num_layers=args.num_layers, dropout_rate=args.dr,
                      num_labels=4, batch_size=args.batch_size, bidirectional=args.bidirectional)
+    elif args.model == 'att_gru':
+        return AttGRU(num_features=39, hidden_dim=args.hidden_dim, num_layers=args.num_layers, dropout_rate=args.dr,
+                        num_labels=4, batch_size=args.batch_size, bidirectional=args.bidirectional)
+    elif args.model == 'mean_pool_gru':
+        return MeanPool(num_features=39, hidden_dim=args.hidden_dim, num_layers=args.num_layers, dropout_rate=args.dr,
+                        num_labels=4, batch_size=args.batch_size, bidirectional=args.bidirectional)
+    else:
+        return GRUAudio(num_features=39, hidden_dim=args.hidden_dim, num_layers=args.num_layers, dropout_rate=args.dr,
+                        num_labels=4, batch_size=args.batch_size, bidirectional=args.bidirectional)
+
+def test_model(args, model_path, stats_path, checkpoint):
+    model = get_model(args)
     model = model.cuda()
     model.load_state_dict(torch.load(model_path))
     model.eval()

@@ -4,7 +4,6 @@ import numpy as np
 
 from torch.nn.utils.rnn import pack_padded_sequence, pad_sequence
 from torch.utils.data import DataLoader
-from  torch.optim.lr_scheduler import CosineAnnealingLR as cos
 from attention import AttGRU, MeanPool
 from process_audio_torch import IEMOCAP, my_collate
 
@@ -24,7 +23,7 @@ optimizer = optim.Adam(model.parameters(), lr=0.0005)
 training_data = IEMOCAP(train=True)
 train_loader = DataLoader(dataset=training_data, batch_size=512, shuffle=True, collate_fn=my_collate, num_workers=0)
 
-scheduler=cos(optimizer, 50)
+#scheduler=cos(optimizer, 50)
 loss_summary=[]
 f=open('/scratch/speech/models/classification/att_classifier.txt',"w+")
 # Perform 10 epochs
