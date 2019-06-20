@@ -25,12 +25,12 @@ class ATT(nn.Module):
         self.u.data.normal_(mean=0, std=stdv)
         self.lstm = nn.LSTM(self.num_features, self.hidden_dim, self.num_layers, batch_first=True, dropout=self.dropout_rate, bidirectional=self.bidirectional).to(self.device)
         self.fc2 = nn.Linear(self.hidden_dim * self.num_directions, self.num_labels).to(self.device)
+        self.batch=nn.BatchNorm1d(self.num_labels)
 
     def forward(self, input, target, seq_length, train=True):
         input = input.to(self.device)
         target = target.to(self.device)
-#        hidden = torch.zeros(self.num_layers * self.num_directions, self.batch_size, self.hidden_dim)
- #       hidden = hidden.to(self.device)
+
         out, hn = self.lstm(input)
 
         out , _ =pad_packed_sequence(out,batch_first=True)
@@ -52,7 +52,10 @@ class ATT(nn.Module):
 
         input_linear=torch.sum(torch.matmul(alpha,out),dim=1)
         out_final = self.fc2(input_linear)
+        pdb.set_trace()
+        out_final_normalized=self.batch(out_final)
+
         
-        loss = F.cross_entropy(out_final, torch.max(target, 1)[1])
+        loss = F.cross_entropy(out_final_normalized, torch.max(target, 1)[1])
 #        print(self.u[10])
         return out_final, loss
