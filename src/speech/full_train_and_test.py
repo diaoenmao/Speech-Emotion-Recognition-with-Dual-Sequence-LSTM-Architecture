@@ -8,7 +8,7 @@ from deep_model import GRUAudio, AttGRU, MeanPool, LSTM_Audio, ATT, Mean_Pool_2
 from attention import AttGRU, MeanPool
 from lstm_audio import LSTM_Audio
 from process_audio_torch import IEMOCAP, my_collate
-from torch.optim.lr_scheduler import MultiStepLR
+from torch.optim.lr_scheduler import ReduceLROnPlateau
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -47,7 +47,7 @@ def train_model(args, model_path, stats_path):
 
     # Use Adam as the optimizer with learning rate 0.01 to make it fast for testing purposes
     optimizer = optim.Adam(model.parameters(), lr=args.lr)
-    scheduler = MultiStepLR(optimizer=optimizer,milestones=[20, 50, 80], gamma=0.3)
+    scheduler = ReduceLROnPlateau(optimizer=optimizer,factor=0.3, patience=8, threshold=1e-3)
 
     # Load the training data
     training_data = IEMOCAP(train=True)
@@ -82,7 +82,7 @@ def train_model(args, model_path, stats_path):
 
         accuracy=correct*1.0/len(training_data)
         losses=losses / len(training_data)
-        
+
         #after training
         model.eval()
         for test_case, target, seq_length in test_loader:
@@ -99,18 +99,18 @@ def train_model(args, model_path, stats_path):
 
         print("Training Loss: {} -------- Testing Loss: {} -------- Training Acc: {} -------- Testing Acc: {}".format(losses,losses_test, accuracy, accuracy_test))
         
-        scheduler.step()
+        scheduler.step(losses)
 
         if (epoch + 1) % 5 == 0:
             checkpoint_path = build_model_path(args, True, epoch+1)
             torch.save(model.state_dict(), checkpoint_path)
         with open(stats_path, 'a+') as f:
-        f.write(
-            "{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n".format(args.dataset, args.hidden_dim, args.dr, args.num_epochs,
+            f.write("========================== Batch Normalization ===========================================")
+            f.write("{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n".format(args.dataset, args.hidden_dim, args.dr, args.num_epochs,
                                                               args.batch_size, args.bidirectional, args.lr,
                                                               args.num_layers,args.model, epoch, losses, losses_test, accuracy, accuracy_test))
-    f.write("\n")
-    f.write("================================="+"Best Test Accuracy"+str(max(best_test_acc))+"=====================================")
+            f.write("\n")
+            f.write("================================="+"Best Test Accuracy"+str(max(best_test_acc))+"=====================================")
 
     torch.save(model.state_dict(), model_path)
 

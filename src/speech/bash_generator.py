@@ -17,12 +17,12 @@ def generate_bash(cuda, models, dropout_rates, batch_sizes, learning_rates, epoc
                 f.write("CUDA_VISIBLE_DEVICES=\"{}\" {}\n".format(device, commands[j]))
 
 if __name__ == '__main__':
-    cuda = ["2", "3"]
-    models = ['mean_pool_gru', 'lstm', 'gru', 'att_gru']
-    dropout_rates = [0.0, 0.2]
-    batch_sizes = [256]
+    cuda = ["0","1"]
+    models = ['Mean_Pool_2',"ATT"]
+    dropout_rates = [0.0, 0.2, 0.4,0.8]
+    batch_sizes = [128]
     learning_rates = [0.001]
-    epochs = [100]
+    epochs = [150]
     hidden_dims = [200, 250, 300]
     bidirections = ['-bi', '']
     generate_bash(cuda, models, dropout_rates, batch_sizes, learning_rates, epochs, hidden_dims, bidirections)
