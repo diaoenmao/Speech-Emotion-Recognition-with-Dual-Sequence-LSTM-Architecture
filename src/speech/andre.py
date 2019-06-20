@@ -54,5 +54,5 @@ class ATT(nn.Module):
         out_final = self.fc2(input_linear)
         
         loss = F.cross_entropy(out_final, torch.max(target, 1)[1])
-        print(self.u[10])
+#        print(self.u[10])
         return out_final, loss
