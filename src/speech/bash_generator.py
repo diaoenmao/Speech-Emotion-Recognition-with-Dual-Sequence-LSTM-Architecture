@@ -17,7 +17,7 @@ def generate_bash(cuda, models, dropout_rates, batch_sizes, learning_rates, epoc
                 f.write("CUDA_VISIBLE_DEVICES=\"{}\" {}\n".format(device, commands[j]))
 
 if __name__ == '__main__':
-    cuda = ["0","1"]
+    cuda = ["0","1","2","3"]
     models = ['Mean_Pool_2',"ATT"]
     dropout_rates = [0.0, 0.2, 0.4,0.8]
     batch_sizes = [128]

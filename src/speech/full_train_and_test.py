@@ -8,6 +8,8 @@ from deep_model import GRUAudio, AttGRU, MeanPool, LSTM_Audio, ATT, Mean_Pool_2
 from process_audio_torch import IEMOCAP, my_collate
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 
+import pickle
+
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
@@ -38,7 +40,8 @@ def init_parser():
     return parser.parse_args()
 
 
-def train_model(args, model_path, stats_path):
+def train_model(args, model_path, stats_path,pickle_path):
+    my_dict={}
     model = get_model(args)
     model.cuda()
     model.train()
@@ -54,7 +57,11 @@ def train_model(args, model_path, stats_path):
     testing_data = IEMOCAP(train=False)
     test_loader = DataLoader(dataset=testing_data, batch_size=256, shuffle=True, collate_fn=my_collate, num_workers=0)
 
-    best_test_acc=[]
+    test_acc=[]
+    train_acc=[]
+    test_loss=[]
+    train_loss=[]
+
 
     for epoch in range(args.num_epochs):  # again, normally you would NOT do 300 epochs, it is toy data
         print("===================================" + str(epoch) + "==============================================")
@@ -92,8 +99,13 @@ def train_model(args, model_path, stats_path):
             losses_test += loss.item() * index.shape[0]
             correct_test += sum(index == target_index).item()
         accuracy_test = correct_test * 1.0 / len(testing_data)
-        best_test_acc.append(accuracy_test)
         losses_test = losses_test / len(testing_data)
+
+        # data gathering
+        test_acc.append(accuracy_test)
+        train_acc.append(accuracy)
+        test_loss.append(losses_test)
+        train_loss.append(losses)
 
         print("Training Loss: {} -------- Testing Loss: {} -------- Training Acc: {} -------- Testing Acc: {}".format(losses,losses_test, accuracy, accuracy_test))
         
@@ -108,7 +120,11 @@ def train_model(args, model_path, stats_path):
                                                               args.batch_size, args.bidirectional, args.lr,
                                                               args.num_layers,args.model, epoch, losses, losses_test, accuracy, accuracy_test))
             f.write("\n")
-    f.write("================================="+"Best Test Accuracy"+str(max(best_test_acc))+"====================================="+"\n")
+    with open(stats_path,"a+") as f:
+        f.write("================================="+"Best Test Accuracy"+str(max(test_acc))+"====================================="+"\n")
+    pickle_out=opne(pickle_path,"wb")
+    pickle.dump({"test_acc":test_acc, "train_acc": train_acc, "test_loss": test_loss, "train_loss": train_loss},pickle_out)
+    pickle_out.close()
 
     torch.save(model.state_dict(), model_path)
 
@@ -157,15 +173,27 @@ def build_model_path(args, checkpoint=False, check_number=0):
         args.lr,
         args.num_layers,
         args.model)
+def build_pickle_path(args):
+    return '/scratch/speech/models/classification/data_{}_hd_{}_dr_{}_e_{}_bs_{}_bi_{}_lr_{}_nl_{}_m_{}.pickle'.format(
+        args.dataset,
+        args.hidden_dim,
+        args.dr,
+        args.num_epochs,
+        args.batch_size,
+        args.bidirectional,
+        args.lr,
+        args.num_layers,
+        args.model)
 
 
 if __name__ == '__main__':
     args = init_parser()
     stats_path="/scratch/speech/models/classification/andre_checkpoint_stats.txt"
+    pickle_path=build_pickle_path(args)
     if args.model_path == '':
         model_path = build_model_path(args)
     else:
         model_path = args.model_path
     if args.train:
-        train_model(args, model_path,stats_path=stats_path)
+        train_model(args, model_path,stats_path=stats_path,pickle_path=pickle_path)
    
