@@ -11,6 +11,7 @@ from process_audio_torch import IEMOCAP, my_collate
 import pdb
 from tqdm import tqdm
 
+from torch.optim.lr_scheduler import ReduceLROnPlateau as ReduceLROnPlateau
 
 # Detect the device
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -24,7 +25,8 @@ training_data = IEMOCAP(train=True)
 train_loader = DataLoader(dataset=training_data, batch_size=128, shuffle=True, collate_fn=my_collate, num_workers=0)
 
 print(model.parameters)
-scheduler=cos(optimizer, 100)
+#scheduler=cos(optimizer, 100)
+scheduler=ReduceLROnPlateau(optimizer,factor=0.5,patience=4)
 loss_summary=[]
 f=open('/scratch/speech/models/classification/att_classifier.txt',"w+")
 # Perform 10 epochs
