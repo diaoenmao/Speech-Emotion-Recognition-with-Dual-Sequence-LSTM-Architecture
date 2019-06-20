@@ -19,7 +19,7 @@ from torch.optim.lr_scheduler import ReduceLROnPlateau as ReduceLROnPlateau
 # Detect the device
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-model = ATT(num_features=39, hidden_dim=300, num_layers=2, dropout_rate=0.0, num_labels=4, batch_size=128,bidirectional=True)
+model = ATT(num_features=39, hidden_dim=300, num_layers=2, dropout_rate=0.6, num_labels=4, batch_size=128,bidirectional=True)
 model.cuda()
 
 optimizer = optim.SGD(model.parameters(), lr=0.001)
@@ -56,7 +56,7 @@ for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is t
         optimizer.step()
 
     print("End of Epoch Mean Loss: ", losses / len(training_data))
-    
+
     scheduler.step(losses/len(training_data))
 
     loss_summary.append((epoch,losses))
