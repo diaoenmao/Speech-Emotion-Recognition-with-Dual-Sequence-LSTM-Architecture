@@ -5,8 +5,6 @@ from torch.nn.utils.rnn import pad_sequence, pack_padded_sequence
 from torch.utils.data import DataLoader
 
 from deep_model import GRUAudio, AttGRU, MeanPool, LSTM_Audio, ATT, Mean_Pool_2
-from attention import AttGRU, MeanPool
-from lstm_audio import LSTM_Audio
 from process_audio_torch import IEMOCAP, my_collate
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 
@@ -105,12 +103,12 @@ def train_model(args, model_path, stats_path):
             checkpoint_path = build_model_path(args, True, epoch+1)
             torch.save(model.state_dict(), checkpoint_path)
         with open(stats_path, 'a+') as f:
-            f.write("========================== Batch Normalization ===========================================")
+            f.write("========================== Batch Normalization ==========================================="+"\n")
             f.write("{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n".format(args.dataset, args.hidden_dim, args.dr, args.num_epochs,
                                                               args.batch_size, args.bidirectional, args.lr,
                                                               args.num_layers,args.model, epoch, losses, losses_test, accuracy, accuracy_test))
             f.write("\n")
-            f.write("================================="+"Best Test Accuracy"+str(max(best_test_acc))+"=====================================")
+    f.write("================================="+"Best Test Accuracy"+str(max(best_test_acc))+"====================================="+"\n")
 
     torch.save(model.state_dict(), model_path)
 
@@ -163,10 +161,11 @@ def build_model_path(args, checkpoint=False, check_number=0):
 
 if __name__ == '__main__':
     args = init_parser()
+    stats_path="/scratch/speech/models/classification/andre_checkpoint_stats.txt"
     if args.model_path == '':
         model_path = build_model_path(args)
     else:
         model_path = args.model_path
     if args.train:
-        train_model(args, model_path)
+        train_model(args, model_path,stats_path=stats_path)
    
