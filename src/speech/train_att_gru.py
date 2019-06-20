@@ -13,6 +13,9 @@ from tqdm import tqdm
 
 from torch.optim.lr_scheduler import ReduceLROnPlateau as ReduceLROnPlateau
 
+
+
+
 # Detect the device
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -33,7 +36,6 @@ f=open('/scratch/speech/models/classification/att_classifier.txt',"w+")
 for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is toy data
     print("===================================" + str(epoch) + "==============================================")
     losses = 0
-    scheduler.step()
     for j, (input, target, seq_length) in enumerate(train_loader):
 #        print("==============================Batch " + str(j) + "=============================================")
 
@@ -54,6 +56,9 @@ for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is t
         optimizer.step()
 
     print("End of Epoch Mean Loss: ", losses / len(training_data))
+    
+    scheduler.step(losses/len(training_data))
+
     loss_summary.append((epoch,losses))
     f.write(str(epoch)+" : "+ str(losses/len(training_data))+"\n")
     if (epoch + 1) % 10 == 0:
