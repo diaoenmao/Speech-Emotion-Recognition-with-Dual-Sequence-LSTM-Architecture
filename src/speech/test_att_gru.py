@@ -13,7 +13,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model = ATT(num_features=39, hidden_dim=300, num_layers=2, dropout_rate=0.0,
                      num_labels=4, batch_size=128,bidirectional=True)
 model = model.cuda()
-model.load_state_dict(torch.load("/scratch/speech/models/classification/deep_att_classifier_epoch_10.pt"))
+model.load_state_dict(torch.load("/scratch/speech/models/classification/deep_att_classifier_epoch_100.pt"))
 model.eval()
 
 testing_data = IEMOCAP(train=False)

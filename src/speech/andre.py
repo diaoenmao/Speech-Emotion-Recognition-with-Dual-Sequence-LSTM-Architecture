@@ -59,11 +59,11 @@ class ATT(nn.Module):
         input_linear=torch.sum(torch.matmul(alpha,out),dim=1)
         input_linear_normalized=self.batchatt(input_linear)
         out_1 = self.fc1(input_linear_normalized)
-        out_1_normalized=self.batch1(out1)
+        out_1_normalized=self.batch1(out_1)
         out_2=self.fc2(out_1_normalized)
-        out_2_normalized=self.batch2(out2)
+        out_2_normalized=self.batch2(out_2)
 
         
         loss = F.cross_entropy(out_2_normalized, torch.max(target, 1)[1])
 #        print(self.u[10])
-        return out_final, loss
+        return out_2_normalized, loss
