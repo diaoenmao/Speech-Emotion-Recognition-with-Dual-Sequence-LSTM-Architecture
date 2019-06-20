@@ -24,8 +24,12 @@ class ATT(nn.Module):
         stdv = 1. / math.sqrt(self.u.shape[0])
         self.u.data.normal_(mean=0, std=stdv)
         self.lstm = nn.LSTM(self.num_features, self.hidden_dim, self.num_layers, batch_first=True, dropout=self.dropout_rate, bidirectional=self.bidirectional).to(self.device)
-        self.fc2 = nn.Linear(self.hidden_dim * self.num_directions, self.num_labels).to(self.device)
-        self.batch=nn.BatchNorm1d(self.num_labels)
+        self.fc1 = nn.Linear(self.hidden_dim * self.num_directions, self.hidden_dim).to(self.device)
+        self.batch1=nn.BatchNorm1d(self.hidden_dim)
+        self.fc2=nn.Linear(self.hidden_dim,self.num_labels).to(self.device)
+
+        self.batch2=nn.BatchNorm1d(self.num_labels)
+        self.batchatt=nn.BatchNorm1d(self.hidden_dim * self.num_directions)
 
     def forward(self, input, target, seq_length, train=True):
         input = input.to(self.device)
@@ -50,12 +54,16 @@ class ATT(nn.Module):
 
         alpha=F.softmax(x,dim=1)
 
+
+
         input_linear=torch.sum(torch.matmul(alpha,out),dim=1)
-        out_final = self.fc2(input_linear)
-        pdb.set_trace()
-        out_final_normalized=self.batch(out_final)
+        input_linear_normalized=self.batchatt(input_linear)
+        out_1 = self.fc1(input_linear_normalized)
+        out_1_normalized=self.batch1(out1)
+        out_2=self.fc2(out_1_normalized)
+        out_2_normalized=self.batch2(out2)
 
         
-        loss = F.cross_entropy(out_final_normalized, torch.max(target, 1)[1])
+        loss = F.cross_entropy(out_2_normalized, torch.max(target, 1)[1])
 #        print(self.u[10])
         return out_final, loss
