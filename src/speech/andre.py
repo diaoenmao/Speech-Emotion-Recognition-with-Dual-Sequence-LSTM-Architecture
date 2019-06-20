@@ -66,10 +66,10 @@ class ATT(nn.Module):
         
         loss = F.cross_entropy(out_2_normalized, torch.max(target, 1)[1])
 #        print(self.u[10])
-        return out_final, loss
-class Mean_Pool_2(nn.module):
+        return out_2, loss
+class Mean_Pool_2(nn.Module):
     def __init__(self, num_features, hidden_dim, num_layers, dropout_rate, num_labels, batch_size, bidirectional=False):
-        super(ATT, self).__init__()
+        super(Mean_Pool_2, self).__init__()
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.num_features = num_features
         self.hidden_dim = hidden_dim
@@ -110,5 +110,5 @@ class Mean_Pool_2(nn.module):
         
         loss = F.cross_entropy(out_2_normalized, torch.max(target, 1)[1])
 #        print(self.u[10])
-        return out_final, loss
+        return out_2, loss
 
