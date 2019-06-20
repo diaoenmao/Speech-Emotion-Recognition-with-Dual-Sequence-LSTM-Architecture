@@ -15,7 +15,7 @@ from tqdm import tqdm
 # Detect the device
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-model = ATT(num_features=39, hidden_dim=250, num_layers=2, dropout_rate=0, num_labels=4, batch_size=128,bidirectional=True)
+model = ATT(num_features=39, hidden_dim=300, num_layers=2, dropout_rate=0.0, num_labels=4, batch_size=128,bidirectional=True)
 model.cuda()
 
 optimizer = optim.SGD(model.parameters(), lr=0.001)
@@ -24,11 +24,11 @@ training_data = IEMOCAP(train=True)
 train_loader = DataLoader(dataset=training_data, batch_size=128, shuffle=True, collate_fn=my_collate, num_workers=0)
 
 print(model.parameters)
-scheduler=cos(optimizer, 50)
+scheduler=cos(optimizer, 100)
 loss_summary=[]
 f=open('/scratch/speech/models/classification/att_classifier.txt',"w+")
 # Perform 10 epochs
-for epoch in range(50):  # again, normally you would NOT do 300 epochs, it is toy data
+for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is toy data
     print("===================================" + str(epoch) + "==============================================")
     losses = 0
     scheduler.step()
