@@ -34,7 +34,7 @@ def process_text_files():
 					elif line.strip() == '':
 						get_next_line = True
 			for utterance in lines:
-				audio_paths.append(audio_path + utterance[1][:14] + '/' + utterance[1] + '.wav')
+				audio_paths.append(audio_path + utterance[1][:-5] + '/' + utterance[1] + '.wav')
 				categorical_emotion.append(utterance[2])
 				print(utterance)
 				scores = utterance[3][1:-1].split(', ')
