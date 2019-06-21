@@ -21,7 +21,7 @@ for line in lines:
 
 with open(out_path, 'r') as in_file:
     lines = [line.strip('\t') for line in in_file]
-    #lines = (line.split(",") for line in stripped if line)
+    lines = [line.split(",") for line in stripped if line]
     with open(out_path[0,-4] + '.csv', 'w') as out_file:
         writer = csv.writer(out_file)
         #writer.writerow(('title', 'intro'))
