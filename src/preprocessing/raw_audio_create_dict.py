@@ -7,7 +7,7 @@ import pickle
 path = '/scratch/speech/raw_audio_dataset/'
 df = pd.read_csv(path + 'audio_paths_labels_updated.csv')
 
-encode = {"hap": [1, 0, 0, 0], "neu": [0, 1, 0, 0], "ang": [0, 0, 1, 0], "sad": [0, 0, 0, 1]}
+encode = {"hap": [1, 0, 0, 0], "exc": [1, 0, 0, 0], "neu": [0, 1, 0, 0], "ang": [0, 0, 1, 0], "sad": [0, 0, 0, 1]}
 
 def extract_features(dataframe):
     input = []
