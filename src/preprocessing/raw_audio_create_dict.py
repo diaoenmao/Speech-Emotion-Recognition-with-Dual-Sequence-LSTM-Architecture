@@ -15,7 +15,7 @@ def extract_features(dataframe):
         sample_rate, data = wavfile.read(file)
         input.append(data)
         target.append(emotion)
-        seq_length.append(shape(data))
+        seq_length.append(len(data))
     return input, target, seq_length
 
 def split_data(data):
