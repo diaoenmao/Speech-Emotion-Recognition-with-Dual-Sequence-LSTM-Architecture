@@ -1,7 +1,7 @@
 import pandas as pd
 
-in_file = './audio_paths_labels.csv'
-out_file = './audio_paths_labels_updated.csv'
+in_file = 'scratch/speech/datasets/audio_paths_labels.csv'
+out_file = 'scratch/speech/datasets/audio_paths_labels_updated.csv'
 
 df = pd.read_csv(in_file)
 
