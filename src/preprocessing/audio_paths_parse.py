@@ -13,5 +13,5 @@ for file, emotion, valence, activation, dominance in df.values:
         audio_paths.append(file)
         categorical_emotion.append(emotion)
 
-df_updated = pd.DataFrame(list(zip(audio_paths, categorical_emotion), columns=['file', 'emotion'])
+df_updated = pd.DataFrame(list(zip(audio_paths, categorical_emotion)), columns=['file', 'emotion'])
 df_updated.to_csv(out_file, index=False)
