@@ -5,7 +5,6 @@ import wave
 
 PATH_TO_DATA = '/scratch/speech/IEMOCAP_full_release/'
 
-
 def print_list(list_to_print):
 	for item in list_to_print:
 		print(item)
@@ -48,5 +47,5 @@ def process_text_files():
 
 if __name__ == '__main__':
 	df = process_text_files()
-	df.to_csv('/scratch/rpc21/Speech-Emotion-Analysis/src/preprocessing/audio_paths_labels.csv',index=False)
+	df.to_csv('/scratch/speech/datasets/audio_paths_labels_1.csv',index=False)
 	# print('wrote to csv')
