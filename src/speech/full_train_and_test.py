@@ -4,11 +4,11 @@ from torch import optim
 from torch.nn.utils.rnn import pad_sequence, pack_padded_sequence
 from torch.utils.data import DataLoader
 
-from SE_audio_torch import GRUAudio
-from attention import AttGRU, MeanPool
-from lstm_audio import LSTM_Audio
+from deep_model import GRUAudio, AttGRU, MeanPool, LSTM_Audio, ATT, Mean_Pool_2
 from process_audio_torch import IEMOCAP, my_collate
-from torch.optim.lr_scheduler import MultiStepLR
+from torch.optim.lr_scheduler import ReduceLROnPlateau
+
+import pickle
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -17,7 +17,7 @@ def init_parser():
     parser = argparse.ArgumentParser(description='Train and test your model as specified by the parameters you enter')
     parser.add_argument('--dataset', '-d', default='IEMOCAP', type=str,
                         help='IEMOCAP or Berlin (Berlin support still coming). IEMOCAP is default', dest='dataset')
-    parser.add_argument('--model', '-m', default='gru', type=str, help='gru, att_gru, lstm, or mean_pool_gru', dest='model')
+    parser.add_argument('--model', '-m', default='gru', type=str, help='GRUAudio, AttGRU, MeanPool, Mean_Pool_2, LSTM_Audio, ATT', dest='model')
     parser.add_argument('--num_layers', '-nl', default=2, type=int, dest='num_layers')
     parser.add_argument('--hidden_dim', '-hd', default=200, type=int, dest='hidden_dim')
     parser.add_argument('-dropout_rate', '-dr', default=0.0, type=float,
@@ -40,103 +40,115 @@ def init_parser():
     return parser.parse_args()
 
 
-def train_model(args, model_path):
+def train_model(args, model_path, stats_path,pickle_path):
+    my_dict={}
     model = get_model(args)
     model.cuda()
+    model.train()
 
     # Use Adam as the optimizer with learning rate 0.01 to make it fast for testing purposes
     optimizer = optim.Adam(model.parameters(), lr=args.lr)
-    scheduler = MultiStepLR(optimizer=optimizer,milestones=[20, 50, 80], gamma=0.3)
+    scheduler = ReduceLROnPlateau(optimizer=optimizer,factor=0.3, patience=8, threshold=1e-3)
 
     # Load the training data
     training_data = IEMOCAP(train=True)
     train_loader = DataLoader(dataset=training_data, batch_size=args.batch_size, shuffle=True, collate_fn=my_collate,
                               num_workers=0)
+    testing_data = IEMOCAP(train=False)
+    test_loader = DataLoader(dataset=testing_data, batch_size=256, shuffle=True, collate_fn=my_collate, num_workers=0)
+
+    test_acc=[]
+    train_acc=[]
+    test_loss=[]
+    train_loss=[]
+
 
     for epoch in range(args.num_epochs):  # again, normally you would NOT do 300 epochs, it is toy data
         print("===================================" + str(epoch) + "==============================================")
         losses = 0
+        correct=0
+        losses_test = 0
+        correct_test = 0
+        model.train()
         for j, (input, target, seq_length) in enumerate(train_loader):
-            # print("==============================Batch " + str(j) + "=============================================")
-            # pad input sequence to make all the same length
-            # pdb.set_trace()
-
+            
             input = pad_sequence(sequences=input, batch_first=True)
 
-            # seq_length = seq_length.to(device)
-            # make input a packed padded sequence
-            #        pdb.set_trace()
-            input = pack_padded_sequence(input, lengths=seq_length, batch_first=True, enforce_sorted=False)
-
-            # Step 1. Remember that Pytorch accumulates gradients.
-            # We need to clear them out before each instance
+            input = pack_padded_sequence(input, lengths=seq_length, batch_first=True, enforce_sorted=False)        
             model.zero_grad()
-
-            # Step 3. Run our forward pass.
             out, loss = model(input, target, seq_length=seq_length)
-
             losses += loss.item() * target.shape[0]
-            # Step 4. Compute the loss, gradients, and update the parameters by
-            #  calling optimizer.step()
             loss.backward()
-            scheduler.step()
+            optimizer.step()
 
-        print("End of Epoch Mean Loss: ", losses / len(training_data))
-        # print(model.state_dict())
+            index = torch.argmax(out, dim=1)
+            target_index = torch.argmax(target, dim=1).to(device)
+            correct += sum(index == target_index).item()
+
+        accuracy=correct*1.0/len(training_data)
+        losses=losses / len(training_data)
+
+        #after training
+        model.eval()
+        for test_case, target, seq_length in test_loader:
+            test_case = pad_sequence(sequences=test_case, batch_first=True)
+            test_case = pack_padded_sequence(test_case, lengths=seq_length, batch_first=True, enforce_sorted=False)
+            out, loss = model(test_case, target, train=False, seq_length=seq_length)
+            index = torch.argmax(out, dim=1)
+            target_index = torch.argmax(target, dim=1).to(device)
+            losses_test += loss.item() * index.shape[0]
+            correct_test += sum(index == target_index).item()
+        accuracy_test = correct_test * 1.0 / len(testing_data)
+        losses_test = losses_test / len(testing_data)
+
+        # data gathering
+        test_acc.append(accuracy_test)
+        train_acc.append(accuracy)
+        test_loss.append(losses_test)
+        train_loss.append(losses)
+
+        print("Training Loss: {} -------- Testing Loss: {} -------- Training Acc: {} -------- Testing Acc: {}".format(losses,losses_test, accuracy, accuracy_test))
+        
+        scheduler.step(losses)
+
         if (epoch + 1) % 5 == 0:
             checkpoint_path = build_model_path(args, True, epoch+1)
             torch.save(model.state_dict(), checkpoint_path)
+        with open(stats_path, 'a+') as f:
+            f.write("========================== Batch Normalization ==========================================="+"\n")
+            f.write("{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n".format(args.dataset, args.hidden_dim, args.dr, args.num_epochs,
+                                                              args.batch_size, args.bidirectional, args.lr,
+                                                              args.num_layers,args.model, epoch, losses, losses_test, accuracy, accuracy_test))
+            f.write("\n")
+    with open(stats_path,"a+") as f:
+        f.write("================================="+"Best Test Accuracy"+str(max(test_acc))+"====================================="+"\n")
+    pickle_out=opne(pickle_path,"wb")
+    pickle.dump({"test_acc":test_acc, "train_acc": train_acc, "test_loss": test_loss, "train_loss": train_loss},pickle_out)
+    pickle_out.close()
 
     torch.save(model.state_dict(), model_path)
 
 
+
 def get_model(args):
-    if args.model == 'gru':
+    if args.model == 'GRUAudio':
         return GRUAudio(num_features=39, hidden_dim=args.hidden_dim, num_layers=args.num_layers, dropout_rate=args.dr,
                      num_labels=4, batch_size=args.batch_size, bidirectional=args.bidirectional)
-    elif args.model == 'att_gru':
+    elif args.model == 'AttGRU':
         return AttGRU(num_features=39, hidden_dim=args.hidden_dim, num_layers=args.num_layers, dropout_rate=args.dr,
                         num_labels=4, batch_size=args.batch_size, bidirectional=args.bidirectional)
-    elif args.model == 'mean_pool_gru':
+    elif args.model == 'MeanPool':
         return MeanPool(num_features=39, hidden_dim=args.hidden_dim, num_layers=args.num_layers, dropout_rate=args.dr,
                         num_labels=4, batch_size=args.batch_size, bidirectional=args.bidirectional)
-    elif args.model == 'lstm':
+    elif args.model == 'LSTM_Audio':
         return LSTM_Audio(num_features=39, hidden_dim=args.hidden_dim, num_layers=args.num_layers, dropout_rate=args.dr,
                         num_labels=4, batch_size=args.batch_size, bidirectional=args.bidirectional)
-    else:
-        return GRUAudio(num_features=39, hidden_dim=args.hidden_dim, num_layers=args.num_layers, dropout_rate=args.dr,
+    elif args.model=="ATT":
+        return ATT(num_features=39, hidden_dim=args.hidden_dim, num_layers=args.num_layers, dropout_rate=args.dr,
                         num_labels=4, batch_size=args.batch_size, bidirectional=args.bidirectional)
-
-def test_model(args, model_path, stats_path, checkpoint):
-    model = get_model(args)
-    model = model.cuda()
-    model.load_state_dict(torch.load(model_path))
-    model.eval()
-
-    testing_data = IEMOCAP(train=False)
-    test_loader = DataLoader(dataset=testing_data, batch_size=256, shuffle=True, collate_fn=my_collate, num_workers=0)
-    print("Loading successful")
-
-    print(len(testing_data))
-    losses = 0
-    correct = 0
-    for test_case, target, seq_length in test_loader:
-        test_case = pad_sequence(sequences=test_case, batch_first=True)
-        test_case = pack_padded_sequence(test_case, lengths=seq_length, batch_first=True, enforce_sorted=False)
-        out, loss = model(test_case, target, train=False, seq_length=seq_length)
-        index = torch.argmax(out, dim=1)
-        target_index = torch.argmax(target, dim=1).to(device)
-        losses += loss.item() * index.shape[0]
-        correct += sum(index == target_index).item()
-    accuracy = correct * 1.0 / len(testing_data)
-    losses = losses / len(testing_data)
-    print("accuracy:", accuracy)
-    print("loss:", losses)
-    with open(stats_path, 'a+') as f:
-        f.write(
-            "{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n".format(args.dataset, args.hidden_dim, args.dr, args.num_epochs,
-                                                              args.batch_size, args.bidirectional, args.lr,
-                                                              args.num_layers, checkpoint, accuracy, losses, args.model))
+    else:
+        return Mean_Pool_2(num_features=39, hidden_dim=args.hidden_dim, num_layers=args.num_layers, dropout_rate=args.dr,
+                        num_labels=4, batch_size=args.batch_size, bidirectional=args.bidirectional)
 
 
 def build_model_path(args, checkpoint=False, check_number=0):
@@ -161,19 +173,27 @@ def build_model_path(args, checkpoint=False, check_number=0):
         args.lr,
         args.num_layers,
         args.model)
+def build_pickle_path(args):
+    return '/scratch/speech/models/classification/data_{}_hd_{}_dr_{}_e_{}_bs_{}_bi_{}_lr_{}_nl_{}_m_{}.pickle'.format(
+        args.dataset,
+        args.hidden_dim,
+        args.dr,
+        args.num_epochs,
+        args.batch_size,
+        args.bidirectional,
+        args.lr,
+        args.num_layers,
+        args.model)
 
 
 if __name__ == '__main__':
     args = init_parser()
+    stats_path="/scratch/speech/models/classification/andre_checkpoint_stats.txt"
+    pickle_path=build_pickle_path(args)
     if args.model_path == '':
         model_path = build_model_path(args)
     else:
         model_path = args.model_path
     if args.train:
-        train_model(args, model_path)
-    if args.test_checkpoints:
-        for checkpoint in range(5, args.num_epochs+1, 5):
-            model_path = build_model_path(args, True, checkpoint)
-            test_model(args, model_path, stats_path='/scratch/speech/models/classification/checkpoint_stats.txt', checkpoint=checkpoint)
-    if args.test:
-        test_model(args, model_path, stats_path='/scratch/speech/models/classification/classifier_stats.txt', checkpoint=args.num_epochs)
+        train_model(args, model_path,stats_path=stats_path,pickle_path=pickle_path)
+   
