@@ -17,8 +17,8 @@ seq_length_new = []
 
 for i, utterance in enumerate(data['input']):
     if len(utterance) < thresh:
+        utterance_new = utterance
         for x in utterance:
-            utterance_new = utterance
             if len(utterance_new) < thresh:
                 utterance_new = np.append(utterance_new, x)
                 print(len(utterance_new))
