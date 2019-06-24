@@ -27,6 +27,7 @@ for i, utterance in enumerate(data['input']):
         utterance_new, sr = librosa.load(df['file'][i], sr = thresh/(len(utterance)/sr_standard))
         input_new.append(utterance_new)
         seq_length_new.append(len(utterance_new))
+    print(i)
 
 dataset_updated = {'input': input_new, 'target': data['target'], 'seq_length': seq_length_new}
 
