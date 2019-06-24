@@ -30,7 +30,7 @@ class IEMOCAP(Dataset):
 
 def my_collate(batch):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    input = [item['input'].to(device) for item in batch]
+    input = torch.from_numpy(np.array([item['input'].to(device) for item in batch]))
     # input = [x.cuda() for x in input]
     target = torch.from_numpy(np.array([item['target'] for item in batch]))
     seq_length = torch.from_numpy(np.array([item['seq_length'].item() for item in batch]))
