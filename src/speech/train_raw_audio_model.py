@@ -6,7 +6,7 @@ from torch.utils.data import DataLoader
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 import pdb
 
-model = RawAudioModel(1, 64, 3, 1, 1, 4, 4, 200, 2, 0, 4, 128, True)
+model = RawAudioModel(1, 64, 3, 1, 1, 4, 4, 200, 2, 0, 4, 16)
 model.cuda()
 model.train()
 
