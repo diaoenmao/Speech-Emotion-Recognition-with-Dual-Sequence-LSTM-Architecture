@@ -10,15 +10,15 @@ model.cuda()
 model.train()
 
 # Use Adam as the optimizer with learning rate 0.01 to make it fast for testing purposes
-optimizer = optim.Adam(model.parameters(), lr=args.lr)
+optimizer = optim.Adam(model.parameters(), lr=0.01)
 scheduler = ReduceLROnPlateau(optimizer=optimizer,factor=0.3, patience=8, threshold=1e-3)
 
 # Load the training data
 training_data = IEMOCAP(train=True)
-train_loader = DataLoader(dataset=training_data, batch_size=args.batch_size, shuffle=True, collate_fn=my_collate,
+train_loader = DataLoader(dataset=training_data, batch_size=128, shuffle=True,
                           num_workers=0)
 testing_data = IEMOCAP(train=False)
-test_loader = DataLoader(dataset=testing_data, batch_size=256, shuffle=True, collate_fn=my_collate, num_workers=0)
+test_loader = DataLoader(dataset=testing_data, batch_size=256, shuffle=True, num_workers=0)
 
 test_acc=[]
 train_acc=[]
