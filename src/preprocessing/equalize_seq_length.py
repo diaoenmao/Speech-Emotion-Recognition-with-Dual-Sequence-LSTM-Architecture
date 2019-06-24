@@ -42,7 +42,7 @@ test_set_new = '/scratch/speech/raw_audio_dataset/raw_audio_test_equal_lengths.p
 
 train, test = split_data(dataset_updated)
 with open(full_set_new, 'wb') as f:
-    pickle.dump(dataset, f)
+    pickle.dump(dataset_updated, f)
 with open(train_set_new, 'wb') as f:
     pickle.dump(train, f)
 with open(test_set_new, 'wb') as f:
