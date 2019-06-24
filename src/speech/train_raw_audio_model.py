@@ -36,6 +36,7 @@ for epoch in range(1):  # again, normally you would NOT do 300 epochs, it is toy
     for j, (input, target, seq_length) in enumerate(train_loader):
 
         model.zero_grad()
+        pdb.set_trace()
         out, loss = model(input, target, seq_length=seq_length)
         losses += loss.item() * target.shape[0]
         loss.backward()
