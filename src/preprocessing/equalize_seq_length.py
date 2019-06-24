@@ -20,7 +20,7 @@ for i, utterance in enumerate(data['input']):
     if len(utterance) < thresh:
         utterance_new = np.tile(utterance, thresh // len(utterance) + 1)
         utterance_new = utterance_new[0:(thresh + 1)]
-        print(utterance_new)
+        print(len(utterance_new))
         #for x in utterance:
         #    if len(utterance_new) < thresh:
         #        utterance_new = np.append(utterance_new, x)
@@ -28,7 +28,7 @@ for i, utterance in enumerate(data['input']):
         input_new.append(utterance_new)
         seq_length_new.append(len(utterance_new))
     elif len(utterance) > thresh:
-        utterance_new, sr = librosa.load(df.values['file'][i], sr = thresh/(len(utterance)/sr_standard))
+        utterance_new, sr = librosa.load(df['file'][i], sr = thresh/(len(utterance)/sr_standard))
         input_new.append(utterance_new)
         seq_length_new.append(len(utterance_new))
 
