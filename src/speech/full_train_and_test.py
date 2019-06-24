@@ -71,10 +71,10 @@ def train_model(args, model_path, stats_path,pickle_path):
         correct_test = 0
         model.train()
         for j, (input, target, seq_length) in enumerate(train_loader):
-            
+
             input = pad_sequence(sequences=input, batch_first=True)
 
-            input = pack_padded_sequence(input, lengths=seq_length, batch_first=True, enforce_sorted=False)        
+            input = pack_padded_sequence(input, lengths=seq_length, batch_first=True, enforce_sorted=False)
             model.zero_grad()
             out, loss = model(input, target, seq_length=seq_length)
             losses += loss.item() * target.shape[0]
@@ -108,7 +108,7 @@ def train_model(args, model_path, stats_path,pickle_path):
         train_loss.append(losses)
 
         print("Training Loss: {} -------- Testing Loss: {} -------- Training Acc: {} -------- Testing Acc: {}".format(losses,losses_test, accuracy, accuracy_test))
-        
+
         scheduler.step(losses)
 
         if (epoch + 1) % 5 == 0:
@@ -122,7 +122,7 @@ def train_model(args, model_path, stats_path,pickle_path):
             f.write("\n")
     with open(stats_path,"a+") as f:
         f.write("================================="+"Best Test Accuracy"+str(max(test_acc))+"====================================="+"\n")
-    pickle_out=opne(pickle_path,"wb")
+    pickle_out=open(pickle_path,"wb")
     pickle.dump({"test_acc":test_acc, "train_acc": train_acc, "test_loss": test_loss, "train_loss": train_loss},pickle_out)
     pickle_out.close()
 
@@ -196,4 +196,3 @@ if __name__ == '__main__':
         model_path = args.model_path
     if args.train:
         train_model(args, model_path,stats_path=stats_path,pickle_path=pickle_path)
-   
