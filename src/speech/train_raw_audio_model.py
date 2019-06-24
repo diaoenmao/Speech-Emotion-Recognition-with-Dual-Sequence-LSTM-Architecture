@@ -1,7 +1,7 @@
 import torch
 from torch import optim
 from raw_audio_model import RawAudioModel
-from process_raw_audio_model import IEMOCAP
+from process_raw_audio_model import IEMOCAP, my_collate
 from torch.utils.data import DataLoader
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 import pdb
@@ -16,16 +16,14 @@ scheduler = ReduceLROnPlateau(optimizer=optimizer,factor=0.3, patience=8, thresh
 
 # Load the training data
 training_data = IEMOCAP(train=True)
-train_loader = DataLoader(dataset=training_data, batch_size=128, shuffle=True,
-                          num_workers=0)
+train_loader = DataLoader(dataset=training_data, batch_size=128, shuffle=True, collate_fn=my_collate, num_workers=0)
 testing_data = IEMOCAP(train=False)
-test_loader = DataLoader(dataset=testing_data, batch_size=256, shuffle=True, num_workers=0)
+test_loader = DataLoader(dataset=testing_data, batch_size=256, shuffle=True, collate_fn=my_collate, num_workers=0)
 
 test_acc=[]
 train_acc=[]
 test_loss=[]
 train_loss=[]
-
 
 for epoch in range(1):  # again, normally you would NOT do 300 epochs, it is toy data
     print("===================================" + str(epoch) + "==============================================")
