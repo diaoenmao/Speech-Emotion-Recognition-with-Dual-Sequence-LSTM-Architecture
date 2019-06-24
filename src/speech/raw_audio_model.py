@@ -36,7 +36,7 @@ class RawAudioModel(nn.Module):
         self.batch4 = nn.BatchNorm1d(self.out_channels*2)
         self.relu = nn.ReLU()
         self.max_pool = nn.MaxPool1d(self.kernel_size_pool, stride=self.stride_pool)
-        self.lstm = nn.LSTM(128000/256, self.hidden_dim, self.num_layers, batch_first=True,
+        self.lstm = nn.LSTM(int(128000/256), self.hidden_dim, self.num_layers, batch_first=True,
                            dropout=self.dropout_rate, bidirectional=self.bidirectional).to(self.device)
         self.classification = nn.Linear(self.hidden_dim * self.num_directions, self.num_labels).to(self.device)
 
