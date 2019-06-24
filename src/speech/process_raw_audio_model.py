@@ -27,3 +27,13 @@ class IEMOCAP(Dataset):
                   'target': self.target[index],
                   'seq_length': torch.tensor(self.seq_length[index]).float()}
         return sample
+
+def my_collate(batch):
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    input = [item['input'].to(device) for item in batch]
+    # input = [x.cuda() for x in input]
+    target = torch.from_numpy(np.array([item['target'] for item in batch]))
+    seq_length = torch.from_numpy(np.array([item['seq_length'].item() for item in batch]))
+    # seq_length = [x[0] for x in seq_length]
+    # seq_length = torch.from_numpy(np.array(seq_length))
+    return [input, target, seq_length]
