@@ -25,6 +25,7 @@ for i, utterance in enumerate(data['input']):
         seq_length_new.append(len(utterance_new))
     elif len(utterance) > thresh:
         utterance_new, sr = librosa.load(df['file'][i], sr = thresh/(len(utterance)/sr_standard))
+        utterance_new = utterance_new[0:thresh]
         print(len(utterance_new))
         input_new.append(utterance_new)
         seq_length_new.append(len(utterance_new))
