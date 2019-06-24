@@ -34,7 +34,7 @@ for i, utterance in enumerate(data['input']):
         seq_length_new.append(len(utterance))
     print(i)
 
-dataset_updated = {'input': input_new, 'target': data['target'], 'seq_length': seq_length_new}
+dataset_updated = {'input': np.array(input_new), 'target': np.array(data['target']), 'seq_length': seq_length_new}
 
 full_set_new = '/scratch/speech/raw_audio_dataset/raw_audio_full_equal_lengths.pkl'
 train_set_new = '/scratch/speech/raw_audio_dataset/raw_audio_train_equal_lengths.pkl'
