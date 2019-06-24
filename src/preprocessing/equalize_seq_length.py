@@ -29,6 +29,9 @@ for i, utterance in enumerate(data['input']):
         print(len(utterance_new))
         input_new.append(utterance_new)
         seq_length_new.append(len(utterance_new))
+    else:
+        input_new.append(utterance)
+        seq_length_new.append(len(utterance))
     print(i)
 
 dataset_updated = {'input': input_new, 'target': data['target'], 'seq_length': seq_length_new}
