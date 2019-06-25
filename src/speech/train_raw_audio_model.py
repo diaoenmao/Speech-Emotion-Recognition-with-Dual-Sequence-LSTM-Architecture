@@ -22,7 +22,7 @@ scheduler = ReduceLROnPlateau(optimizer=optimizer,factor=0.3, patience=8, thresh
 training_data = IEMOCAP(train=True)
 train_loader = DataLoader(dataset=training_data, batch_size=128, shuffle=True, collate_fn=my_collate, num_workers=0)
 testing_data = IEMOCAP(train=False)
-test_loader = DataLoader(dataset=testing_data, batch_size=128, shuffle=True, collate_fn=my_collate, num_workers=0)
+test_loader = DataLoader(dataset=testing_data, batch_size=100, shuffle=True, collate_fn=my_collate, num_workers=0)
 
 test_acc=[]
 train_acc=[]
