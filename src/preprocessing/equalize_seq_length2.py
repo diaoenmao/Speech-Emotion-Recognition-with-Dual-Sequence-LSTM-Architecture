@@ -22,12 +22,10 @@ for i, utterance in enumerate(data['input']):
         utterance_new = np.append(utterance, np.zeros(thresh - len(utterance)))
         input_new.append(utterance_new)
         seq_length_new.append(len(utterance_new))
-        print(len(utterance_new))
     elif len(utterance) > thresh:
         utterance_new = utterance[0:thresh]
         input_new.append(utterance_new)
         seq_length_new.append(len(utterance_new))
-        print(len(utterance_new))
     else:
         input_new.append(utterance)
         seq_length_new.append(len(utterance))
