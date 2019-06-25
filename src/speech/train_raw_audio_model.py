@@ -57,6 +57,7 @@ for epoch in range(10):  # again, normally you would NOT do 300 epochs, it is to
 
     model.eval()
     for test_case, target, seq_length in test_loader:
+        test_case = test_case.unsqueeze(1)
         out, loss = model(test_case, target, train=False, seq_length=seq_length)
         index = torch.argmax(out, dim=1)
         target_index = torch.argmax(target, dim=1).to(device)
