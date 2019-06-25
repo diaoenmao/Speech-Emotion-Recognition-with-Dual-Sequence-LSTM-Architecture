@@ -188,7 +188,7 @@ def build_pickle_path(args):
 
 if __name__ == '__main__':
     args = init_parser()
-    stats_path="/scratch/speech/models/classification/andre_checkpoint_stats.txt"
+    stats_path="/scratch/speech/models/classification/andre_(test_cuda)_checkpoint_stats.txt"
     pickle_path=build_pickle_path(args)
     if args.model_path == '':
         model_path = build_model_path(args)
