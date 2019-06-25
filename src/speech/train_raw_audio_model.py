@@ -27,7 +27,7 @@ train_acc=[]
 test_loss=[]
 train_loss=[]
 
-for epoch in range(1):  # again, normally you would NOT do 300 epochs, it is toy data
+for epoch in range(3):  # again, normally you would NOT do 300 epochs, it is toy data
     print("===================================" + str(epoch) + "==============================================")
     losses = 0
     correct=0
@@ -37,7 +37,6 @@ for epoch in range(1):  # again, normally you would NOT do 300 epochs, it is toy
     for j, (input, target, seq_length) in enumerate(train_loader):
         input = input.unsqueeze(1)
         model.zero_grad()
-        pdb.set_trace()
         out, loss = model(input, target, seq_length=seq_length)
         losses += loss.item() * target.shape[0]
         loss.backward()

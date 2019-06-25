@@ -43,7 +43,6 @@ class RawAudioModel(nn.Module):
     def forward(self, input, target, seq_length, train=True):
         input = input.to(self.device)
         target = target.to(self.device)
-        pdb.set_trace()
         out = self.cnn1(input)
         print(out.shape)
         out = self.batch1(out)
