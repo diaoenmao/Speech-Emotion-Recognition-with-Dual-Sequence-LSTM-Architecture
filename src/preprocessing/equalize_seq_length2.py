@@ -3,6 +3,7 @@ import numpy as np
 import librosa
 import pandas as pd
 from raw_audio_create_dict import split_data
+import pdb
 
 dict_path = '/scratch/speech/raw_audio_dataset/raw_audio_full.pkl'
 file = open(dict_path, 'rb')
@@ -31,6 +32,7 @@ for i, utterance in enumerate(data['input']):
         input_new.append(utterance)
         seq_length_new.append(len(utterance))
 
+pdb.set_trace()
 dataset_updated = {'input': np.array(input_new), 'target': np.array(data['target']), 'seq_length': seq_length_new}
 
 full_set_new = '/scratch/speech/raw_audio_dataset/raw_audio_full_equal_lengths2.pkl'
