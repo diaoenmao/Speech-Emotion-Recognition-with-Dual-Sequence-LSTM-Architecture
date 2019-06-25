@@ -9,7 +9,7 @@ from torch.nn import DataParallel
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-model = RawAudioModel(1, 64, 3, 1, 1, 4, 4, 200, 2, 0, 4, 32)
+model = RawAudioModel(1, 64, 3, 1, 1, 4, 4, 200, 2, 0, 4, 128)
 model.cuda()
 model=DataParallel(model,device_ids=[0,1,2,3])
 model.train()
@@ -20,7 +20,7 @@ scheduler = ReduceLROnPlateau(optimizer=optimizer,factor=0.3, patience=8, thresh
 
 # Load the training data
 training_data = IEMOCAP(train=True)
-train_loader = DataLoader(dataset=training_data, batch_size=32, shuffle=True, collate_fn=my_collate, num_workers=0)
+train_loader = DataLoader(dataset=training_data, batch_size=128, shuffle=True, collate_fn=my_collate, num_workers=0)
 testing_data = IEMOCAP(train=False)
 test_loader = DataLoader(dataset=testing_data, batch_size=32, shuffle=True, collate_fn=my_collate, num_workers=0)
 
@@ -49,7 +49,6 @@ for epoch in range(3):  # again, normally you would NOT do 300 epochs, it is toy
         index = torch.argmax(out, dim=1)
         target_index = torch.argmax(target, dim=1).to(device)
         correct += sum(index == target_index).item()
-        print("loss: ",loss)
 
     accuracy=correct*1.0/len(training_data)
     losses=losses / len(training_data)
