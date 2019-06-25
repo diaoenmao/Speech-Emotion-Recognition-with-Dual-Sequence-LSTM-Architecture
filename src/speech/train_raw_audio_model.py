@@ -15,7 +15,7 @@ model=DataParallel(model,device_ids=[0,1,2,3])
 model.train()
 
 # Use Adam as the optimizer with learning rate 0.01 to make it fast for testing purposes
-optimizer = optim.Adam(model.parameters(), lr=0.01)
+optimizer = optim.Adam(model.parameters(), lr=0.001)
 scheduler = ReduceLROnPlateau(optimizer=optimizer,factor=0.3, patience=8, threshold=1e-3)
 
 # Load the training data
@@ -29,7 +29,7 @@ train_acc=[]
 test_loss=[]
 train_loss=[]
 
-for epoch in range(10):  # again, normally you would NOT do 300 epochs, it is toy data
+for epoch in range(50):  # again, normally you would NOT do 300 epochs, it is toy data
     print("===================================" + str(epoch+1) + "==============================================")
     losses = 0
     correct=0
