@@ -10,6 +10,7 @@ from torch.nn import DataParallel
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 model = RawAudioModel(1, 64, 3, 1, 1, 4, 4, 200, 2, 0, 4, 32)
+model.cuda()
 model=DataParallel(model,device_ids=[0,1,2,3])
 model.train()
 
