@@ -73,7 +73,7 @@ for epoch in range(200):  # again, normally you would NOT do 300 epochs, it is t
     test_loss.append(losses_test)
     train_loss.append(losses)
     with open("/scratch/speech/models/classification/CNN_checkpoint_stats.txt","a+") as f:
-        f.write("Epoch: {}-----------Training Loss: {} -------- Testing Loss: {} -------- Training Acc: {} -------- Testing Acc: {}".format(epoch+1,losses,losses_test, accuracy, accuracy_test))
+        f.write("Epoch: {}-----------Training Loss: {} -------- Testing Loss: {} -------- Training Acc: {} -------- Testing Acc: {}".format(epoch+1,losses,losses_test, accuracy, accuracy_test)+"\n")
 
 
     scheduler.step(losses_test)
