@@ -9,7 +9,7 @@ from torch.nn import DataParallel
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-model = RawAudioModel(1, 64, 3, 1, 1, 4, 4, 200, 2, 0, 4, 128)
+model = RawAudioModel(1, 64, 3, 1, 1, 4, 4, 200, 2, 0.2, 4, 128)
 model.cuda()
 model=DataParallel(model,device_ids=[0,1,2,3])
 model.train()
@@ -76,7 +76,7 @@ for epoch in range(50):  # again, normally you would NOT do 300 epochs, it is to
     print("Training Loss: {} -------- Testing Loss: {} -------- Training Acc: {} -------- Testing Acc: {}".format(losses,losses_test, accuracy, accuracy_test))
 
 
-    scheduler.step(test_losses)
+    scheduler.step(losses_test)
 
 
 #with open(stats_path,"a+") as f:
