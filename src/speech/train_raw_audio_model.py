@@ -6,7 +6,7 @@ from torch.utils.data import DataLoader
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 import pdb
 
-model = RawAudioModel(1, 64, 3, 1, 1, 4, 4, 200, 2, 0, 4, 16)
+model = RawAudioModel(1, 64, 3, 1, 1, 4, 4, 200, 2, 0, 4, 4)
 model.cuda()
 model.train()
 
@@ -16,9 +16,9 @@ scheduler = ReduceLROnPlateau(optimizer=optimizer,factor=0.3, patience=8, thresh
 
 # Load the training data
 training_data = IEMOCAP(train=True)
-train_loader = DataLoader(dataset=training_data, batch_size=128, shuffle=True, collate_fn=my_collate, num_workers=0)
+train_loader = DataLoader(dataset=training_data, batch_size=4, shuffle=True, collate_fn=my_collate, num_workers=0)
 testing_data = IEMOCAP(train=False)
-test_loader = DataLoader(dataset=testing_data, batch_size=256, shuffle=True, collate_fn=my_collate, num_workers=0)
+test_loader = DataLoader(dataset=testing_data, batch_size=32, shuffle=True, collate_fn=my_collate, num_workers=0)
 
 test_acc=[]
 train_acc=[]
