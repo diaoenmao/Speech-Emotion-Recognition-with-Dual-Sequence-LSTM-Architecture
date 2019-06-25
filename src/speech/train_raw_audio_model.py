@@ -16,7 +16,7 @@ model.train()
 
 # Use Adam as the optimizer with learning rate 0.01 to make it fast for testing purposes
 optimizer = optim.Adam(model.parameters(), lr=0.001)
-scheduler = ReduceLROnPlateau(optimizer=optimizer,factor=0.3, patience=8, threshold=1e-3)
+scheduler = ReduceLROnPlateau(optimizer=optimizer,factor=0.3, patience=5, threshold=1e-3)
 
 # Load the training data
 training_data = IEMOCAP(train=True)
@@ -76,7 +76,7 @@ for epoch in range(50):  # again, normally you would NOT do 300 epochs, it is to
     print("Training Loss: {} -------- Testing Loss: {} -------- Training Acc: {} -------- Testing Acc: {}".format(losses,losses_test, accuracy, accuracy_test))
 
 
-    scheduler.step(losses)
+    scheduler.step(test_losses)
 
 
 #with open(stats_path,"a+") as f:
