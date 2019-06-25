@@ -30,14 +30,14 @@ test_loss=[]
 train_loss=[]
 
 for epoch in range(3):  # again, normally you would NOT do 300 epochs, it is toy data
-    print("===================================" + str(epoch) + "==============================================")
+    print("===================================" + str(epoch+1) + "==============================================")
     losses = 0
     correct=0
     losses_test = 0
     correct_test = 0
     model.train()
     for j, (input, target, seq_length) in enumerate(train_loader):
-        print("================================= Batch"+ str(j)+ "===================================================")
+        if (j+1)%50==0: print("================================= Batch"+ str(j+1)+ "===================================================")
         input = input.unsqueeze(1)
         model.zero_grad()
         out, loss = model(input, target, seq_length=seq_length)
@@ -56,24 +56,6 @@ for epoch in range(3):  # again, normally you would NOT do 300 epochs, it is toy
     print("accuracy: ", accuracy)
     print("losses: ", losses)
 
-    #after training
-    model.eval()
-    for test_case, target, seq_length in test_loader:
-        out, loss = model(test_case, target, train=False, seq_length=seq_length)
-        index = torch.argmax(out, dim=1)
-        target_index = torch.argmax(target, dim=1).to(device)
-        losses_test += loss.item() * index.shape[0]
-        correct_test += sum(index == target_index).item()
-    accuracy_test = correct_test * 1.0 / len(testing_data)
-    losses_test = losses_test / len(testing_data)
-
-    # data gathering
-    test_acc.append(accuracy_test)
-    train_acc.append(accuracy)
-    test_loss.append(losses_test)
-    train_loss.append(losses)
-
-    print("Training Loss: {} -------- Testing Loss: {} -------- Training Acc: {} -------- Testing Acc: {}".format(losses,losses_test, accuracy, accuracy_test))
 
     scheduler.step(losses)
 
