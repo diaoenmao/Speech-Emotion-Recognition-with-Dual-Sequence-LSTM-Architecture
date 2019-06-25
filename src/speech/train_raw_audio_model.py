@@ -41,8 +41,9 @@ for epoch in range(3):  # again, normally you would NOT do 300 epochs, it is toy
         input = input.unsqueeze(1)
         model.zero_grad()
         out, loss = model(input, target, seq_length=seq_length)
+        loss = torch.mean(loss)
         pdb.set_trace()
-        losses += torch.mean(loss).item() * target.shape[0]
+        losses += loss.item() * target.shape[0]
         loss.backward()
         optimizer.step()
 
