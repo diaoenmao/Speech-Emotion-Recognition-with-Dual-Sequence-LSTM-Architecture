@@ -29,7 +29,7 @@ train_acc=[]
 test_loss=[]
 train_loss=[]
 
-for epoch in range(50):  # again, normally you would NOT do 300 epochs, it is toy data
+for epoch in range(200):  # again, normally you would NOT do 300 epochs, it is toy data
     print("===================================" + str(epoch+1) + "==============================================")
     losses = 0
     correct=0
@@ -72,17 +72,15 @@ for epoch in range(50):  # again, normally you would NOT do 300 epochs, it is to
     train_acc.append(accuracy)
     test_loss.append(losses_test)
     train_loss.append(losses)
-
-    print("Training Loss: {} -------- Testing Loss: {} -------- Training Acc: {} -------- Testing Acc: {}".format(losses,losses_test, accuracy, accuracy_test))
+    with open("/scratch/speech/models/classification/CNN_checkpoint_stats.txt","a+") as f:
+        f.write("Epoch: {}-----------Training Loss: {} -------- Testing Loss: {} -------- Training Acc: {} -------- Testing Acc: {}".format(epoch+1,losses,losses_test, accuracy, accuracy_test))
 
 
     scheduler.step(losses_test)
 
 
-#with open(stats_path,"a+") as f:
-#    f.write("================================="+"Best Test Accuracy"+str(max(test_acc))+"====================================="+"\n")
-#pickle_out=open(pickle_path,"wb")
-#pickle.dump({"test_acc":test_acc, "train_acc": train_acc, "test_loss": test_loss, "train_loss": train_loss},pickle_out)
-#pickle_out.close()
+pickle_out=open("/scratch/speech/models/classification/CNN_checkpoint_stats.pkl","wb")
+pickle.dump({"test_acc":test_acc, "train_acc": train_acc, "test_loss": test_loss, "train_loss": train_loss},pickle_out)
+pickle_out.close()
 
 #torch.save(model.state_dict(), model_path)
