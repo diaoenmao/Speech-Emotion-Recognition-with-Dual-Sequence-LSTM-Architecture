@@ -11,12 +11,23 @@ from torch.nn import DataParallel
 
 
 model = ConvLSTM(1, [64,32,16],[9,5,5],100)
-model.cuda()
 model=DataParallel(model,device_ids=[0,1,2,3])
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 epoch=1
-pdb.set_trace()
-model=model.load_state_dict(torch.load("/scratch/speech/models/classification/ConvLSTM_checkpoint_epoch_{}.pt".format(epoch))['state_dict'])
+#pdb.set_trace()
+#model.load_state_dict(torch.load("/scratch/speech/models/classification/ConvLSTM_checkpoint_epoch_{}.pt".format(epoch))['state_dict'])
+path="/scratch/speech/models/classification/ConvLSTM_checkpoint_epoch_{}.pt".format(epoch)
+
+
+state_dict = torch.load(path)
+# create new OrderedDict that does not contain `module.`
+from collections import OrderedDict
+new_state_dict = OrderedDict()
+for k, v in state_dict.items():
+    name = k[7:] # remove `module.`
+    new_state_dict[name] = v
+# load params
+model.load_state_dict(new_state_dict)
 
 training_data = IEMOCAP(train=True)
 train_loader = DataLoader(dataset=training_data, batch_size=60, shuffle=True, collate_fn=my_collate, num_workers=0)
