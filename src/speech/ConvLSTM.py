@@ -14,7 +14,7 @@ class ConvLSTMCell(nn.Module):
         self.hidden_channels = hidden_channels
         self.kernel_size = kernel_size
         self.stride=1
-        self.padding = int(kernel_size / 2)
+        self.padding = int((kernel_size-1) / 2)
         self.kernel_size_pool=kernel_size_pool
         self.stride_pool=stride_pool
 
