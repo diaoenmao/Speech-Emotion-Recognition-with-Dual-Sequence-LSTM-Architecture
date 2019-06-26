@@ -22,9 +22,9 @@ optimizer = optim.SGD(model.parameters(), lr=0.01)
 scheduler =CosineAnnealingLR(optimizer, T_max=100, eta_min=0.0001)
 # Load the training data
 training_data = IEMOCAP(train=True)
-train_loader = DataLoader(dataset=training_data, batch_size=100, shuffle=True, collate_fn=my_collate, num_workers=0)
+train_loader = DataLoader(dataset=training_data, batch_size=120, shuffle=True, collate_fn=my_collate, num_workers=0)
 testing_data = IEMOCAP(train=False)
-test_loader = DataLoader(dataset=testing_data, batch_size=100, shuffle=True, collate_fn=my_collate, num_workers=0)
+test_loader = DataLoader(dataset=testing_data, batch_size=120, shuffle=True, collate_fn=my_collate, num_workers=0)
 
 test_acc=[]
 train_acc=[]
@@ -39,7 +39,7 @@ for epoch in range(10):  # again, normally you would NOT do 300 epochs, it is to
     correct_test = 0
     model.train()
     for j, (input, target, seq_length) in enumerate(train_loader):
-       # if (j+1)%50==0: print("================================= Batch"+ str(j+1)+ "===================================================")
+        if (j+1)%50==0: print("================================= Batch"+ str(j+1)+ "===================================================")
         input=input.float()
         input = input.unsqueeze(1)
         input=torch.split(input,1280,dim=2)
@@ -66,6 +66,10 @@ for epoch in range(10):  # again, normally you would NOT do 300 epochs, it is to
         test_case = test_case.unsqueeze(1)
         test_case=torch.split(test_case,1280,dim=2)
         out, loss = model(test_case, target, train=False, seq_length=seq_length)
+
+        loss = torch.mean(loss,dim=0)
+        out=torch.flatten(out,start_dim=0,end_dim=1)
+
         index = torch.argmax(out, dim=1)
         target_index = torch.argmax(target, dim=1).to(device)
         loss = torch.mean(loss)
