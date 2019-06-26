@@ -61,14 +61,21 @@ for epoch in range(10):  # again, normally you would NOT do 300 epochs, it is to
 
     accuracy=correct*1.0/len(training_data)
     losses=losses / len(training_data)
+    print("accuracy:", accuracy)
+    print("loss:", losses)
+    torch.save(model.state_dict(), "/scratch/speech/models/classification/ConvLSTM_checkpoint_epoch_{}.pt".format(epoch))
 
     model.eval()
     for test_case, target, seq_length in test_loader:
         test_case=test_case.float()
         test_case = test_case.unsqueeze(1)
         test_case=torch.split(test_case,1280,dim=2)
-        pdb.set_trace()
-        out, loss = model(test_case, target, train=False, seq_length=seq_length)
+        try:
+            out, loss = model(test_case, target, train=False, seq_length=seq_length)
+        except:
+            print(len(test_case))
+            print(test_case[0].shape)
+            print(test_target.shape)
 
         loss = torch.mean(loss,dim=0)
         out=torch.flatten(out,start_dim=0,end_dim=1)
