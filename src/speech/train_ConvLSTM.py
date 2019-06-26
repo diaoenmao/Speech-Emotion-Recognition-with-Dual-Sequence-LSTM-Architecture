@@ -32,7 +32,8 @@ test_acc=[]
 train_acc=[]
 test_loss=[]
 train_loss=[]
-
+epoch=0
+torch.save(model.state_dict(), "/scratch/speech/models/classification/ConvLSTM_checkpoint_epoch_{}.pt".format(epoch))
 for epoch in range(10):  # again, normally you would NOT do 300 epochs, it is toy data
     print("===================================" + str(epoch+1) + "==============================================")
     losses = 0
@@ -63,7 +64,7 @@ for epoch in range(10):  # again, normally you would NOT do 300 epochs, it is to
     losses=losses / len(training_data)
     print("accuracy:", accuracy)
     print("loss:", losses)
-    torch.save(model.state_dict(), "/scratch/speech/models/classification/ConvLSTM_checkpoint_epoch_{}.pt".format(epoch))
+    torch.save(model.state_dict(), "/scratch/speech/models/classification/ConvLSTM_checkpoint_epoch_{}.pt".format(epoch+1))
 
     model.eval()
     for test_case, target, seq_length in test_loader:
