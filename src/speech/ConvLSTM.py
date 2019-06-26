@@ -5,7 +5,7 @@ import pdb
 
 
 class ConvLSTMCell(nn.Module):
-    def __init__(self, input_channels, hidden_channels, kernel_size,kernel_size_pool, stride_pool, kernel_size_pool=8, stride_pool=4):
+    def __init__(self, input_channels, hidden_channels, kernel_size, kernel_size_pool=8, stride_pool=4):
         super(ConvLSTMCell, self).__init__()
 
         assert hidden_channels % 2 == 0
