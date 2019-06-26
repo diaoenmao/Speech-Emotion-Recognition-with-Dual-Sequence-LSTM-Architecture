@@ -50,9 +50,9 @@ class ConvLSTMCell(nn.Module):
 
     def init_hidden(self, batch_size, hidden, shape):
         if self.Wci is None:
-            self.Wci = nn.Parameter(torch.zeros(batch_size, hidden, shape)).cuda()
-            self.Wcf = nn.Parameter(torch.zeros(batch_size, hidden, shape)).cuda()
-            self.Wco = nn.Parameter(torch.zeros(batch_size, hidden, shape)).cuda()
+            self.Wci = nn.Parameter(torch.zeros(1, hidden, shape)).cuda()
+            self.Wcf = nn.Parameter(torch.zeros(1, hidden, shape)).cuda()
+            self.Wco = nn.Parameter(torch.zeros(1, hidden, shape)).cuda()
 
         return (nn.Parameter(torch.zeros(batch_size, hidden, shape)).cuda(),
                 nn.Parameter(torch.zeros(batch_size, hidden, shape)).cuda())
