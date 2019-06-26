@@ -34,13 +34,12 @@ train_loss=[]
 
 model.eval()
 for test_case, target, seq_length in test_loader:
-	test_case=test_case.float()
+    test_case=test_case.float()
     test_case = test_case.unsqueeze(1)
     test_case=torch.split(test_case,1280,dim=2)
     try:
         out, loss = model(test_case, target, train=False, seq_length=seq_length)
     except:
-    	pdb.set_trace()
         print(len(test_case))
         print(test_case[0].shape)
         print(target.shape)
