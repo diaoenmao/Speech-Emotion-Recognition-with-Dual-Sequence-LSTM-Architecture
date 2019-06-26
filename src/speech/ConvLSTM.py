@@ -5,7 +5,7 @@ import pdb
 
 
 class ConvLSTMCell(nn.Module):
-    def __init__(self, input_channels, hidden_channels, kernel_size,kernel_size_pool=8, stride_pool=4):
+    def __init__(self, input_channels, hidden_channels, kernel_size,kernel_size_pool, stride_pool, kernel_size_pool=8, stride_pool=4):
         super(ConvLSTMCell, self).__init__()
 
         assert hidden_channels % 2 == 0
@@ -71,7 +71,10 @@ class ConvLSTM(nn.Module):
         self.step = step
         self._all_layers = []
         self.num_labels=4
-        self.classification = nn.Linear(100, self.num_labels)
+        self.linear_dim=16*18
+
+        self.classification = nn.Linear(self.linear_dim, self.num_labels)
+
         for i in range(self.num_layers):
             name = 'cell{}'.format(i)
             cell = ConvLSTMCell(self.input_channels[i], self.hidden_channels[i], self.kernel_size[i])
@@ -99,7 +102,8 @@ class ConvLSTM(nn.Module):
             outputs.append(x)
         ## mean pooling and loss function
         pdb.set_trace()
-        out = torch.mean(outputs, dim=1)
+        out=[torch.unsqueeze(o, dim=3) for o in outputs]
+        out=torch.flatten(torch.mean(torch.cat(out,dim=3),dim=3),start_dim=1)
 
         out = self.classification(out)
 

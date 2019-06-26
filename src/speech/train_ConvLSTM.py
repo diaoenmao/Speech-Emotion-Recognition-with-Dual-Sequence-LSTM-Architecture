@@ -13,7 +13,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 model = ConvLSTM(1, [64,32,16],[9,5,5],100)
 model.cuda()
-model=DataParallel(model,device_ids=[0,1,2,3])
+#model=DataParallel(model,device_ids=[0,1,2,3])
 model.train()
 
 # Use Adam as the optimizer with learning rate 0.01 to make it fast for testing purposes
