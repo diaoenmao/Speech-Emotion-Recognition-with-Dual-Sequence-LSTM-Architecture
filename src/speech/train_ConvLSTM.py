@@ -13,7 +13,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 model = ConvLSTM(1, [64,32,16],[9,5,5],100)
 print("============================ Number of parameters ====================================")
-print(str(sum(p.numel() for p in model.parameters() if p.requires_grad)//1000000)+" million")
+print(str(sum(p.numel() for p in model.parameters() if p.requires_grad)))
 model.cuda()
 model=DataParallel(model,device_ids=[0,1,2,3])
 model.train()
@@ -41,7 +41,7 @@ for epoch in range(10):  # again, normally you would NOT do 300 epochs, it is to
     correct_test = 0
     model.train()
     for j, (input, target, seq_length) in enumerate(train_loader):
-        if (j+1)%50==0: print("================================= Batch"+ str(j+1)+ "===================================================")
+        if (j+1)%5==0: print("================================= Batch"+ str(j+1)+ "===================================================")
         input=input.float()
         input = input.unsqueeze(1)
         input=torch.split(input,1280,dim=2)
