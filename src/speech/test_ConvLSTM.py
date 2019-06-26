@@ -13,10 +13,9 @@ model.cuda()
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 epoch=1
 pretrained_dict =torch.load("/scratch/speech/models/classification/ConvLSTM_checkpoint_epoch_{}.pt".format(epoch))
-model_dict = model.state_dict()
 
 # 1. filter out unnecessary keys
-pretrained_dict = {k: v for k, v in pretrained_dict.items() if k in model_dict}
+pretrained_dict = {"module."+k: v for k, v in pretrained_dict.items()}
 # 2. overwrite entries in the existing state dict
 model_dict.update(pretrained_dict) 
 # 3. load the new state dict
