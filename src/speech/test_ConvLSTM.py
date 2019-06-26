@@ -11,7 +11,7 @@ from torch.nn import DataParallel
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 epoch=1
-#model = torch.load("/scratch/speech/models/classification/ConvLSTM_checkpoint_epoch_{}.pt".format(epoch))
+model = torch.load("/scratch/speech/models/classification/ConvLSTM_checkpoint_epoch_{}.pt".format(epoch))
 #print("============================ Number of parameters ====================================")
 #print(str(sum(p.numel() for p in model.parameters() if p.requires_grad)))
 model.cuda()
