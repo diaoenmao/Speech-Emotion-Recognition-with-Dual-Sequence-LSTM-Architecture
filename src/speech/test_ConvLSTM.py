@@ -43,7 +43,7 @@ correct_test=0
 loss=0
 model.eval()
 for j,(test_case, target, seq_length) in enumerate(test_loader):
-	print(j)
+    print(j)
     test_case=test_case.float()
     test_case = test_case.unsqueeze(1)
     test_case=torch.split(test_case,1280,dim=2)
