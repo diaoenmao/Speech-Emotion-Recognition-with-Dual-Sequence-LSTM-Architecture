@@ -24,7 +24,7 @@ test_acc=[]
 train_acc=[]
 test_loss=[]
 train_loss=[]
-
+loss=0
 model.eval()
 for test_case, target, seq_length in test_loader:
     test_case=test_case.float()
@@ -33,6 +33,7 @@ for test_case, target, seq_length in test_loader:
     try:
         out, loss = model(test_case, target, train=False, seq_length=seq_length)
     except:
+    	pdb.set_trace()
         print(len(test_case))
         print(test_case[0].shape)
         print(target.shape)
