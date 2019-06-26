@@ -76,7 +76,7 @@ for epoch in range(10):  # again, normally you would NOT do 300 epochs, it is to
         except:
             print(len(test_case))
             print(test_case[0].shape)
-            print(test_target.shape)
+            print(target.shape)
 
         loss = torch.mean(loss,dim=0)
         out=torch.flatten(out,start_dim=0,end_dim=1)
