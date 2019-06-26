@@ -67,6 +67,7 @@ for epoch in range(10):  # again, normally you would NOT do 300 epochs, it is to
         test_case=test_case.float()
         test_case = test_case.unsqueeze(1)
         test_case=torch.split(test_case,1280,dim=2)
+        pdb.set_trace()
         out, loss = model(test_case, target, train=False, seq_length=seq_length)
 
         loss = torch.mean(loss,dim=0)
