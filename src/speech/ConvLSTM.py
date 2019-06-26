@@ -38,7 +38,7 @@ class ConvLSTMCell(nn.Module):
         self.Wco = None
 
     def forward(self, x, h, c):
-        assert c*self.Wci.size()==self.Whi(h).size(), "c*Wci size {}, Whi(h) size{}".format(c*self.Wci.size(),self.Whi(h).size())
+        assert c*self.Wci.size()==self.Whi(h).size(), "c*Wci size {}, Whi(h) size{}".format(c*self.Wci.shape,self.Whi(h).shape)
 
         ci = torch.sigmoid(self.Wxi(x) + self.Whi(h) + c * self.Wci)
         cf = torch.sigmoid(self.Wxf(x) + self.Whf(h) + c * self.Wcf)
