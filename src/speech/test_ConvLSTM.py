@@ -11,7 +11,7 @@ from torch.nn import DataParallel
 
 
 model = ConvLSTM(1, [64,32,16],[9,5,5],100)
-model=DataParallel(model,device_ids=[0,1,2,3])
+#model=DataParallel(model,device_ids=[0,1,2,3])
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 epoch=1
 #pdb.set_trace()
