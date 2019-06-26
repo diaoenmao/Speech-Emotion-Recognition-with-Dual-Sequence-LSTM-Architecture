@@ -13,7 +13,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 model = ConvLSTM(1, [64,32,16],[9,5,5],100)
 model.cuda()
-model=DataParallel(model,device_ids=[0,1,2,3])
+#model=DataParallel(model,device_ids=[0,1,2,3])
 model.train()
 
 # Use Adam as the optimizer with learning rate 0.01 to make it fast for testing purposes
@@ -22,9 +22,9 @@ optimizer = optim.SGD(model.parameters(), lr=0.01)
 scheduler =CosineAnnealingLR(optimizer, T_max=100, eta_min=0.0001)
 # Load the training data
 training_data = IEMOCAP(train=True)
-train_loader = DataLoader(dataset=training_data, batch_size=100, shuffle=True, collate_fn=my_collate, num_workers=0)
+train_loader = DataLoader(dataset=training_data, batch_size=10, shuffle=True, collate_fn=my_collate, num_workers=0)
 testing_data = IEMOCAP(train=False)
-test_loader = DataLoader(dataset=testing_data, batch_size=100, shuffle=True, collate_fn=my_collate, num_workers=0)
+test_loader = DataLoader(dataset=testing_data, batch_size=10, shuffle=True, collate_fn=my_collate, num_workers=0)
 
 test_acc=[]
 train_acc=[]
@@ -45,7 +45,8 @@ for epoch in range(10):  # again, normally you would NOT do 300 epochs, it is to
         input=torch.split(input,1280,dim=2)
         model.zero_grad()
         out, loss = model(input, target, seq_length=seq_length)
-        loss = torch.mean(loss)
+        pdb.set_trace()
+        loss = torch.mean(loss,dim=0)
         losses += loss.item() * target.shape[0]
         loss.backward()
         optimizer.step()
