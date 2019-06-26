@@ -105,6 +105,7 @@ class ConvLSTM(nn.Module):
         out=torch.flatten(torch.mean(torch.cat(out,dim=3),dim=3),start_dim=1)
 
         out = self.classification(out)
+        pdb.set_trace()
 
         loss = F.cross_entropy(out, torch.max(target, 1)[1])
 
