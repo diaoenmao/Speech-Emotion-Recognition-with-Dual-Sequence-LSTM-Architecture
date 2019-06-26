@@ -45,10 +45,10 @@ for epoch in range(10):  # again, normally you would NOT do 300 epochs, it is to
         input=torch.split(input,1280,dim=2)
         model.zero_grad()
         out, loss = model(input, target, seq_length=seq_length)
-        pdb.set_trace()
+        #pdb.set_trace()
         loss = torch.mean(loss,dim=0)
         out=torch.flatten(out,start_dim=0,end_dim=1)
-        pdb.set_trace()
+        #pdb.set_trace()
         losses += loss.item() * target.shape[0]
         loss.backward()
         optimizer.step()
