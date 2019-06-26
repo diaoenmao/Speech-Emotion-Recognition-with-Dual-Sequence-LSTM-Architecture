@@ -8,10 +8,11 @@ from torch.optim.lr_scheduler import ReduceLROnPlateau
 from torch.optim.lr_scheduler import CosineAnnealingLR
 import pdb
 from torch.nn import DataParallel
-
+model = ConvLSTM(1, [64,32,16],[9,5,5],100)
+model.cuda()
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 epoch=1
-model = torch.load("/scratch/speech/models/classification/ConvLSTM_checkpoint_epoch_{}.pt".format(epoch))
+model = model.load_state_dict(torch.load("/scratch/speech/models/classification/ConvLSTM_checkpoint_epoch_{}.pt".format(epoch)))
 model=DataParallel(model,device_ids=[0,1,2,3])
 
 
