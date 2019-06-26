@@ -34,24 +34,24 @@ train_loss=[]
 
 model.eval()
 for test_case, target, seq_length in test_loader:
-        test_case=test_case.float()
-        test_case = test_case.unsqueeze(1)
-        test_case=torch.split(test_case,1280,dim=2)
-        try:
-            out, loss = model(test_case, target, train=False, seq_length=seq_length)
-        except:
-        	pdb.set_trace()
-            print(len(test_case))
-            print(test_case[0].shape)
-            print(target.shape)
+	test_case=test_case.float()
+    test_case = test_case.unsqueeze(1)
+    test_case=torch.split(test_case,1280,dim=2)
+    try:
+        out, loss = model(test_case, target, train=False, seq_length=seq_length)
+    except:
+    	pdb.set_trace()
+        print(len(test_case))
+        print(test_case[0].shape)
+        print(target.shape)
 
-        loss = torch.mean(loss,dim=0)
-        out=torch.flatten(out,start_dim=0,end_dim=1)
+    loss = torch.mean(loss,dim=0)
+    out=torch.flatten(out,start_dim=0,end_dim=1)
 
-        index = torch.argmax(out, dim=1)
-        target_index = torch.argmax(target, dim=1).to(device)
-        loss = torch.mean(loss)
-        losses_test += loss.item() * index.shape[0]
-        correct_test += sum(index == target_index).item()
-    accuracy_test = correct_test * 1.0 / len(testing_data)
-    losses_test = losses_test / len(testing_data)
+    index = torch.argmax(out, dim=1)
+    target_index = torch.argmax(target, dim=1).to(device)
+    loss = torch.mean(loss)
+    losses_test += loss.item() * index.shape[0]
+    correct_test += sum(index == target_index).item()
+accuracy_test = correct_test * 1.0 / len(testing_data)
+losses_test = losses_test / len(testing_data)
