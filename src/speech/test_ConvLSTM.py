@@ -38,9 +38,12 @@ test_acc=[]
 train_acc=[]
 test_loss=[]
 train_loss=[]
+losses_test=0
+correct_test=0
 loss=0
 model.eval()
-for test_case, target, seq_length in test_loader:
+for j,(test_case, target, seq_length) in enumerate(test_loader):
+	print(j)
     test_case=test_case.float()
     test_case = test_case.unsqueeze(1)
     test_case=torch.split(test_case,1280,dim=2)
@@ -59,3 +62,5 @@ for test_case, target, seq_length in test_loader:
     correct_test += sum(index == target_index).item()
 accuracy_test = correct_test * 1.0 / len(testing_data)
 losses_test = losses_test / len(testing_data)
+print(accuracy_test)
+print(losses_test)
