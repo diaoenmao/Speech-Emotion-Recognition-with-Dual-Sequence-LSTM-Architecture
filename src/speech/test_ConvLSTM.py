@@ -11,7 +11,7 @@ from torch.nn import DataParallel
 
 
 model = ConvLSTM(1, [64,32,16],[9,5,5],100)
-#model=DataParallel(model,device_ids=[0,1,2,3])
+model.cuda()
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 epoch=1
 #pdb.set_trace()
@@ -28,7 +28,7 @@ for k, v in state_dict.items():
     new_state_dict[name] = v
 # load params
 model.load_state_dict(new_state_dict)
-
+model=DataParallel(model,device_ids=[0,1,2,3])
 training_data = IEMOCAP(train=True)
 train_loader = DataLoader(dataset=training_data, batch_size=60, shuffle=True, collate_fn=my_collate, num_workers=0)
 testing_data = IEMOCAP(train=False)
