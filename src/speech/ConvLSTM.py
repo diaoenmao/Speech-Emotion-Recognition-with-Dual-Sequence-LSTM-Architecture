@@ -75,7 +75,7 @@ class ConvLSTM(nn.Module):
         self.classification = nn.Linear(100, self.num_labels)
         for i in range(self.num_layers):
             name = 'cell{}'.format(i)
-            cell = ConvLSTMCell(self.input_channels[i], self.hidden_channels[i], self.kernel_size)
+            cell = ConvLSTMCell(self.input_channels[i], self.hidden_channels[i], self.kernel_size[i])
             setattr(self, name, cell)
             self._all_layers.append(cell)
 
