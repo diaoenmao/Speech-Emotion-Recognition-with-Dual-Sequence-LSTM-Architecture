@@ -101,7 +101,6 @@ class ConvLSTM(nn.Module):
                 internal_state[i] = (new_h, new_c)
             outputs.append(x)
         ## mean pooling and loss function
-        pdb.set_trace()
         out=[torch.unsqueeze(o, dim=3) for o in outputs]
         out=torch.flatten(torch.mean(torch.cat(out,dim=3),dim=3),start_dim=1)
 
