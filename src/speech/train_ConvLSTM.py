@@ -67,12 +67,12 @@ for epoch in range(10):  # again, normally you would NOT do 300 epochs, it is to
     torch.save(model.state_dict(), "/scratch/speech/models/classification/ConvLSTM_checkpoint_epoch_{}.pt".format(epoch+1))
 
     model.eval()
-    for test_case, target, seq_length in test_loader:
+    for test_case, target, _ in test_loader:
         test_case=test_case.float()
         test_case = test_case.unsqueeze(1)
         test_case=torch.split(test_case,1280,dim=2)
         try:
-            out, loss = model(test_case, target, train=False, seq_length=seq_length)
+            out, loss = model(test_case, target)
         except:
             print(len(test_case))
             print(test_case[0].shape)

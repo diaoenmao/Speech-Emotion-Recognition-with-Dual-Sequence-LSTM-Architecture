@@ -28,11 +28,11 @@ for k, v in state_dict.items():
     new_state_dict[name] = v
 # load params
 model.load_state_dict(new_state_dict)
-model=DataParallel(model,device_ids=[0,1,2,3])
+#model=DataParallel(model,device_ids=[0,1,2,3])
 training_data = IEMOCAP(train=True)
-train_loader = DataLoader(dataset=training_data, batch_size=60, shuffle=True, collate_fn=my_collate, num_workers=0)
+train_loader = DataLoader(dataset=training_data, batch_size=15, shuffle=True, collate_fn=my_collate, num_workers=0)
 testing_data = IEMOCAP(train=False)
-test_loader = DataLoader(dataset=testing_data, batch_size=60, shuffle=True, collate_fn=my_collate, num_workers=0)
+test_loader = DataLoader(dataset=testing_data, batch_size=15, shuffle=True, collate_fn=my_collate, num_workers=0)
 
 test_acc=[]
 train_acc=[]
@@ -48,7 +48,7 @@ for j,(test_case, target, seq_length) in enumerate(test_loader):
     test_case = test_case.unsqueeze(1)
     test_case=torch.split(test_case,1280,dim=2)
     try:
-        out, loss = model(test_case, target, train=False, seq_length=seq_length)
+        out, loss = model(test_case, target)
     except:
     	pdb.set_trace()
 

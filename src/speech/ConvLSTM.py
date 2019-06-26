@@ -83,7 +83,7 @@ class ConvLSTM(nn.Module):
             setattr(self, name, cell)
             self._all_layers.append(cell)
 
-    def forward(self, input, target, seq_length, train=True):
+    def forward(self, input, target):
         # input should be a list of inputs, like a time stamp, maybe 1280 for 100 times. 
         internal_state = []
         outputs = []
