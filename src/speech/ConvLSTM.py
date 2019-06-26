@@ -4,6 +4,7 @@ import torch.nn.functional as F
 import pdb
 
 
+
 class ConvLSTMCell(nn.Module):
     def __init__(self, input_channels, hidden_channels, kernel_size, kernel_size_pool=8, stride_pool=4):
         super(ConvLSTMCell, self).__init__()
@@ -72,6 +73,7 @@ class ConvLSTM(nn.Module):
         self._all_layers = []
         self.num_labels=4
         self.linear_dim=16*18
+        self.device= torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
         self.classification = nn.Linear(self.linear_dim, self.num_labels)
 
@@ -105,9 +107,8 @@ class ConvLSTM(nn.Module):
         out=torch.flatten(torch.mean(torch.cat(out,dim=3),dim=3),start_dim=1)
 
         out = self.classification(out)
-        pdb.set_trace()
 
-        loss = F.cross_entropy(out, torch.max(target, 1)[1])
+        loss = F.cross_entropy(out, torch.max(target, 1)[1].to(self.device))
 
 
 
