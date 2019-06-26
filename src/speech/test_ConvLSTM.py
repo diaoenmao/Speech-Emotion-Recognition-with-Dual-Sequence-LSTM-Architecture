@@ -34,9 +34,6 @@ for test_case, target, seq_length in test_loader:
         out, loss = model(test_case, target, train=False, seq_length=seq_length)
     except:
     	pdb.set_trace()
-        print(len(test_case))
-        print(test_case[0].shape)
-        print(target.shape)
 
     loss = torch.mean(loss,dim=0)
     out=torch.flatten(out,start_dim=0,end_dim=1)
