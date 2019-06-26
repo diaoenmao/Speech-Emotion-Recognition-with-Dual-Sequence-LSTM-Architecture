@@ -14,11 +14,7 @@ epoch=1
 model = torch.load("/scratch/speech/models/classification/ConvLSTM_checkpoint_epoch_{}.pt".format(epoch))
 model=DataParallel(model,device_ids=[0,1,2,3])
 
-# Use Adam as the optimizer with learning rate 0.01 to make it fast for testing purposes
-optimizer = optim.SGD(model.parameters(), lr=0.01)
-#scheduler = ReduceLROnPlateau(optimizer=optimizer,factor=0.3, patience=5, threshold=1e-3)
-scheduler =CosineAnnealingLR(optimizer, T_max=100, eta_min=0.0001)
-# Load the training data
+
 training_data = IEMOCAP(train=True)
 train_loader = DataLoader(dataset=training_data, batch_size=60, shuffle=True, collate_fn=my_collate, num_workers=0)
 testing_data = IEMOCAP(train=False)
