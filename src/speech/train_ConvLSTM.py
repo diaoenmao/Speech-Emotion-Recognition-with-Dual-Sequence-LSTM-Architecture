@@ -11,7 +11,7 @@ from torch.nn import DataParallel
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-model = ConvLSTM(1, 64, [64,32,16],[8,4,4],100)
+model = ConvLSTM(1, [64,32,16],[8,4,4],100)
 model.cuda()
 model=DataParallel(model,device_ids=[0,1,2,3])
 model.train()
