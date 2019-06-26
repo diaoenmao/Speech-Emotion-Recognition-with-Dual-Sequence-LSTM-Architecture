@@ -109,5 +109,6 @@ class ConvLSTM(nn.Module):
         loss = F.cross_entropy(out, torch.max(target, 1)[1])
 
 
-        return out, loss
+
+        return torch.unsqueeze(out,dim=0), torch.unsqueeze(loss, dim=0)
 
