@@ -15,6 +15,7 @@ model.cuda()
 model=DataParallel(model,device_ids=[0,1,2,3])
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 epoch=1
+pdb.set_trace()
 model=model.load_state_dict(torch.load("/scratch/speech/models/classification/ConvLSTM_checkpoint_epoch_{}.pt".format(epoch))['state_dict'])
 
 training_data = IEMOCAP(train=True)
