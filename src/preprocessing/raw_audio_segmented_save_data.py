@@ -3,6 +3,8 @@ import pandas as pd
 import textgrid
 from scipy.io import wavfile
 from sklearn.model_selection import train_test_split
+import pickle
+import pdb
 
 in_file = '/scratch/speech/raw_audio_dataset/audio_paths_labels_updated.csv'
 df = pd.read_csv(in_file)
@@ -43,7 +45,9 @@ def extract_features(dataframe):
                 indices.append(round(stop * sample_rate))
 
         data = data.tolist()
+        pdb.set_trace()
         data = [data[i : j] for i, j in zip([0] + indices, indices + [None])]
+        pdb.set_trace()
         print(data)
 
         input.append(data)
