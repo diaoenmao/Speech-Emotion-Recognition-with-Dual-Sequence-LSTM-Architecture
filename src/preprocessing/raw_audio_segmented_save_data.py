@@ -41,9 +41,11 @@ def extract_features():
                 break
             else:
                 indices.append(round(stop * sample_rate))
+                
         data = data.tolist()
         data = [data[i : j] for i, j in zip([0] + indices, indices + [None])]
         print(data)
+
         input.append(data)
         target.append(encode[emotion])
 
