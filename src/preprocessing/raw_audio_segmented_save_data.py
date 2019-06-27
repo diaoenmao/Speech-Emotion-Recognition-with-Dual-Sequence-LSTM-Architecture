@@ -48,7 +48,7 @@ def extract_features(dataframe):
 
         #data = data.tolist()
         pdb.set_trace()
-        data = [data[i : j] for i, j in zip(([0] + indices).pop(), indices)]
+        data = [data[i : j] for i, j in zip(([0] + indices)[:-1], indices)]
         pdb.set_trace()
         print(data)
 
