@@ -38,7 +38,6 @@ def extract_features(dataframe):
         indices = []
 
         sample_rate, data = wavfile.read(file)
-        pdb.set_trace()
 
         for start, stop, name, tier in tgrid_df.values:
             if tier != 'silences':
@@ -47,9 +46,7 @@ def extract_features(dataframe):
                 indices.append(round(stop * sample_rate))
 
         #data = data.tolist()
-        pdb.set_trace()
         data = [data[i : j] for i, j in zip(([0] + indices)[:-1], indices)]
-        pdb.set_trace()
         print(data)
 
         input.append(data)
