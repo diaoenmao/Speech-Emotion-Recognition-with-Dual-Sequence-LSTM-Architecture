@@ -10,5 +10,5 @@ for file, _ in df.values:
     basename = file[(index + 1):-4]
     directory = file[:60] + basename[:-5] + '/'
     endpoint = '/scratch/speech/textgrids/'
-    cmd = 'praat --run {} {} {} {}'.format(script_path, basename, directory, endpoint)
+    cmd = 'praat --run {} {} {} {}'.format(script_path, directory, basename, endpoint)
     os.system(cmd)
