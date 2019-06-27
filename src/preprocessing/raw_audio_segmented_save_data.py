@@ -15,11 +15,11 @@ encode = {"hap": [1, 0, 0, 0], "exc": [1, 0, 0, 0], "neu": [0, 1, 0, 0], "ang": 
 
 save_path = '/scratch/speech/raw_audio_dataset/'
 
-def extract_features():
+def extract_features(dataframe):
     input = []
     target = []
 
-    for file, emotion in df.values:
+    for file, emotion in dataframe.values:
         script_path = '/scratch/speech/modularProsodyTagger/mod01.praat'
         index = file.rfind('/')
         basename = file[(index + 1):-4]
@@ -41,7 +41,7 @@ def extract_features():
                 break
             else:
                 indices.append(round(stop * sample_rate))
-                
+
         data = data.tolist()
         data = [data[i : j] for i, j in zip([0] + indices, indices + [None])]
         print(data)
