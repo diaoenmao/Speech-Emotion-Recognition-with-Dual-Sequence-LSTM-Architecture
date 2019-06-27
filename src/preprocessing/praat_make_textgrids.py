@@ -1,8 +1,11 @@
 import os
 import pandas as pd
 
+
 in_file = '/scratch/speech/raw_audio_dataset/audio_paths_labels_updated.csv'
 df = pd.read_csv(in_file)
+
+basename = ''
 
 for file, _ in df.values:
     script_path = '/scratch/speech/modularProsodyTagger/mod01.praat'
