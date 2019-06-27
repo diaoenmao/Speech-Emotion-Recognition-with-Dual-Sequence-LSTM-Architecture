@@ -55,7 +55,7 @@ def extract_features(dataframe):
         input.append(data)
         target.append(encode[emotion])
 
-        return input, target
+    return input, target
 
 def split_data(data):
     input_train, input_test, target_train, target_test = train_test_split(
