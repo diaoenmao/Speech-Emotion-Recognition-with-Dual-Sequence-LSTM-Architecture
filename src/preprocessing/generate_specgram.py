@@ -10,7 +10,7 @@ df = pd.read_csv(in_file)
 
 endpoint = '/scratch/speech/spectrograms/'
 
-for file, _ in df.values:
+for i, (file, _) in enumerate(df.values):
     sample_rate, samples = wavfile.read(file)
     spectrum, freqs, t, im = plt.specgram(samples, Fs=sample_rate)
     plt.gca().set_axis_off()
@@ -22,3 +22,4 @@ for file, _ in df.values:
     index = file.rfind('/')
     basename = file[(index + 1):-4]
     plt.savefig(endpoint + '{}_spec.png'.format(basename), bbox_inches='tight', pad_inches=0)
+    print(i)
