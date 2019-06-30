@@ -72,7 +72,7 @@ class ConvLSTM(nn.Module):
         self.step = step
         self._all_layers = []
         self.num_labels=4
-        self.linear_dim=16*18
+        self.linear_dim=12
         self.device= torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
         self.classification = nn.Linear(self.linear_dim, self.num_labels)
