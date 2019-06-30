@@ -11,8 +11,8 @@ from torch.nn import DataParallel
 import pickle
 path="/scratch/speech/models/classification/ConvLSTM_data_debug.pickle"
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-hidden_channels=[64,32,16,4]
-kernel_size=[5,5,5,5]
+hidden_channels=[64,32,16,16]
+kernel_size=[9,5,5,5]
 model = ConvLSTM(1, hidden_channels,kernel_size,100)
 print("============================ Number of parameters ====================================")
 print(str(sum(p.numel() for p in model.parameters() if p.requires_grad)))
