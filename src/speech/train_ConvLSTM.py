@@ -77,6 +77,7 @@ for epoch in range(10):  # again, normally you would NOT do 300 epochs, it is to
             print(len(test_case))
             print(test_case[0].shape)
             print(target.shape)
+            pdb.set_trace()
 
         loss = torch.mean(loss,dim=0)
         out=torch.flatten(out,start_dim=0,end_dim=1)
