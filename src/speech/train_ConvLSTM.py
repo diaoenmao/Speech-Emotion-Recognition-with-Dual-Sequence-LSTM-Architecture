@@ -39,7 +39,7 @@ test_loss=[]
 train_loss=[]
 epoch=0
 torch.save(model.state_dict(), "/scratch/speech/models/classification/ConvLSTM_checkpoint_epoch_{}.pt".format(epoch))
-for epoch in range(20):  # again, normally you would NOT do 300 epochs, it is toy data
+for epoch in range(200):  # again, normally you would NOT do 300 epochs, it is toy data
     print("===================================" + str(epoch+1) + "==============================================")
     losses = 0
     correct=0
