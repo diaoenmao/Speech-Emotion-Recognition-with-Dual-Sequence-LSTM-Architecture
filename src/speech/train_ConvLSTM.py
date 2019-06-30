@@ -23,7 +23,9 @@ model.train()
 
 # Use Adam as the optimizer with learning rate 0.01 to make it fast for testing purposes
 optimizer = optim.Adam(model.parameters(), lr=0.005)
-scheduler = ReduceLROnPlateau(optimizer=optimizer,factor=0.5, patience=3, threshold=1e-3)
+optimizer2=optim.SGD(model.parameters(), lr=0.01)
+scheduler = ReduceLROnPlateau(optimizer=optimizer,factor=0.5, patience=2, threshold=1e-3)
+scheduler2=ReduceLROnPlateau(optimizer=optimizer2, factor=0.5, patience=2, threshold=1e-3)
 #scheduler =CosineAnnealingLR(optimizer, T_max=100, eta_min=0.0001)
 # Load the training data
 training_data = IEMOCAP(train=True)
@@ -73,7 +75,7 @@ for epoch in range(20):  # again, normally you would NOT do 300 epochs, it is to
     losses=losses / (len(training_data)-res)
     print("accuracy:", accuracy)
     print("loss:", losses)
-    #torch.save(model.state_dict(), "/scratch/speech/models/classification/ConvLSTM_checkpoint_epoch_{}.pt".format(epoch+1))
+    torch.save(model.state_dict(), "/scratch/speech/models/classification/ConvLSTM_checkpoint_epoch_{}.pt".format(epoch+1))
 
     model.eval()
     with torch.no_grad():
@@ -98,6 +100,7 @@ for epoch in range(20):  # again, normally you would NOT do 300 epochs, it is to
             correct_test += sum(index == target_index).item()
     accuracy_test = correct_test * 1.0 / (len(testing_data)-res)
     losses_test = losses_test / (len(testing_data)-res)
+    if losses_test<1.0: scheduler=scheduler2
 
     # data gathering
     test_acc.append(accuracy_test)
