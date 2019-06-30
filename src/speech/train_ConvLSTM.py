@@ -108,7 +108,7 @@ for epoch in range(20):  # again, normally you would NOT do 300 epochs, it is to
         f.write("Epoch: {}-----------Training Loss: {} -------- Testing Loss: {} -------- Training Acc: {} -------- Testing Acc: {}".format(epoch+1,losses,losses_test, accuracy, accuracy_test)+"\n")
 
 
-    #scheduler.step()
+    scheduler.step(losses_test)
 
 
 pickle_out=open("/scratch/speech/models/classification/ConvLSTM_checkpoint_stats.pkl","wb")
