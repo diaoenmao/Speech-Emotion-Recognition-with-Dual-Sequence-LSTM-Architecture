@@ -16,7 +16,9 @@ model = ConvLSTM(1, [64,32,16],[9,5,5],100)
 print("============================ Number of parameters ====================================")
 print(str(sum(p.numel() for p in model.parameters() if p.requires_grad)))
 model.cuda()
-model=DataParallel(model,device_ids=[0,1,2,3])
+device_ids=[0,1,2,3]
+num_devices=len(device_ids)
+model=DataParallel(model,device_ids=device_ids)
 model.train()
 
 # Use Adam as the optimizer with learning rate 0.01 to make it fast for testing purposes
@@ -47,6 +49,12 @@ for epoch in range(10):  # again, normally you would NOT do 300 epochs, it is to
         input=input.float()
         input = input.unsqueeze(1)
         input=torch.split(input,1280,dim=2)
+        res=target.shape[0]%num_devices
+        quo=target.shape[0]//num_devices
+        if res !=0:
+            target=target[:num_devices*quo]
+            input=[t[:num_devices*quo] for t in input]
+
         model.zero_grad()
         out, loss = model(input, target)
         #pdb.set_trace()
@@ -61,8 +69,8 @@ for epoch in range(10):  # again, normally you would NOT do 300 epochs, it is to
         target_index = torch.argmax(target, dim=1).to(device)
         correct += sum(index == target_index).item()
 
-    accuracy=correct*1.0/len(training_data)
-    losses=losses / len(training_data)
+    accuracy=correct*1.0/(len(training_data)-res)
+    losses=losses / (len(training_data)-res)
     print("accuracy:", accuracy)
     print("loss:", losses)
     #torch.save(model.state_dict(), "/scratch/speech/models/classification/ConvLSTM_checkpoint_epoch_{}.pt".format(epoch+1))
@@ -72,13 +80,12 @@ for epoch in range(10):  # again, normally you would NOT do 300 epochs, it is to
         test_case=test_case.float()
         test_case = test_case.unsqueeze(1)
         test_case=torch.split(test_case,1280,dim=2)
-        try:
-            out, loss = model(test_case, target)
-        except:
-            pickle_out=open(path,"wb")
-            mydict={"test_case":test_case,"target": target}
-            pickle.dump(mydict,pickle_out)
-            pickle_out.close()
+        res=target.shape[0]%num_devices
+        quo=target.shape[0]//num_devices
+        if res !=0:
+            target=target[:num_devices*quo]
+            test_case=[t[:num_devices*quo] for t in test_case]
+        out, loss = model(test_case, target)
 
         loss = torch.mean(loss,dim=0)
         out=torch.flatten(out,start_dim=0,end_dim=1)
@@ -88,8 +95,8 @@ for epoch in range(10):  # again, normally you would NOT do 300 epochs, it is to
         loss = torch.mean(loss)
         losses_test += loss.item() * index.shape[0]
         correct_test += sum(index == target_index).item()
-    accuracy_test = correct_test * 1.0 / len(testing_data)
-    losses_test = losses_test / len(testing_data)
+    accuracy_test = correct_test * 1.0 / (len(testing_data)-res)
+    losses_test = losses_test / (len(testing_data)-res)
 
     # data gathering
     test_acc.append(accuracy_test)

@@ -83,15 +83,12 @@ class ConvLSTM(nn.Module):
             setattr(self, name, cell)
             self._all_layers.append(cell)
 
-    def forward(self, input, target,debug=False):
+    def forward(self, input, target):
         # input should be a list of inputs, like a time stamp, maybe 1280 for 100 times. 
-        if debug: print("okay")
         internal_state = []
         outputs = []
-        if debug: print("okay")
         for step in range(self.step):
             x = input[step]
-            if debug: print("step:", step)
             for i in range(self.num_layers):
                 name = 'cell{}'.format(i)
                 if step == 0:
@@ -99,25 +96,19 @@ class ConvLSTM(nn.Module):
                     (h, c) = getattr(self, name).init_hidden(batch_size=bsize, hidden=self.hidden_channels[i],
                                                              shape=shape)
                     internal_state.append((h, c))
-                    if debug: print("i:", i)
 
                 # do forward
                 (h, c) = internal_state[i]
                 x, new_h, new_c = getattr(self, name)(x, h, c)
                 internal_state[i] = (new_h, new_c)
-                if debug: print("i:", i)
             outputs.append(x)
         ## mean pooling and loss function
         out=[torch.unsqueeze(o, dim=3) for o in outputs]
-        if debug: print("okay")
         out=torch.flatten(torch.mean(torch.cat(out,dim=3),dim=3),start_dim=1)
-        if debug: print("okay")
 
         out = self.classification(out)
-        if debug: print("okay")
 
         loss = F.cross_entropy(out, torch.max(target, 1)[1].to(self.device))
-        if debug: print("okay")
 
 
 
