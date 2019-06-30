@@ -27,9 +27,9 @@ scheduler = ReduceLROnPlateau(optimizer=optimizer,factor=0.5, patience=3, thresh
 #scheduler =CosineAnnealingLR(optimizer, T_max=100, eta_min=0.0001)
 # Load the training data
 training_data = IEMOCAP(train=True)
-train_loader = DataLoader(dataset=training_data, batch_size=60, shuffle=True, collate_fn=my_collate, num_workers=0)
+train_loader = DataLoader(dataset=training_data, batch_size=100, shuffle=True, collate_fn=my_collate, num_workers=0)
 testing_data = IEMOCAP(train=False)
-test_loader = DataLoader(dataset=testing_data, batch_size=60, shuffle=True, collate_fn=my_collate, num_workers=0)
+test_loader = DataLoader(dataset=testing_data, batch_size=100, shuffle=True, collate_fn=my_collate, num_workers=0)
 
 test_acc=[]
 train_acc=[]
@@ -76,25 +76,26 @@ for epoch in range(20):  # again, normally you would NOT do 300 epochs, it is to
     #torch.save(model.state_dict(), "/scratch/speech/models/classification/ConvLSTM_checkpoint_epoch_{}.pt".format(epoch+1))
 
     model.eval()
-    for test_case, target, _ in test_loader:
-        test_case=test_case.float()
-        test_case = test_case.unsqueeze(1)
-        test_case=torch.split(test_case,1280,dim=2)
-        res=target.shape[0]%num_devices
-        quo=target.shape[0]//num_devices
-        if res !=0:
-            target=target[:num_devices*quo]
-            test_case=[t[:num_devices*quo] for t in test_case]
-        out, loss = model(test_case, target)
+    with torch.no_grad():
+        for test_case, target, _ in test_loader:
+            test_case=test_case.float()
+            test_case = test_case.unsqueeze(1)
+            test_case=torch.split(test_case,1280,dim=2)
+            res=target.shape[0]%num_devices
+            quo=target.shape[0]//num_devices
+            if res !=0:
+                target=target[:num_devices*quo]
+                test_case=[t[:num_devices*quo] for t in test_case]
+            out, loss = model(test_case, target)
 
-        loss = torch.mean(loss,dim=0)
-        out=torch.flatten(out,start_dim=0,end_dim=1)
+            loss = torch.mean(loss,dim=0)
+            out=torch.flatten(out,start_dim=0,end_dim=1)
 
-        index = torch.argmax(out, dim=1)
-        target_index = torch.argmax(target, dim=1).to(device)
-        loss = torch.mean(loss)
-        losses_test += loss.item() * index.shape[0]
-        correct_test += sum(index == target_index).item()
+            index = torch.argmax(out, dim=1)
+            target_index = torch.argmax(target, dim=1).to(device)
+            loss = torch.mean(loss)
+            losses_test += loss.item() * index.shape[0]
+            correct_test += sum(index == target_index).item()
     accuracy_test = correct_test * 1.0 / (len(testing_data)-res)
     losses_test = losses_test / (len(testing_data)-res)
 
