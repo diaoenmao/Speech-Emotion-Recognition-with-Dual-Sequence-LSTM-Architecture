@@ -15,7 +15,8 @@ class ConvLSTMCell(nn.Module):
         self.hidden_channels = hidden_channels
         self.kernel_size = kernel_size
         self.stride=1
-        self.padding = int((kernel_size-1) / 2)
+        #self.padding = int((kernel_size-1) / 2)
+        self.padding=0
         self.kernel_size_pool=kernel_size_pool
         self.stride_pool=stride_pool
 
@@ -72,9 +73,8 @@ class ConvLSTM(nn.Module):
         self.step = step
         self._all_layers = []
         self.num_labels=4
-        self.linear_dim=12
         self.device= torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
+        self.linear_dim=12
         self.classification = nn.Linear(self.linear_dim, self.num_labels)
 
         for i in range(self.num_layers):
@@ -101,6 +101,7 @@ class ConvLSTM(nn.Module):
                 (h, c) = internal_state[i]
                 x, new_h, new_c = getattr(self, name)(x, h, c)
                 internal_state[i] = (new_h, new_c)
+                print(x.shape)
             outputs.append(x)
         ## mean pooling and loss function
         out=[torch.unsqueeze(o, dim=3) for o in outputs]
