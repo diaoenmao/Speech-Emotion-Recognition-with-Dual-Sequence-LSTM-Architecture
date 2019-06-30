@@ -22,8 +22,8 @@ model=DataParallel(model,device_ids=device_ids)
 model.train()
 
 # Use Adam as the optimizer with learning rate 0.01 to make it fast for testing purposes
-optimizer = optim.Adam(model.parameters(), lr=0.001)
-#scheduler = ReduceLROnPlateau(optimizer=optimizer,factor=0.3, patience=5, threshold=1e-3)
+optimizer = optim.Adam(model.parameters(), lr=0.005)
+scheduler = ReduceLROnPlateau(optimizer=optimizer,factor=0.5, patience=3, threshold=1e-3)
 #scheduler =CosineAnnealingLR(optimizer, T_max=100, eta_min=0.0001)
 # Load the training data
 training_data = IEMOCAP(train=True)
@@ -37,7 +37,7 @@ test_loss=[]
 train_loss=[]
 epoch=0
 torch.save(model.state_dict(), "/scratch/speech/models/classification/ConvLSTM_checkpoint_epoch_{}.pt".format(epoch))
-for epoch in range(10):  # again, normally you would NOT do 300 epochs, it is toy data
+for epoch in range(20):  # again, normally you would NOT do 300 epochs, it is toy data
     print("===================================" + str(epoch+1) + "==============================================")
     losses = 0
     correct=0
