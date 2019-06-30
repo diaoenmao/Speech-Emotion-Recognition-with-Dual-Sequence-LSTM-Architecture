@@ -12,7 +12,7 @@ import pickle
 path="/scratch/speech/models/classification/ConvLSTM_data_debug.pickle"
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-model = ConvLSTM(1, [64,32,16],[9,5,5],100)
+model = ConvLSTM(1, [64,32,16],[5,5,5],100)
 print("============================ Number of parameters ====================================")
 print(str(sum(p.numel() for p in model.parameters() if p.requires_grad)))
 model.cuda()
@@ -22,7 +22,7 @@ model=DataParallel(model,device_ids=device_ids)
 model.train()
 
 # Use Adam as the optimizer with learning rate 0.01 to make it fast for testing purposes
-optimizer = optim.Adam(model.parameters(), lr=0.001)
+optimizer = optim.Adam(model.parameters(), lr=0.0001)
 optimizer2=optim.SGD(model.parameters(), lr=0.01)
 scheduler = ReduceLROnPlateau(optimizer=optimizer,factor=0.5, patience=2, threshold=1e-3)
 #scheduler2=ReduceLROnPlateau(optimizer=optimizer2, factor=0.5, patience=2, threshold=1e-3)
@@ -100,7 +100,7 @@ for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is t
             correct_test += sum(index == target_index).item()
     accuracy_test = correct_test * 1.0 / (len(testing_data)-res)
     losses_test = losses_test / (len(testing_data)-res)
-    if losses_test<0.95: scheduler=scheduler2; optimizer=optimizer2
+    #if losses_test<0.95: scheduler=scheduler2; optimizer=optimizer2
 
     # data gathering
     test_acc.append(accuracy_test)
