@@ -105,7 +105,7 @@ class ConvLSTM(nn.Module):
         ## mean pooling and loss function
         out=[torch.unsqueeze(o, dim=3) for o in outputs]
         out=torch.flatten(torch.mean(torch.cat(out,dim=3),dim=3),start_dim=1)
-
+        pdb.set_trace()
         out = self.classification(out)
 
         loss = F.cross_entropy(out, torch.max(target, 1)[1].to(self.device))
