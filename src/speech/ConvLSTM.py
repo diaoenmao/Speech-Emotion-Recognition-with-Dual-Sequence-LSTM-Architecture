@@ -15,10 +15,10 @@ class ConvLSTMCell(nn.Module):
         self.hidden_channels = hidden_channels
         self.kernel_size = kernel_size
         self.stride=1
-        #self.padding = int((kernel_size-1) / 2)
-        self.padding=0
+        self.padding = int((kernel_size-1) / 2)
         self.kernel_size_pool=kernel_size_pool
         self.stride_pool=stride_pool
+        self.padding_pool=int((kernel_size_pool-1)/2)
 
         self.Wxi = nn.Conv1d(self.input_channels, self.hidden_channels, self.kernel_size, self.stride,self.padding,  bias=True)
         self.Whi = nn.Conv1d(self.hidden_channels, self.hidden_channels, self.kernel_size, self.stride, self.padding, bias=False)
@@ -32,7 +32,7 @@ class ConvLSTMCell(nn.Module):
         self.Wxo = nn.Conv1d(self.input_channels, self.hidden_channels, self.kernel_size, self.stride,self.padding,  bias=True)
         self.Who = nn.Conv1d(self.hidden_channels, self.hidden_channels, self.kernel_size, self.stride, self.padding, bias=False)
         
-        self.max_pool = nn.MaxPool1d(self.kernel_size_pool, stride=self.stride_pool)
+        self.max_pool = nn.MaxPool1d(self.kernel_size_pool, stride=self.stride_pool, padding=self.padding_pool)
         self.batch = nn.BatchNorm1d(self.hidden_channels)
 
         self.Wci = None
@@ -74,7 +74,7 @@ class ConvLSTM(nn.Module):
         self._all_layers = []
         self.num_labels=4
         self.device= torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        self.linear_dim=12
+        self.linear_dim=int(1280/(4**self.num_layers))
         self.classification = nn.Linear(self.linear_dim, self.num_labels)
 
         for i in range(self.num_layers):
@@ -101,7 +101,6 @@ class ConvLSTM(nn.Module):
                 (h, c) = internal_state[i]
                 x, new_h, new_c = getattr(self, name)(x, h, c)
                 internal_state[i] = (new_h, new_c)
-                print(x.shape)
             outputs.append(x)
         ## mean pooling and loss function
         out=[torch.unsqueeze(o, dim=3) for o in outputs]
