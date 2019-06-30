@@ -8,7 +8,8 @@ from torch.optim.lr_scheduler import ReduceLROnPlateau
 from torch.optim.lr_scheduler import CosineAnnealingLR
 import pdb
 from torch.nn import DataParallel
-
+import pickle
+path="/scratch/speech/models/classification/ConvLSTM_data_debug.pickle"
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 model = ConvLSTM(1, [64,32,16],[9,5,5],100)
@@ -64,7 +65,7 @@ for epoch in range(10):  # again, normally you would NOT do 300 epochs, it is to
     losses=losses / len(training_data)
     print("accuracy:", accuracy)
     print("loss:", losses)
-    torch.save(model.state_dict(), "/scratch/speech/models/classification/ConvLSTM_checkpoint_epoch_{}.pt".format(epoch+1))
+    #torch.save(model.state_dict(), "/scratch/speech/models/classification/ConvLSTM_checkpoint_epoch_{}.pt".format(epoch+1))
 
     model.eval()
     for test_case, target, _ in test_loader:
@@ -74,7 +75,10 @@ for epoch in range(10):  # again, normally you would NOT do 300 epochs, it is to
         try:
             out, loss = model(test_case, target)
         except:
-            model(test_case, target, debug=True)
+            pickle_out=open(path,"wb")
+            mydict={"test_case":test_case,"target": target}
+            pickle.dump(mydict,pickle_out)
+            pickle_out.close()
 
         loss = torch.mean(loss,dim=0)
         out=torch.flatten(out,start_dim=0,end_dim=1)
