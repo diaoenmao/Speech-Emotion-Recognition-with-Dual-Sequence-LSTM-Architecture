@@ -85,8 +85,10 @@ class ConvLSTM(nn.Module):
 
     def forward(self, input, target,debug=False):
         # input should be a list of inputs, like a time stamp, maybe 1280 for 100 times. 
+        if debug: print("okay")
         internal_state = []
         outputs = []
+        if debug: print("okay")
         for step in range(self.step):
             x = input[step]
             if debug: print("step:", step)

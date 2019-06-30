@@ -74,11 +74,7 @@ for epoch in range(10):  # again, normally you would NOT do 300 epochs, it is to
         try:
             out, loss = model(test_case, target)
         except:
-            print("============================== test_case ==================================")
-            print(test_case)
-            print("============================== target ======================================")
-            print(target)
-            model(test_case, target, debug=False)
+            model(test_case, target, debug=True)
 
         loss = torch.mean(loss,dim=0)
         out=torch.flatten(out,start_dim=0,end_dim=1)
