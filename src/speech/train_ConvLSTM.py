@@ -22,7 +22,7 @@ model=DataParallel(model,device_ids=device_ids)
 model.train()
 
 # Use Adam as the optimizer with learning rate 0.01 to make it fast for testing purposes
-optimizer = optim.Adam(model.parameters(), lr=0.005)
+optimizer = optim.Adam(model.parameters(), lr=0.001)
 optimizer2=optim.SGD(model.parameters(), lr=0.01)
 scheduler = ReduceLROnPlateau(optimizer=optimizer,factor=0.5, patience=2, threshold=1e-3)
 #scheduler2=ReduceLROnPlateau(optimizer=optimizer2, factor=0.5, patience=2, threshold=1e-3)
