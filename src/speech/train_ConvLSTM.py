@@ -11,8 +11,8 @@ from torch.nn import DataParallel
 import pickle
 path="/scratch/speech/models/classification/ConvLSTM_data_debug.pickle"
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-hidden_channels=[64,32,16,16]
-kernel_size=[9,5,5,5]
+hidden_channels=[64,32]
+kernel_size=[9,5]
 model = ConvLSTM(1, hidden_channels,kernel_size,100)
 print("============================ Number of parameters ====================================")
 print(str(sum(p.numel() for p in model.parameters() if p.requires_grad)))
@@ -27,7 +27,7 @@ optimizer = optim.Adam(model.parameters(), lr=0.005)
 optimizer2=optim.SGD(model.parameters(), lr=0.1)
 scheduler = ReduceLROnPlateau(optimizer=optimizer,factor=0.5, patience=2, threshold=1e-3)
 #scheduler2=ReduceLROnPlateau(optimizer=optimizer2, factor=0.5, patience=2, threshold=1e-3)
-scheduler2 =CosineAnnealingLR(optimizer2, T_max=100, eta_min=0.0001)
+scheduler2 =CosineAnnealingLR(optimizer2, T_max=300, eta_min=0.0001)
 # Load the training data
 training_data = IEMOCAP(train=True)
 train_loader = DataLoader(dataset=training_data, batch_size=120, shuffle=True, collate_fn=my_collate, num_workers=0)
@@ -40,7 +40,7 @@ test_loss=[]
 train_loss=[]
 epoch=0
 torch.save(model.state_dict(), "/scratch/speech/models/classification/ConvLSTM_checkpoint_epoch_{}.pt".format(epoch))
-for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is toy data
+for epoch in range(300):  # again, normally you would NOT do 300 epochs, it is toy data
     print("===================================" + str(epoch+1) + "==============================================")
     losses = 0
     correct=0
@@ -66,7 +66,7 @@ for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is t
         #pdb.set_trace()
         losses += loss.item() * target.shape[0]
         loss.backward()
-        optimizer.step()
+        optimizer2.step()
 
         index = torch.argmax(out, dim=1)
         target_index = torch.argmax(target, dim=1).to(device)
@@ -113,8 +113,8 @@ for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is t
         f.write("Epoch: {}-----------Training Loss: {} -------- Testing Loss: {} -------- Training Acc: {} -------- Testing Acc: {}".format(epoch+1,losses,losses_test, accuracy, accuracy_test)+"\n")
 
 
-    scheduler.step(losses)
-    #scheduler.step()
+    #scheduler.step(losses)
+    scheduler2.step()
 
 
 pickle_out=open("/scratch/speech/models/classification/ConvLSTM_checkpoint_stats.pkl","wb")
