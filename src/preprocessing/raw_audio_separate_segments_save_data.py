@@ -56,7 +56,7 @@ def extract_features(dataframe):
 
         input.append(data)
         for i in range(len(data)): target.append(encode[emotion])
-
+        pdb.set_trace()
         print(i)
 
     return input, target
