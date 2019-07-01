@@ -77,7 +77,7 @@ class ConvLSTM(nn.Module):
         self._all_layers = []
         self.num_labels=4
         self.device= torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        self.linear_dim=int(self.hidden_channels[-1]*128000/step/(4**self.num_layers))
+        self.linear_dim=int(self.hidden_channels[-1]*(128000/step)/(4**self.num_layers))
         self.classification = nn.Linear(self.linear_dim, self.num_labels)
 
         for i in range(self.num_layers):
