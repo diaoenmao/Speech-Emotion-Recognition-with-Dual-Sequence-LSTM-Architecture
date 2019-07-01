@@ -89,11 +89,10 @@ class ConvLSTM(nn.Module):
 
     def forward(self, input, target):
         # input should be a list of inputs, like a time stamp, maybe 1280 for 100 times.
-        input=self.dropout(input)
         internal_state = []
         outputs = []
         for step in range(self.step):
-            x = input[step]
+            x = self.dropout(input[step])
             for i in range(self.num_layers):
                 name = 'cell{}'.format(i)
                 if step == 0:
