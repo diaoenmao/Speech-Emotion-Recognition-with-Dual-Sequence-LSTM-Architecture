@@ -12,8 +12,8 @@ import pickle
 path="/scratch/speech/models/classification/ConvLSTM_data_debug.pickle"
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 hidden_channels=[64,32,16]
-kernel_size=[9,9,5]
-step=200
+kernel_size=[9,5,5]
+step=100
 model = ConvLSTM(1, hidden_channels,kernel_size,step,True)
 print("============================ Number of parameters ====================================")
 print(str(sum(p.numel() for p in model.parameters() if p.requires_grad)))
@@ -30,11 +30,13 @@ scheduler = ReduceLROnPlateau(optimizer=optimizer,factor=0.5, patience=2, thresh
 #scheduler2=ReduceLROnPlateau(optimizer=optimizer2, factor=0.5, patience=2, threshold=1e-3)
 scheduler2 =CosineAnnealingLR(optimizer2, T_max=300, eta_min=0.0001)
 # Load the training data
-training_data = IEMOCAP(train=True)
+training_data = IEMOCAP(train=True, mike=True)
 train_loader = DataLoader(dataset=training_data, batch_size=100, shuffle=True, collate_fn=my_collate, num_workers=0)
-testing_data = IEMOCAP(train=False)
+testing_data = IEMOCAP(train=False, mike=True)
 test_loader = DataLoader(dataset=testing_data, batch_size=100, shuffle=True, collate_fn=my_collate, num_workers=0)
-
+print("=================")
+print(len(training_data))
+print("===================")
 test_acc=[]
 train_acc=[]
 test_loss=[]
@@ -52,7 +54,7 @@ for epoch in range(300):  # again, normally you would NOT do 300 epochs, it is t
         if (j+1)%5==0: print("================================= Batch"+ str(j+1)+ "===================================================")
         input=input.float()
         input = input.unsqueeze(1)
-        input=torch.split(input,int(128000/step),dim=2)
+        input=torch.split(input,int(32000/step),dim=2)
         res=target.shape[0]%num_devices
         quo=target.shape[0]//num_devices
         if res !=0:
@@ -84,7 +86,7 @@ for epoch in range(300):  # again, normally you would NOT do 300 epochs, it is t
         for test_case, target, _ in test_loader:
             test_case=test_case.float()
             test_case = test_case.unsqueeze(1)
-            test_case=torch.split(test_case,int(128000/step),dim=2)
+            test_case=torch.split(test_case,int(32000/step),dim=2)
             res=target.shape[0]%num_devices
             quo=target.shape[0]//num_devices
             if res !=0:
