@@ -50,7 +50,7 @@ for epoch in range(300):  # again, normally you would NOT do 300 epochs, it is t
     losses_test = 0
     correct_test = 0
     model.train()
-    for j, (input, target, seq_length) in enumerate(train_loader):
+    for j, (input, target, _) in enumerate(train_loader):
         if (j+1)%5==0: print("================================= Batch"+ str(j+1)+ "===================================================")
         input=input.float()
         input = input.unsqueeze(1)

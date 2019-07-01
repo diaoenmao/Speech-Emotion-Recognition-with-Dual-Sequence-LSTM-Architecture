@@ -22,7 +22,7 @@ class IEMOCAP(Dataset):
         if not mike:
             self.seq_length = data["seq_length"]
         else:
-            self.seq_length=None
+            self.seq_length=torch.zeros(len(data["input"]))
 
 #        pdb.set_trace()
         self.input = data["input"]
