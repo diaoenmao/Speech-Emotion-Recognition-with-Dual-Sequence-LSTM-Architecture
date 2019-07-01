@@ -66,7 +66,7 @@ class ConvLSTM(nn.Module):
     # input_channels corresponds to the first input feature map
     # hidden state is a list of succeeding lstm layers.
     # kernel size is also a list, same length as hidden_channels
-    def __init__(self, input_channels, hidden_channels, kernel_size, step):
+    def __init__(self, input_channels, hidden_channels, kernel_size, step,attention_flag=False):
         super(ConvLSTM, self).__init__()
         assert len(hidden_channels)==len(kernel_size), "size mismatch"
         self.input_channels = [input_channels] + hidden_channels
@@ -79,7 +79,8 @@ class ConvLSTM(nn.Module):
         self.device= torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.linear_dim=int(self.hidden_channels[-1]*(128000/step)/(4**self.num_layers))
         self.classification = nn.Linear(self.linear_dim, self.num_labels)
-
+        self.attention=nn.Parameter(torch.zeros(self.linear_dim))
+        self.attention_flag=attention_flag
         for i in range(self.num_layers):
             name = 'cell{}'.format(i)
             cell = ConvLSTMCell(self.input_channels[i], self.hidden_channels[i], self.kernel_size[i])
@@ -107,11 +108,15 @@ class ConvLSTM(nn.Module):
             outputs.append(x)
         ## mean pooling and loss function
         out=[torch.unsqueeze(o, dim=3) for o in outputs]
-        out=torch.flatten(torch.mean(torch.cat(out,dim=3),dim=3),start_dim=1)
+        out=torch.flatten(torch.cat(out,dim=3),start_dim=1,end_dim=2)
+        if self.attention_flag:
+            alpha=torch.unsqueeze(F.softmax(torch.matmul(attention,out),dim=1),dim=2)
+            out=torch.squeeze(torch.bmm(out,alpha),dim=2)
+        else:
+            out=torch.mean(torch.cat(out,dim=3)
         out = self.classification(out)
 
         loss = F.cross_entropy(out, torch.max(target, 1)[1].to(self.device))
-
 
 
         return torch.unsqueeze(out,dim=0), torch.unsqueeze(loss, dim=0)
