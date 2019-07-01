@@ -91,6 +91,7 @@ class ConvLSTM(nn.Module):
         internal_state = []
         outputs = []
         for step in range(self.step):
+            x=input(step)
             for i in range(self.num_layers):
                 name = 'cell{}'.format(i)
                 if step == 0:
