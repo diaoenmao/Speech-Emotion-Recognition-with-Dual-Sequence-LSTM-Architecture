@@ -4,7 +4,7 @@ import pdb
 path = '/scratch/speech/raw_audio_dataset/'
 
 # train set changes
-out = open(path + 'raw_audio_segmented_train.pkl', 'rb')
+out = open(path + 'raw_audio_segmented_train_equal_lengths.pkl', 'rb')
 data = pickle.load(out)
 
 input = []
@@ -21,7 +21,7 @@ with open(path + 'raw_audio_separate_segments_train.pkl', 'wb') as f:
     pickle.dump(train_dataset, f)
 
 # test set changes
-out = open(path + 'raw_audio_segmented_test.pkl', 'rb')
+out = open(path + 'raw_audio_segmented_test_equal_lengths.pkl', 'rb')
 data = pickle.load(out)
 
 input = []
