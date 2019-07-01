@@ -52,7 +52,7 @@ for epoch in range(300):  # again, normally you would NOT do 300 epochs, it is t
         if (j+1)%5==0: print("================================= Batch"+ str(j+1)+ "===================================================")
         input=input.float()
         input = input.unsqueeze(1)
-        input=torch.split(input,128000/step,dim=2)
+        input=torch.split(input,int(128000/step),dim=2)
         res=target.shape[0]%num_devices
         quo=target.shape[0]//num_devices
         if res !=0:
@@ -84,7 +84,7 @@ for epoch in range(300):  # again, normally you would NOT do 300 epochs, it is t
         for test_case, target, _ in test_loader:
             test_case=test_case.float()
             test_case = test_case.unsqueeze(1)
-            test_case=torch.split(test_case,128000/step,dim=2)
+            test_case=torch.split(test_case,int(128000/step),dim=2)
             res=target.shape[0]%num_devices
             quo=target.shape[0]//num_devices
             if res !=0:
