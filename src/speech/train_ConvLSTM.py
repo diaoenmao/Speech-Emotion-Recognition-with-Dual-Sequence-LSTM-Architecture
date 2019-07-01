@@ -13,7 +13,7 @@ path="/scratch/speech/models/classification/ConvLSTM_data_debug.pickle"
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 hidden_channels=[64,32,16]
 kernel_size=[9,5,5]
-step=100
+step=50
 model = ConvLSTM(1, hidden_channels,kernel_size,step)
 print("============================ Number of parameters ====================================")
 print(str(sum(p.numel() for p in model.parameters() if p.requires_grad)))
@@ -52,7 +52,7 @@ for epoch in range(300):  # again, normally you would NOT do 300 epochs, it is t
         if (j+1)%5==0: print("================================= Batch"+ str(j+1)+ "===================================================")
         input=input.float()
         input = input.unsqueeze(1)
-        input=torch.split(input,128,dim=2)
+        input=torch.split(input,128000/step,dim=2)
         res=target.shape[0]%num_devices
         quo=target.shape[0]//num_devices
         if res !=0:
