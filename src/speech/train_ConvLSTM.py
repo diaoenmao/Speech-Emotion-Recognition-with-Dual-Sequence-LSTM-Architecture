@@ -13,7 +13,7 @@ path="/scratch/speech/models/classification/ConvLSTM_data_debug.pickle"
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 hidden_channels=[64,32,16]
 kernel_size=[9,5,5]
-step=50
+step=100
 model = ConvLSTM(1, hidden_channels,kernel_size,step)
 print("============================ Number of parameters ====================================")
 print(str(sum(p.numel() for p in model.parameters() if p.requires_grad)))
