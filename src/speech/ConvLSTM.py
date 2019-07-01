@@ -50,7 +50,7 @@ class ConvLSTMCell(nn.Module):
         ch = co * torch.tanh(cc)
         ch_pool=self.batch(self.max_pool(ch))
         #ch_pool=self.dropout(ch_pool)
-        return ch_pool, self.dropout(ch), self.dropout(cc)
+        return ch_pool, ch, cc
 
     def init_hidden(self, batch_size, hidden, shape):
         if self.Wci is None:
