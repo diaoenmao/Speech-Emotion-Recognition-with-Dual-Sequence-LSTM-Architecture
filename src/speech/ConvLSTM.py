@@ -6,7 +6,7 @@ import pdb
 
 
 class ConvLSTMCell(nn.Module):
-    def __init__(self, input_channels, hidden_channels, kernel_size, dropout=0.2, kernel_size_pool=8, stride_pool=4):
+    def __init__(self, input_channels, hidden_channels, kernel_size, dropout=0.1, kernel_size_pool=8, stride_pool=4):
         super(ConvLSTMCell, self).__init__()
 
         assert hidden_channels % 2 == 0
@@ -66,7 +66,7 @@ class ConvLSTM(nn.Module):
     # input_channels corresponds to the first input feature map
     # hidden state is a list of succeeding lstm layers.
     # kernel size is also a list, same length as hidden_channels
-    def __init__(self, input_channels, hidden_channels, kernel_size, step, dropout=0.2):
+    def __init__(self, input_channels, hidden_channels, kernel_size, step):
         super(ConvLSTM, self).__init__()
         assert len(hidden_channels)==len(kernel_size), "size mismatch"
         self.input_channels = [input_channels] + hidden_channels
@@ -79,7 +79,6 @@ class ConvLSTM(nn.Module):
         self.device= torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.linear_dim=int(self.hidden_channels[-1]*1280/(4**self.num_layers))
         self.classification = nn.Linear(self.linear_dim, self.num_labels)
-        self.dropout=nn.Dropout(p=dropout, inplace=False)
 
         for i in range(self.num_layers):
             name = 'cell{}'.format(i)
@@ -92,7 +91,6 @@ class ConvLSTM(nn.Module):
         internal_state = []
         outputs = []
         for step in range(self.step):
-            x = self.dropout(input[step])
             for i in range(self.num_layers):
                 name = 'cell{}'.format(i)
                 if step == 0:
