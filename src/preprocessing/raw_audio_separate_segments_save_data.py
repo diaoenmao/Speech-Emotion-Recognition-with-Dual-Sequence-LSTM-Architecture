@@ -48,20 +48,17 @@ def extract_features(dataframe):
                 indices.append(round(stop * sample_rate))
                 labels.append(name)
 
-        #data = data.tolist()
         data = [data[k : l] for j, (k, l) in enumerate(zip(([0] + indices)[:-1], indices)) if labels[j] != 'SIL']
-        #print(data)
 
         input.extend(data)
         for x in range(len(data)): target.append(encode[emotion])
-        pdb.set_trace()
         print(i)
 
     return input, target
 
 def split_data(data):
     input_train, input_test, target_train, target_test = train_test_split(
-        data['input'], data['target'], data['segment_labels'], test_size=0.2, random_state=42)
+        data['input'], data['target'], test_size=0.2, random_state=42)
     train = {'input': input_train, 'target': target_train}
     test = {'input': input_test, 'target': target_test}
     return train, test
