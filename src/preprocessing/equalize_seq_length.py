@@ -2,7 +2,7 @@ import pickle
 import numpy as np
 import librosa
 import pandas as pd
-from raw_audio_create_dict import split_data
+from raw_audio_separate_segments_save_data import split_data
 
 dict_path = '/scratch/speech/raw_audio_dataset/raw_audio_separate_segments_full.pkl'
 file = open(dict_path, 'rb')
