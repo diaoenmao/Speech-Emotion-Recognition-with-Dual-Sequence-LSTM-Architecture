@@ -11,7 +11,7 @@ target = []
 for i, utterance in enumerate(data['input']):
     for j, segment in enumerate(utterance):
         if data['segment_labels'][i][j] != 'SIL':
-            input.extend(segment)
+            input.append(segment)
             target.append(data['target'][i])
 
 train_dataset = {'input': input, 'target': target}
