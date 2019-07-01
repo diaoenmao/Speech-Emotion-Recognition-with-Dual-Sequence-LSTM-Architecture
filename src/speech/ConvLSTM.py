@@ -111,7 +111,7 @@ class ConvLSTM(nn.Module):
         out=[torch.unsqueeze(o, dim=3) for o in outputs]
         out=torch.flatten(torch.cat(out,dim=3),start_dim=1,end_dim=2)
         if self.attention_flag:
-            alpha=torch.unsqueeze(F.softmax(torch.matmul(attention,out),dim=1),dim=2)
+            alpha=torch.unsqueeze(F.softmax(torch.matmul(self.attention,out),dim=1),dim=2)
             out=torch.squeeze(torch.bmm(out,alpha),dim=2)
         else:
             out=torch.mean(torch.cat(out,dim=3))
