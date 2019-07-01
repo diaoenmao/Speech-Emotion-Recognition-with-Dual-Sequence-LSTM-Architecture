@@ -49,8 +49,8 @@ class ConvLSTMCell(nn.Module):
         co = torch.sigmoid(self.Wxo(x) + self.Who(h) + cc * self.Wco)
         ch = co * torch.tanh(cc)
         ch_pool=self.batch(self.max_pool(ch))
-        ch_pool=self.dropout(ch_pool)
-        return ch_pool, ch, cc
+        #ch_pool=self.dropout(ch_pool)
+        return ch_pool, self.dropout(ch), cc
 
     def init_hidden(self, batch_size, hidden, shape):
         if self.Wci is None:
