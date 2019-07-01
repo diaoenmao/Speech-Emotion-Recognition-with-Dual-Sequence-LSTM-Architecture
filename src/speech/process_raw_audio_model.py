@@ -42,7 +42,7 @@ def my_collate(batch):
     input = torch.from_numpy(np.array([item['input'] for item in batch])).to(device)
     # input = [x.cuda() for x in input]
     target = torch.from_numpy(np.array([item['target'] for item in batch]))
-    if not mike:
+    if not self.mike:
         seq_length = torch.from_numpy(np.array([item['seq_length'] for item in batch]))
     else: seq_length=None
     # seq_length = [x[0] for x in seq_length]
