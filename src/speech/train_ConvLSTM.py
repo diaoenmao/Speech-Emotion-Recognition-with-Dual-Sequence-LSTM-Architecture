@@ -113,7 +113,7 @@ for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is t
         f.write("Epoch: {}-----------Training Loss: {} -------- Testing Loss: {} -------- Training Acc: {} -------- Testing Acc: {}".format(epoch+1,losses,losses_test, accuracy, accuracy_test)+"\n")
 
 
-    scheduler.step(losses_test)
+    scheduler.step(losses)
     #scheduler.step()
 
 
