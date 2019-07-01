@@ -13,7 +13,7 @@ path="/scratch/speech/models/classification/ConvLSTM_data_debug.pickle"
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 hidden_channels=[64,32,16]
 kernel_size=[9,5,5]
-step=200
+step=100
 model = ConvLSTM(1, hidden_channels,kernel_size,step)
 print("============================ Number of parameters ====================================")
 print(str(sum(p.numel() for p in model.parameters() if p.requires_grad)))
@@ -31,9 +31,9 @@ scheduler = ReduceLROnPlateau(optimizer=optimizer,factor=0.5, patience=2, thresh
 scheduler2 =CosineAnnealingLR(optimizer2, T_max=300, eta_min=0.0001)
 # Load the training data
 training_data = IEMOCAP(train=True)
-train_loader = DataLoader(dataset=training_data, batch_size=120, shuffle=True, collate_fn=my_collate, num_workers=0)
+train_loader = DataLoader(dataset=training_data, batch_size=116, shuffle=True, collate_fn=my_collate, num_workers=0)
 testing_data = IEMOCAP(train=False)
-test_loader = DataLoader(dataset=testing_data, batch_size=120, shuffle=True, collate_fn=my_collate, num_workers=0)
+test_loader = DataLoader(dataset=testing_data, batch_size=116, shuffle=True, collate_fn=my_collate, num_workers=0)
 
 test_acc=[]
 train_acc=[]
