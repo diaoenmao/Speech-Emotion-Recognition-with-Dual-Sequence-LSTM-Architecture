@@ -20,8 +20,9 @@ save_path = '/scratch/speech/raw_audio_dataset/'
 def extract_features(dataframe):
     input = []
     target = []
+    segment_labels = []
 
-    for file, emotion in dataframe.values:
+    for i, (file, emotion) in enumerate(dataframe.values):
         script_path = '/scratch/speech/modularProsodyTagger/mod01.praat'
         index = file.rfind('/')
         basename = file[(index + 1):-4]
@@ -36,6 +37,7 @@ def extract_features(dataframe):
 
         data = []
         indices = []
+        labels = []
 
         sample_rate, data = wavfile.read(file)
 
@@ -44,21 +46,25 @@ def extract_features(dataframe):
                 break
             else:
                 indices.append(round(stop * sample_rate))
+                labels.append(name)
 
         #data = data.tolist()
         data = [data[i : j] for i, j in zip(([0] + indices)[:-1], indices)]
-        print(data)
+        #print(data)
 
         input.append(data)
         target.append(encode[emotion])
+        segment_labels.append(labels)
 
-    return input, target
+        print(i)
+
+    return input, target, segment_labels
 
 def split_data(data):
-    input_train, input_test, target_train, target_test = train_test_split(
-        data["input"], data["target"], test_size=0.2, random_state=42)
-    train = {'input': input_train, 'target': target_train}
-    test = {'input': input_test, 'target': target_test}
+    input_train, input_test, target_train, target_test, segment_labels_train, segment_labels_test = train_test_split(
+        data['input'], data['target'], data['segment_labels'], test_size=0.2, random_state=42)
+    train = {'input': input_train, 'target': target_train, 'segment_labels': segment_labels_train}
+    test = {'input': input_test, 'target': target_test, 'segment_labels': segment_labels_test}
     return train, test
 
 def save(dataset):
@@ -71,6 +77,6 @@ def save(dataset):
         pickle.dump(test, f)
 
 if __name__ == '__main__':
-    input, target = extract_features(df)
-    dataset = {'input': input, 'target': target}
+    input, target, segment_labels = extract_features(df)
+    dataset = {'input': input, 'target': target, 'segment_labels': segment_labels}
     save(dataset)
