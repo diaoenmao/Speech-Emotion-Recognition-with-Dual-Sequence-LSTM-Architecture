@@ -49,13 +49,11 @@ def extract_features(dataframe):
                 labels.append(name)
 
         #data = data.tolist()
-        pdb.set_trace()
-        data = [data[j : k] for i, (j, k) in enumerate(zip(([0] + indices)[:-1], indices)) if labels[i] != 'SIL']
-        pdb.set_trace()
+        data = [data[k : l] for j, (k, l) in enumerate(zip(([0] + indices)[:-1], indices)) if labels[j] != 'SIL']
         #print(data)
 
-        input.append(data)
-        for i in range(len(data)): target.append(encode[emotion])
+        input.extend(data)
+        for x in range(len(data)): target.append(encode[emotion])
         pdb.set_trace()
         print(i)
 
