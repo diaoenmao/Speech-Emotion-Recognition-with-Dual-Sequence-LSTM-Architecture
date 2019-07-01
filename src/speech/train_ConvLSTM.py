@@ -14,7 +14,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 hidden_channels=[64,32,16]
 kernel_size=[9,5,5]
 step=100
-model = ConvLSTM(1, hidden_channels,kernel_size,step)
+model = ConvLSTM(1, hidden_channels,kernel_size,step,True)
 print("============================ Number of parameters ====================================")
 print(str(sum(p.numel() for p in model.parameters() if p.requires_grad)))
 model.cuda()

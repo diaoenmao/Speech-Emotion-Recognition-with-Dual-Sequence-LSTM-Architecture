@@ -87,6 +87,7 @@ class ConvLSTM(nn.Module):
             setattr(self, name, cell)
             self._all_layers.append(cell)
 
+
     def forward(self, input, target):
         # input should be a list of inputs, like a time stamp, maybe 1280 for 100 times.
         internal_state = []
@@ -113,11 +114,9 @@ class ConvLSTM(nn.Module):
             alpha=torch.unsqueeze(F.softmax(torch.matmul(attention,out),dim=1),dim=2)
             out=torch.squeeze(torch.bmm(out,alpha),dim=2)
         else:
-            out=torch.mean(torch.cat(out,dim=3)
-        out = self.classification(out)
+            out=torch.mean(torch.cat(out,dim=3))
 
+        out=self.classification(out)
         loss = F.cross_entropy(out, torch.max(target, 1)[1].to(self.device))
-
-
         return torch.unsqueeze(out,dim=0), torch.unsqueeze(loss, dim=0)
 
