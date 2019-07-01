@@ -24,7 +24,7 @@ model=DataParallel(model,device_ids=device_ids)
 model.train()
 
 # Use Adam as the optimizer with learning rate 0.01 to make it fast for testing purposes
-optimizer = optim.Adam(model.parameters(), lr=0.005)
+optimizer = optim.Adam(model.parameters(), lr=0.001)
 optimizer2=optim.SGD(model.parameters(), lr=0.1)
 scheduler = ReduceLROnPlateau(optimizer=optimizer,factor=0.5, patience=2, threshold=1e-3)
 #scheduler2=ReduceLROnPlateau(optimizer=optimizer2, factor=0.5, patience=2, threshold=1e-3)
@@ -67,7 +67,7 @@ for epoch in range(300):  # again, normally you would NOT do 300 epochs, it is t
         #pdb.set_trace()
         losses += loss.item() * target.shape[0]
         loss.backward()
-        optimizer2.step()
+        optimizer.step()
 
         index = torch.argmax(out, dim=1)
         target_index = torch.argmax(target, dim=1).to(device)
@@ -114,8 +114,8 @@ for epoch in range(300):  # again, normally you would NOT do 300 epochs, it is t
         f.write("Epoch: {}-----------Training Loss: {} -------- Testing Loss: {} -------- Training Acc: {} -------- Testing Acc: {}".format(epoch+1,losses,losses_test, accuracy, accuracy_test)+"\n")
 
 
-    #scheduler.step(losses)
-    scheduler2.step()
+    scheduler.step(losses)
+    #scheduler2.step()
 
 
 pickle_out=open("/scratch/speech/models/classification/ConvLSTM_checkpoint_stats.pkl","wb")
