@@ -21,7 +21,7 @@ for i, segment in enumerate(data['input']):
         print(len(segment_new))
         #seq_length_new.append(len(utterance_new))
     elif len(segment) > thresh:
-        segment_new = librosa.resample(segment, sr_standard, thresh/(len(segment)/sr_standard))
+        segment_new = librosa.resample(segment.astype('float'), sr_standard, thresh/(len(segment)/sr_standard))
         segment_new = segment_new[0:thresh]
         input_new.append(segment_new)
         print(len(segment_new))
