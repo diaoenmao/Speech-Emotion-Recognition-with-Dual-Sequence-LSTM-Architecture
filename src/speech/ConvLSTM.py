@@ -6,7 +6,7 @@ import pdb
 
 
 class ConvLSTMCell(nn.Module):
-    def __init__(self, input_channels, hidden_channels, kernel_size, kernel_size_pool=8, stride_pool=4):
+    def __init__(self, input_channels, hidden_channels, kernel_size, dropout=0.2, kernel_size_pool=8, stride_pool=4):
         super(ConvLSTMCell, self).__init__()
 
         assert hidden_channels % 2 == 0
@@ -35,6 +35,8 @@ class ConvLSTMCell(nn.Module):
         self.max_pool = nn.MaxPool1d(self.kernel_size_pool, stride=self.stride_pool, padding=self.padding_pool)
         self.batch = nn.BatchNorm1d(self.hidden_channels)
 
+        self.dropout=nn.Dropout(p=dropout, inplace=False)
+
         self.Wci = None
         self.Wcf = None
         self.Wco = None
@@ -47,6 +49,7 @@ class ConvLSTMCell(nn.Module):
         co = torch.sigmoid(self.Wxo(x) + self.Who(h) + cc * self.Wco)
         ch = co * torch.tanh(cc)
         ch_pool=self.batch(self.max_pool(ch))
+        ch_pool=self.dropout(ch_pool)
         return ch_pool, ch, cc
 
     def init_hidden(self, batch_size, hidden, shape):
@@ -63,7 +66,7 @@ class ConvLSTM(nn.Module):
     # input_channels corresponds to the first input feature map
     # hidden state is a list of succeeding lstm layers.
     # kernel size is also a list, same length as hidden_channels
-    def __init__(self, input_channels, hidden_channels, kernel_size, step):
+    def __init__(self, input_channels, hidden_channels, kernel_size, step, dropout=0.2):
         super(ConvLSTM, self).__init__()
         assert len(hidden_channels)==len(kernel_size), "size mismatch"
         self.input_channels = [input_channels] + hidden_channels
@@ -76,6 +79,7 @@ class ConvLSTM(nn.Module):
         self.device= torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.linear_dim=int(self.hidden_channels[-1]*1280/(4**self.num_layers))
         self.classification = nn.Linear(self.linear_dim, self.num_labels)
+        self.dropout=nn.Dropout(p=dropout, inplace=False)
 
         for i in range(self.num_layers):
             name = 'cell{}'.format(i)
@@ -84,7 +88,8 @@ class ConvLSTM(nn.Module):
             self._all_layers.append(cell)
 
     def forward(self, input, target):
-        # input should be a list of inputs, like a time stamp, maybe 1280 for 100 times. 
+        # input should be a list of inputs, like a time stamp, maybe 1280 for 100 times.
+        input=self.dropout(input)
         internal_state = []
         outputs = []
         for step in range(self.step):
