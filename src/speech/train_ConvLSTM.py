@@ -49,6 +49,7 @@ epoch=0
 hidden_channels=[64,32,16]
 kernel_size=[9,5,5]
 step=100
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 losses_test = 0
 correct_test = 0
 model1=ConvLSTM(1, hidden_channels,kernel_size,step,True)
