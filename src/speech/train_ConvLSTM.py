@@ -55,8 +55,8 @@ with torch.no_grad():
             for j in i:
                 temp.append(j)
         test_case=temp
-        length=test_case.shape[0]
         test_case=torch.from_numpy(np.array([i for i in test_case])).to(device)
+        length=test_case.shape[0]
 
         test_case=test_case.float()
         test_case = test_case.unsqueeze(1)
