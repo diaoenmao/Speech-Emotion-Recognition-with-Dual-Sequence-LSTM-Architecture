@@ -35,7 +35,11 @@ def extract_features(dataframe):
         #plt.savefig(endpoint + '{}_spec.png'.format(basename), bbox_inches='tight', pad_inches=0)
         print(i)
         im = cv2.imread(endpoint + '{}_spec.png'.format(basename))
-        input.append(im)
+        try:
+            x = len(im)
+            input.append(im)
+        except:
+            print("no data found at index" + i)
         target.append(encode[emotion])
 
     return input, target
