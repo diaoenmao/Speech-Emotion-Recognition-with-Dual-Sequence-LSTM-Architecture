@@ -117,6 +117,7 @@ class ConvLSTM(nn.Module):
             out=torch.mean(torch.cat(out,dim=3))
 
         out=self.classification(out)
+        pdb.set_trace()
         try:
             loss = F.cross_entropy(out, torch.max(target, 1)[1].to(self.device))
         except:
