@@ -6,6 +6,7 @@ import pandas as pd
 import matplotlib.ticker as ticker
 import cv2
 from sklearn.model_selection import train_test_split
+import pickle
 
 in_file = '/scratch/speech/raw_audio_dataset/audio_paths_labels_updated.csv'
 df = pd.read_csv(in_file)
@@ -31,8 +32,7 @@ def extract_features(dataframe):
         #plt.show()
         index = file.rfind('/')
         basename = file[(index + 1):-4]
-        if i >= 1288:
-            plt.savefig(endpoint + '{}_spec.png'.format(basename), bbox_inches='tight', pad_inches=0)
+        #plt.savefig(endpoint + '{}_spec.png'.format(basename), bbox_inches='tight', pad_inches=0)
         print(i)
         im = cv2.imread(endpoint + '{}_spec.png'.format(basename))
         input.append(im)
