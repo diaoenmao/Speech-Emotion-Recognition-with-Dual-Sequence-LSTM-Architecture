@@ -10,6 +10,7 @@ import pdb
 from torch.nn import DataParallel
 import pickle
 import numpy as np
+'''
 path="/scratch/speech/models/classification/ConvLSTM_data_debug.pickle"
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 hidden_channels=[64,32,16]
@@ -30,6 +31,7 @@ optimizer2=optim.SGD(model.parameters(), lr=0.1)
 scheduler = ReduceLROnPlateau(optimizer=optimizer,factor=0.5, patience=2, threshold=1e-3)
 #scheduler2=ReduceLROnPlateau(optimizer=optimizer2, factor=0.5, patience=2, threshold=1e-3)
 scheduler2 =CosineAnnealingLR(optimizer2, T_max=300, eta_min=0.0001)
+'''
 # Load the training data
 training_data = IEMOCAP(train=True, segment=True)
 train_loader = DataLoader(dataset=training_data, batch_size=100, shuffle=True, collate_fn=my_collate_train, num_workers=0)
@@ -43,13 +45,13 @@ train_acc=[]
 test_loss=[]
 train_loss=[]
 epoch=0
-torch.save(model.module.state_dict(), "/scratch/speech/models/classification/ConvLSTM_checkpoint_epoch_{}.pt".format(epoch))
+#torch.save(model.module.state_dict(), "/scratch/speech/models/classification/ConvLSTM_checkpoint_epoch_{}.pt".format(epoch))
 losses_test = 0
 correct_test = 0
 model1=ConvLSTM(1, hidden_channels,kernel_size,step,True)
 model1.load_state_dict(torch.load("/scratch/speech/models/classification/ConvLSTM_checkpoint_epoch_{}.pt".format(epoch)))
 model1.eval()
-with torch.cuda.device(1):
+with torch.cuda.device(0):
     model1.cuda()
 print("success")
 with torch.no_grad():
