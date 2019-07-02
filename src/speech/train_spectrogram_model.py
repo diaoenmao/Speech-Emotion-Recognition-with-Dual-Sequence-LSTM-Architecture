@@ -40,9 +40,9 @@ for epoch in range(200):  # again, normally you would NOT do 300 epochs, it is t
     for j, (input, target) in enumerate(train_loader):
        # if (j+1)%50==0: print("================================= Batch"+ str(j+1)+ "===================================================")
         input=input.float()
-        input = input.unsqueeze(1)
+        #input = input.unsqueeze(1)
         model.zero_grad()
-        out, loss = model(input, target, seq_length=seq_length)
+        out, loss = model(input, target)
         loss = torch.mean(loss)
         losses += loss.item() * target.shape[0]
         loss.backward()
@@ -58,8 +58,8 @@ for epoch in range(200):  # again, normally you would NOT do 300 epochs, it is t
     model.eval()
     for test_case, target, seq_length in test_loader:
         test_case=test_case.float()
-        test_case = test_case.unsqueeze(1)
-        out, loss = model(test_case, target, train=False, seq_length=seq_length)
+        #test_case = test_case.unsqueeze(1)
+        out, loss = model(test_case, target, train=False)
         index = torch.argmax(out, dim=1)
         target_index = torch.argmax(target, dim=1).to(device)
         loss = torch.mean(loss)
@@ -74,15 +74,15 @@ for epoch in range(200):  # again, normally you would NOT do 300 epochs, it is t
     test_loss.append(losses_test)
     train_loss.append(losses)
     print("Epoch: {}-----------Training Loss: {} -------- Testing Loss: {} -------- Training Acc: {} -------- Testing Acc: {}".format(epoch+1,losses,losses_test, accuracy, accuracy_test)+"\n")
-    with open("/scratch/speech/models/classification/CNN_checkpoint_stats_mike.txt","a+") as f:
-        f.write("Epoch: {}-----------Training Loss: {} -------- Testing Loss: {} -------- Training Acc: {} -------- Testing Acc: {}".format(epoch+1,losses,losses_test, accuracy, accuracy_test)+"\n")
+    #with open("/scratch/speech/models/classification/spectrogram_stats.txt","a+") as f:
+        #f.write("Epoch: {}-----------Training Loss: {} -------- Testing Loss: {} -------- Training Acc: {} -------- Testing Acc: {}".format(epoch+1,losses,losses_test, accuracy, accuracy_test)+"\n")
 
 
     scheduler.step()
 
 
-pickle_out=open("/scratch/speech/models/classification/spectrogram_checkpoint_stats.pkl","wb")
-pickle.dump({"test_acc":test_acc, "train_acc": train_acc, "test_loss": test_loss, "train_loss": train_loss},pickle_out)
-pickle_out.close()
+#pickle_out=open("/scratch/speech/models/classification/spectrogram_checkpoint_stats.pkl","wb")
+#pickle.dump({"test_acc":test_acc, "train_acc": train_acc, "test_loss": test_loss, "train_loss": train_loss},pickle_out)
+#pickle_out.close()
 
 #torch.save(model.state_dict(), model_path)
