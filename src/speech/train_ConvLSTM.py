@@ -32,6 +32,7 @@ scheduler = ReduceLROnPlateau(optimizer=optimizer,factor=0.5, patience=2, thresh
 #scheduler2=ReduceLROnPlateau(optimizer=optimizer2, factor=0.5, patience=2, threshold=1e-3)
 scheduler2 =CosineAnnealingLR(optimizer2, T_max=300, eta_min=0.0001)
 
+
 # Load the training data
 training_data = IEMOCAP(train=True, segment=True)
 train_loader = DataLoader(dataset=training_data, batch_size=100, shuffle=True, collate_fn=my_collate_train, num_workers=0)
@@ -46,69 +47,6 @@ test_loss=[]
 train_loss=[]
 epoch=0
 torch.save(model.module.state_dict(), "/scratch/speech/models/classification/ConvLSTM_checkpoint_epoch_{}.pt".format(epoch))
-losses_test = 0
-correct_test = 0
-model1=ConvLSTM(1, hidden_channels,kernel_size,step,True)
-model1.load_state_dict(torch.load("/scratch/speech/models/classification/ConvLSTM_checkpoint_epoch_{}.pt".format(epoch)))
-model1.eval()
-with torch.cuda.device(0):
-    model1.cuda()
-print("success")
-with torch.no_grad():
-    for j,(test_case, target, seq_length) in enumerate(test_loader):
-        print(j)
-        temp=[]
-        for i in test_case:
-            for j in i:
-                temp.append(j)
-        test_case=torch.from_numpy(np.array([i for i in temp])).to(device)
-        length=test_case.shape[0]
-
-        test_case=test_case.float()
-        test_case = test_case.unsqueeze(1)
-        test_case=torch.split(test_case,int(32000/step),dim=2)
-        out,_ = model1(test_case, target, False)
-        target_index = torch.argmax(target, dim=1).to(device)
-        temp=0
-        temp1=0
-        for i,j in enumerate(target_index):
-            temp1+=seq_length[i]
-            if j==torch.argmax(torch.sum(out[temp:temp1,:],dim=0)):
-                correct_test+=1
-        print(correct_test)
-accuracy_test = correct_test * 1.0 / (len(testing_data))
-print(accuracy_test)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-torch.save(model.state_dict(), "/scratch/speech/models/classification/ConvLSTM_checkpoint_epoch_{}.pt".format(epoch))
 for epoch in range(300):  # again, normally you would NOT do 300 epochs, it is toy data
     print("===================================" + str(epoch+1) + "==============================================")
     losses = 0
@@ -143,57 +81,47 @@ for epoch in range(300):  # again, normally you would NOT do 300 epochs, it is t
 
     accuracy=correct*1.0/(len(training_data)-res)
     losses=losses / (len(training_data)-res)
-    print("accuracy:", accuracy)
-    print("loss:", losses)
-    torch.save(model.state_dict(), "/scratch/speech/models/classification/ConvLSTM_checkpoint_epoch_{}.pt".format(epoch+1))
 
-    model.eval()
+    # we save the model, and run it on single gpu
+    torch.save(model.module.state_dict(), "/scratch/speech/models/classification/ConvLSTM_checkpoint_epoch_{}.pt".format(epoch+1))
+    model1=ConvLSTM(1, hidden_channels,kernel_size,step,True)
+    model1.load_state_dict(torch.load("/scratch/speech/models/classification/ConvLSTM_checkpoint_epoch_{}.pt".format(epoch)))
+    model1.eval()
+    with torch.cuda.device(0):
+        model1.cuda()
+    print("success")
     with torch.no_grad():
-        for test_case, target, seq_length in test_loader:
+        for j,(test_case, target, seq_length) in enumerate(test_loader):
+            print(j)
             temp=[]
             for i in test_case:
                 for j in i:
-                    temp.append(i)
-            test_case=temp
-            test_case=torch.from_numpy(np.array([i for i in test_case])).to(device)
+                    temp.append(j)
+            test_case=torch.from_numpy(np.array([i for i in temp])).to(device)
+            length=test_case.shape[0]
 
             test_case=test_case.float()
             test_case = test_case.unsqueeze(1)
             test_case=torch.split(test_case,int(32000/step),dim=2)
-
-
-            res=target.shape[0]%num_devices
-            quo=target.shape[0]//num_devices
-            if res !=0:
-                target=target[:num_devices*quo]
-                test_case=[t[:num_devices*quo] for t in test_case]
-            out, loss = model(test_case, target)
-
-            loss = torch.flatten(loss,start_dim=0, end_dim=1)
-            out=torch.flatten(out,start_dim=0,end_dim=1)
-
-
+            out,_ = model1(test_case, target, False)
             target_index = torch.argmax(target, dim=1).to(device)
-
             temp=0
             temp1=0
             for i,j in enumerate(target_index):
                 temp1+=seq_length[i]
                 if j==torch.argmax(torch.sum(out[temp:temp1,:],dim=0)):
                     correct_test+=1
-                losses_test+=torch.sum(out[temp:temp1,j]).item()
-    accuracy_test = correct_test * 1.0 / (len(testing_data)-res)
-    losses_test = losses_test / (len(testing_data)-res)
+            print(correct_test)
+    accuracy_test = correct_test * 1.0 / (len(testing_data))
     #if losses_test<0.95: scheduler=scheduler2; optimizer=optimizer2
 
     # data gathering
     test_acc.append(accuracy_test)
     train_acc.append(accuracy)
-    test_loss.append(losses_test)
     train_loss.append(losses)
-    print("Epoch: {}-----------Training Loss: {} -------- Testing Loss: {} -------- Training Acc: {} -------- Testing Acc: {}".format(epoch+1,losses,losses_test, accuracy, accuracy_test)+"\n")
+    print("Epoch: {}-----------Training Loss: {}  -------- Training Acc: {} -------- Testing Acc: {}".format(epoch+1,losses, accuracy, accuracy_test)+"\n")
     with open("/scratch/speech/models/classification/ConvLSTM_checkpoint_stats.txt","a+") as f:
-        f.write("Epoch: {}-----------Training Loss: {} -------- Testing Loss: {} -------- Training Acc: {} -------- Testing Acc: {}".format(epoch+1,losses,losses_test, accuracy, accuracy_test)+"\n")
+        f.write("Epoch: {}-----------Training Loss: {} -------- Training Acc: {} -------- Testing Acc: {}".format(epoch+1,losses, accuracy, accuracy_test)+"\n")
 
 
     scheduler.step(losses)
@@ -201,5 +129,5 @@ for epoch in range(300):  # again, normally you would NOT do 300 epochs, it is t
 
 
 pickle_out=open("/scratch/speech/models/classification/ConvLSTM_checkpoint_stats.pkl","wb")
-pickle.dump({"test_acc":test_acc, "train_acc": train_acc, "test_loss": test_loss, "train_loss": train_loss},pickle_out)
+pickle.dump({"test_acc":test_acc, "train_acc": train_acc, "train_loss": train_loss},pickle_out)
 pickle_out.close()
