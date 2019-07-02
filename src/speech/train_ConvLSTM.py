@@ -43,19 +43,20 @@ train_acc=[]
 test_loss=[]
 train_loss=[]
 epoch=0
-
+torch.save(model, "/scratch/speech/models/classification/ConvLSTM_checkpoint_epoch_{}.pt".format(epoch))
 
 losses_test = 0
 correct_test = 0
+model1=torch.load("/scratch/speech/models/classification/ConvLSTM_checkpoint_epoch_{}.pt".format(epoch))
 model.eval()
+print("success")
 with torch.no_grad():
     for test_case, target, seq_length in test_loader:
         temp=[]
         for i in test_case:
             for j in i:
                 temp.append(j)
-        test_case=temp
-        test_case=torch.from_numpy(np.array([i for i in test_case])).to(device)
+        test_case=torch.from_numpy(np.array([i for i in temp])).to(device)
         length=test_case.shape[0]
 
         test_case=test_case.float()
