@@ -47,7 +47,7 @@ torch.save(model.module.state_dict(), "/scratch/speech/models/classification/Con
 losses_test = 0
 correct_test = 0
 model1=ConvLSTM(1, hidden_channels,kernel_size,step,True)
-model1=torch.load_state_dict(torch.load("/scratch/speech/models/classification/ConvLSTM_checkpoint_epoch_{}.pt".format(epoch)))
+model1.load_state_dict(torch.load("/scratch/speech/models/classification/ConvLSTM_checkpoint_epoch_{}.pt".format(epoch)))
 model1.eval()
 with torch.cuda.device(1):
     model1.cuda()
