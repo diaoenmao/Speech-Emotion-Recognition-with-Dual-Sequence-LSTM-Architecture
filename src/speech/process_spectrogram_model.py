@@ -20,14 +20,15 @@ class IEMOCAP(Dataset):
         return len(self.input)
 
     def __getitem__(self, index):
-        sample = {'input': self.input[index],
+        sample = {'input': (self.input[index]).tolist(),
                   'target': self.target[index]}
         return sample
 
 def my_collate(batch):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     pdb.set_trace()
-    input = torch.from_numpy((np.array([item['input'] for item in batch])).astype('float')).permute(0,3,1,2)
+    #input = torch.from_numpy((np.array([item['input'] for item in batch])).astype('float')).permute(0,3,1,2)
+    input = torch.FloatTensor([item['input'] for item in batch]).permute(0,3,1,2)
     # input = [x.cuda() for x in input]
     target = torch.from_numpy(np.array([item['target'] for item in batch]))
     # seq_length = [x[0] for x in seq_length]
