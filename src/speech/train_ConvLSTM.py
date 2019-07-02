@@ -67,9 +67,8 @@ with torch.no_grad():
         if res !=0:
             target=target[:num_devices*quo]
             test_case=[t[:num_devices*quo] for t in test_case]
-        out, loss = model(test_case, target)
+        out = model(test_case, target)
 
-        loss = torch.flatten(loss,start_dim=0, end_dim=1)
         out=torch.flatten(out,start_dim=0,end_dim=1)
 
 
@@ -81,9 +80,8 @@ with torch.no_grad():
             temp1+=seq_length[i]
             if j==torch.argmax(torch.sum(out[temp:temp1,:],dim=0)):
                 correct_test+=1
-            losses_test+=torch.sum(out[temp:temp1,j]).item()
 accuracy_test = correct_test * 1.0 / (len(testing_data)-res)
-losses_test = losses_test / (len(testing_data)-res)
+print(accuracy_test)
 
 
 
