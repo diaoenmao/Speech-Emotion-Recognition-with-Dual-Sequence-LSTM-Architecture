@@ -48,6 +48,7 @@ torch.save(model, "/scratch/speech/models/classification/ConvLSTM_checkpoint_epo
 losses_test = 0
 correct_test = 0
 model1=torch.load("/scratch/speech/models/classification/ConvLSTM_checkpoint_epoch_{}.pt".format(epoch))
+model1=DataParallel(model1,device_ids=[0])
 model.eval()
 print("success")
 with torch.no_grad():
@@ -62,13 +63,6 @@ with torch.no_grad():
         test_case=test_case.float()
         test_case = test_case.unsqueeze(1)
         test_case=torch.split(test_case,int(32000/step),dim=2)
-        pdb.set_trace()
-
-        res=length%num_devices
-        quo=length//num_devices
-        if res !=0:
-            target=target[:num_devices*quo]
-            test_case=[t[:num_devices*quo] for t in test_case]
         out = model(test_case, target)
 
         out=torch.flatten(out,start_dim=0,end_dim=1)
