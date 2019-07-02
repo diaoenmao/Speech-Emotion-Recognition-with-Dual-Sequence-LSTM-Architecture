@@ -9,6 +9,7 @@ from torch.optim.lr_scheduler import CosineAnnealingLR
 import pdb
 from torch.nn import DataParallel
 import pickle
+import numpy as np
 path="/scratch/speech/models/classification/ConvLSTM_data_debug.pickle"
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 hidden_channels=[64,32,16]
@@ -42,6 +43,77 @@ train_acc=[]
 test_loss=[]
 train_loss=[]
 epoch=0
+
+
+losses_test = 0
+correct_test = 0
+model.eval()
+with torch.no_grad():
+    for test_case, target, seq_length in test_loader:
+        temp=[]
+        for i in test_case:
+            for j in i:
+                temp.append(i)
+        test_case=temp
+        test_case=torch.from_numpy(np.array([i for i in test_case])).to(device)
+
+        test_case=test_case.float()
+        test_case = test_case.unsqueeze(1)
+        test_case=torch.split(test_case,int(32000/step),dim=2)
+
+
+        res=target.shape[0]%num_devices
+        quo=target.shape[0]//num_devices
+        if res !=0:
+            target=target[:num_devices*quo]
+            test_case=[t[:num_devices*quo] for t in test_case]
+        out, loss = model(test_case, target)
+
+        loss = torch.flatten(loss,start_dim=0, end_dim=1)
+        out=torch.flatten(out,start_dim=0,end_dim=1)
+
+
+        target_index = torch.argmax(target, dim=1).to(device)
+
+        temp=0
+        temp1=0
+        for i,j in enumerate(target_index):
+            temp1+=seq_length[i]
+            if j==torch.argmax(torch.sum(out[temp:temp1,:],dim=0)):
+                correct_test+=1
+            losses_test+=torch.sum(out[temp:temp1,j]).item()
+accuracy_test = correct_test * 1.0 / (len(testing_data)-res)
+losses_test = losses_test / (len(testing_data)-res)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 torch.save(model.state_dict(), "/scratch/speech/models/classification/ConvLSTM_checkpoint_epoch_{}.pt".format(epoch))
 for epoch in range(300):  # again, normally you would NOT do 300 epochs, it is toy data
     print("===================================" + str(epoch+1) + "==============================================")
