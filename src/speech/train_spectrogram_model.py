@@ -11,8 +11,9 @@ from torch.nn import DataParallel
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 model = SpectrogramModel(3, 64, 3, 1, 1, 4, 4, 200, 2, 0.2, 4, 40, True)
-model.cuda()
-model=DataParallel(model,device_ids=[0,1,2,3])
+with torch.cuda.device(2):
+    model.cuda()
+model=DataParallel(model,device_ids=[2,3])
 model.train()
 
 # Use Adam as the optimizer with learning rate 0.01 to make it fast for testing purposes
