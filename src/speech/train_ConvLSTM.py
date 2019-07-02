@@ -116,7 +116,6 @@ for epoch in range(300):  # again, normally you would NOT do 300 epochs, it is t
                 if j==torch.argmax(torch.sum(out[temp:temp1,:],dim=0)):
                     correct_test+=1
                 losses_test+=torch.sum(out[temp:temp1,j]).item()
-
     accuracy_test = correct_test * 1.0 / (len(testing_data)-res)
     losses_test = losses_test / (len(testing_data)-res)
     #if losses_test<0.95: scheduler=scheduler2; optimizer=optimizer2
