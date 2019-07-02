@@ -39,7 +39,7 @@ for epoch in range(200):  # again, normally you would NOT do 300 epochs, it is t
     model.train()
     for j, (input, target) in enumerate(train_loader):
        # if (j+1)%50==0: print("================================= Batch"+ str(j+1)+ "===================================================")
-        input=input.float()
+        #input=input.float()
         #input = input.unsqueeze(1)
         #pdb.set_trace()
         #input = input.permute(0, 3, 1, 2)
@@ -58,7 +58,7 @@ for epoch in range(200):  # again, normally you would NOT do 300 epochs, it is t
     losses=losses / len(training_data)
 
     model.eval()
-    for test_case, target, seq_length in test_loader:
+    for test_case, target in test_loader:
         test_case=test_case.float()
         #test_case = test_case.unsqueeze(1)
         out, loss = model(test_case, target, train=False)
