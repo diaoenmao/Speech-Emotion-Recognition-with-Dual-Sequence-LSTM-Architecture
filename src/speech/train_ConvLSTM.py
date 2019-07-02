@@ -43,13 +43,14 @@ train_acc=[]
 test_loss=[]
 train_loss=[]
 epoch=0
-torch.save(model, "/scratch/speech/models/classification/ConvLSTM_checkpoint_epoch_{}.pt".format(epoch))
-
+torch.save(model.module.state_dict(), "/scratch/speech/models/classification/ConvLSTM_checkpoint_epoch_{}.pt".format(epoch))
 losses_test = 0
 correct_test = 0
-model1=torch.load("/scratch/speech/models/classification/ConvLSTM_checkpoint_epoch_{}.pt".format(epoch))
-model1=DataParallel(model1,device_ids=[0])
-model.eval()
+model1=ConvLSTM(1, hidden_channels,kernel_size,step,True)
+model1=torch.load_state_dict(torch.load("/scratch/speech/models/classification/ConvLSTM_checkpoint_epoch_{}.pt".format(epoch)))
+model1.eval()
+with torch.cuda.device(1):
+    model1.cuda()
 print("success")
 with torch.no_grad():
     for j,(test_case, target, seq_length) in enumerate(test_loader):
