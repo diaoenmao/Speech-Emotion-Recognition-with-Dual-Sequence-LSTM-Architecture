@@ -32,7 +32,8 @@ def extract_features(dataframe):
         #plt.show()
         index = file.rfind('/')
         basename = file[(index + 1):-4]
-        #plt.savefig(endpoint + '{}_spec.png'.format(basename), bbox_inches='tight', pad_inches=0)
+        if i in [1278,1279,1280,1281,1282,1283,1284,1285,1286,1287]:
+            plt.savefig(endpoint + '{}_spec.png'.format(basename), bbox_inches='tight', pad_inches=0)
         print(i)
         im = cv2.imread(endpoint + '{}_spec.png'.format(basename))
         try:
