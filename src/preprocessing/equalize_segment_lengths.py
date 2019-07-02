@@ -16,18 +16,11 @@ input_new = []
 for i, utterance in enumerate(data['input']):
     utterance_new = []
     for j, segment in enumerate(utterance):
-        if len(segment) < thresh:
-            segment_new = np.tile(segment, thresh // len(segment) + 1)
-            segment_new = segment_new[0:thresh]
-            utterance_new.append(segment_new)
-            print(len(segment_new))
-            #seq_length_new.append(len(utterance_new))
-        elif len(segment) > thresh:
+        if len(segment) != thresh:
             segment_new = librosa.resample(segment.astype('float'), sr_standard, thresh/(len(segment)/sr_standard))
             segment_new = segment_new[0:thresh]
             utterance_new.append(segment_new)
             print(len(segment_new))
-            #seq_length_new.append(len(utterance_new))
         else:
             utterance_new.append(segment)
             print(len(segment_new))
