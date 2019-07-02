@@ -88,7 +88,7 @@ class ConvLSTM(nn.Module):
             self._all_layers.append(cell)
 
 
-    def forward(self, input, target):
+    def forward(self, input, target, train=True):
         # input should be a list of inputs, like a time stamp, maybe 1280 for 100 times.
         internal_state = []
         outputs = []
@@ -118,9 +118,9 @@ class ConvLSTM(nn.Module):
 
         out=self.classification(out)
         pdb.set_trace()
-        try:
+        if Train:
             loss = F.cross_entropy(out, torch.max(target, 1)[1].to(self.device))
-        except:
+        else:
             loss=torch.zeros(10,10)
         return torch.unsqueeze(out,dim=0), torch.unsqueeze(loss, dim=0)
 
