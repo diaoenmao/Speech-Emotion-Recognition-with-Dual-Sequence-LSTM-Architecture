@@ -78,15 +78,15 @@ for epoch in range(200):  # again, normally you would NOT do 300 epochs, it is t
     test_loss.append(losses_test)
     train_loss.append(losses)
     print("Epoch: {}-----------Training Loss: {} -------- Testing Loss: {} -------- Training Acc: {} -------- Testing Acc: {}".format(epoch+1,losses,losses_test, accuracy, accuracy_test)+"\n")
-    #with open("/scratch/speech/models/classification/spectrogram_stats.txt","a+") as f:
-        #f.write("Epoch: {}-----------Training Loss: {} -------- Testing Loss: {} -------- Training Acc: {} -------- Testing Acc: {}".format(epoch+1,losses,losses_test, accuracy, accuracy_test)+"\n")
+    with open("/scratch/speech/models/classification/spectrogram_stats.txt","a+") as f:
+        f.write("Epoch: {}-----------Training Loss: {} -------- Testing Loss: {} -------- Training Acc: {} -------- Testing Acc: {}".format(epoch+1,losses,losses_test, accuracy, accuracy_test)+"\n")
 
 
     scheduler.step()
 
 
-#pickle_out=open("/scratch/speech/models/classification/spectrogram_checkpoint_stats.pkl","wb")
-#pickle.dump({"test_acc":test_acc, "train_acc": train_acc, "test_loss": test_loss, "train_loss": train_loss},pickle_out)
-#pickle_out.close()
+pickle_out=open("/scratch/speech/models/classification/spectrogram_checkpoint_stats.pkl","wb")
+pickle.dump({"test_acc":test_acc, "train_acc": train_acc, "test_loss": test_loss, "train_loss": train_loss},pickle_out)
+pickle_out.close()
 
 #torch.save(model.state_dict(), model_path)
