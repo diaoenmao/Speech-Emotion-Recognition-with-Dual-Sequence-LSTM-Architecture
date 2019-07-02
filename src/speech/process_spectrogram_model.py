@@ -26,7 +26,7 @@ class IEMOCAP(Dataset):
 
 def my_collate(batch):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    pdb.set_trace()
+    #pdb.set_trace()
     #input = torch.from_numpy((np.array([item['input'] for item in batch])).astype('float')).permute(0,3,1,2)
     input = torch.FloatTensor([item['input'] for item in batch]).permute(0,3,1,2)
     # input = [x.cuda() for x in input]
