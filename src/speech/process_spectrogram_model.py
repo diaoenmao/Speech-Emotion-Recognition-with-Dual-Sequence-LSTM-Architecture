@@ -26,6 +26,7 @@ class IEMOCAP(Dataset):
 
 def my_collate(batch):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    pdb.set_trace()
     input = torch.from_numpy(np.array([item['input'] for item in batch])).to(device)
     # input = [x.cuda() for x in input]
     target = torch.from_numpy(np.array([item['target'] for item in batch]))
