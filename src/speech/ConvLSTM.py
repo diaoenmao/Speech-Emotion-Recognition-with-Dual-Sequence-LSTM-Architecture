@@ -117,10 +117,11 @@ class ConvLSTM(nn.Module):
             out=torch.mean(torch.cat(out,dim=3))
 
         out=self.classification(out)
-        pdb.set_trace()
-        if Train:
+        if train:
             loss = F.cross_entropy(out, torch.max(target, 1)[1].to(self.device))
+            out=torch.unsqueeze(out,dim=0)
+            loss=torch.unsqueeze(loss, dim=0)
         else:
-            loss=torch.zeros(10,10)
-        return torch.unsqueeze(out,dim=0), torch.unsqueeze(loss, dim=0)
+            loss=None
+        return out, loss
 
