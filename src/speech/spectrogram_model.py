@@ -38,7 +38,7 @@ class SpectrogramModel(nn.Module):
         self.max_pool1 = nn.MaxPool2d(self.kernel_size_pool//2, stride=self.stride_pool//2)
         self.max_pool = nn.MaxPool2d(self.kernel_size_pool, stride=self.stride_pool)
         self.max_pool4 = nn.MaxPool2d(int(self.kernel_size_pool*5/4), stride=int(self.stride_pool*5/4))
-        self.lstm = nn.LSTM(int(480/256), self.hidden_dim, self.num_layers, batch_first=True,
+        self.lstm = nn.LSTM(int(640/160), self.hidden_dim, self.num_layers, batch_first=True,
                            dropout=self.dropout_rate, bidirectional=self.bidirectional).to(self.device)
         self.classification = nn.Linear(self.hidden_dim * self.num_directions, self.num_labels).to(self.device)
 
@@ -77,6 +77,8 @@ class SpectrogramModel(nn.Module):
         print(out.shape)
         out = self.max_pool4(out)
         print(out.shape)
+        #out = torch.flatten(out, start_dim=2, end_dim=3)
+        out = torch.view(list(out.size())[0], list(out.size())[1], -1)
         #pdb.set_trace()
         out, hn = self.lstm(out)
 #        print(out.shape)
