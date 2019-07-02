@@ -76,7 +76,7 @@ with torch.no_grad():
             if j==torch.argmax(torch.sum(out[temp:temp1,:],dim=0)):
                 correct_test+=1
         print(correct_test)
-accuracy_test = correct_test * 1.0 / (len(testing_data)-res)
+accuracy_test = correct_test * 1.0 / (len(testing_data))
 print(accuracy_test)
 
 
