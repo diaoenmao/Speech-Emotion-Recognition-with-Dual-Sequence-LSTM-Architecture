@@ -106,6 +106,7 @@ for epoch in range(300):  # again, normally you would NOT do 300 epochs, it is t
             temp=0
             temp1=0
             for i,j in enumerate(target_index):
+                pdb.set_trace()
                 temp1+=seq_length[i]
                 if j==torch.argmax(torch.sum(out[temp:temp1,:],dim=0)):
                     correct_test+=1
