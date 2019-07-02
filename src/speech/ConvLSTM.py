@@ -120,6 +120,6 @@ class ConvLSTM(nn.Module):
         try:
             loss = F.cross_entropy(out, torch.max(target, 1)[1].to(self.device))
         except:
-            loss=torch.zeros(1,1)
+            loss=torch.zeros(10,10)
         return torch.unsqueeze(out,dim=0), torch.unsqueeze(loss, dim=0)
 
