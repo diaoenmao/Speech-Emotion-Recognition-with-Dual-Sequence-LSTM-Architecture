@@ -35,7 +35,7 @@ scheduler2 =CosineAnnealingLR(optimizer2, T_max=300, eta_min=0.0001)
 
 # Load the training data
 training_data = IEMOCAP(train=True, segment=True)
-train_loader = DataLoader(dataset=training_data, batch_size=400, shuffle=True, collate_fn=my_collate_train, num_workers=0)
+train_loader = DataLoader(dataset=training_data, batch_size=400, shuffle=True, collate_fn=my_collate_train, num_workers=0, drop_last=True)
 testing_data = IEMOCAP(train=False, segment=True)
 test_loader = DataLoader(dataset=testing_data, batch_size=100, shuffle=True, collate_fn=my_collate_test, num_workers=0)
 print("=================")
@@ -59,11 +59,6 @@ for epoch in range(300):  # again, normally you would NOT do 300 epochs, it is t
         input=input.float()
         input = input.unsqueeze(1)
         input=torch.split(input,int(32000/step),dim=2)
-        res=target.shape[0]%num_devices
-        quo=target.shape[0]//num_devices
-        if res !=0:
-            target=target[:num_devices*quo]
-            input=[t[:num_devices*quo] for t in input]
 
         model.zero_grad()
         out, loss = model(input, target)
@@ -79,8 +74,8 @@ for epoch in range(300):  # again, normally you would NOT do 300 epochs, it is t
         target_index = torch.argmax(target, dim=1).to(device)
         correct += sum(index == target_index).item()
 
-    accuracy=correct*1.0/(len(training_data)-res)
-    losses=losses / (len(training_data)-res)
+    accuracy=correct*1.0/(len(training_data))
+    losses=losses / (len(training_data))
 
     # we save the model, and run it on single gpu
     torch.save(model.module.state_dict(), "/scratch/speech/models/classification/ConvLSTM_checkpoint_epoch_{}.pt".format(epoch+1))
