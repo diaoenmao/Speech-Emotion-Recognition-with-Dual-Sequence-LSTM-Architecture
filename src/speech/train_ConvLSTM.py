@@ -2,7 +2,7 @@ import torch
 from torch import optim
 from raw_audio_model import RawAudioModel
 from ConvLSTM import ConvLSTM
-from process_raw_audio_model import IEMOCAP, my_collate
+from process_raw_audio_model import IEMOCAP, my_collate_train, my_collate_test
 from torch.utils.data import DataLoader
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 from torch.optim.lr_scheduler import CosineAnnealingLR
