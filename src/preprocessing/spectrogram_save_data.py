@@ -38,9 +38,9 @@ def extract_features(dataframe):
         try:
             x = len(im)
             input.append(im)
+            target.append(encode[emotion])
         except:
             print("no data found at index" + str(i))
-        target.append(encode[emotion])
 
     return input, target
 
