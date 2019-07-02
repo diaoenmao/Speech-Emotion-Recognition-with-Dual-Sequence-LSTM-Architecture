@@ -20,7 +20,7 @@ model = ConvLSTM(1, hidden_channels,kernel_size,step,True)
 print("============================ Number of parameters ====================================")
 print(str(sum(p.numel() for p in model.parameters() if p.requires_grad)))
 model.cuda()
-device_ids=[0,1,2,3]
+device_ids=[0,1]
 num_devices=len(device_ids)
 model=DataParallel(model,device_ids=device_ids)
 model.train()
@@ -35,7 +35,7 @@ scheduler2 =CosineAnnealingLR(optimizer2, T_max=300, eta_min=0.0001)
 
 # Load the training data
 training_data = IEMOCAP(train=True, segment=True)
-train_loader = DataLoader(dataset=training_data, batch_size=400, shuffle=True, collate_fn=my_collate_train, num_workers=0)
+train_loader = DataLoader(dataset=training_data, batch_size=200, shuffle=True, collate_fn=my_collate_train, num_workers=0)
 testing_data = IEMOCAP(train=False, segment=True)
 test_loader = DataLoader(dataset=testing_data, batch_size=100, shuffle=True, collate_fn=my_collate_test, num_workers=0)
 print("=================")
