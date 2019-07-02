@@ -55,15 +55,16 @@ with torch.no_grad():
             for j in i:
                 temp.append(j)
         test_case=temp
+        length=test_case.shape[0]
         test_case=torch.from_numpy(np.array([i for i in test_case])).to(device)
 
         test_case=test_case.float()
         test_case = test_case.unsqueeze(1)
         test_case=torch.split(test_case,int(32000/step),dim=2)
+        pdb.set_trace()
 
-
-        res=target.shape[0]%num_devices
-        quo=target.shape[0]//num_devices
+        res=length%num_devices
+        quo=length//num_devices
         if res !=0:
             target=target[:num_devices*quo]
             test_case=[t[:num_devices*quo] for t in test_case]
