@@ -41,7 +41,7 @@ class SpectrogramModel(nn.Module):
                            dropout=self.dropout_rate, bidirectional=self.bidirectional).to(self.device)
         self.classification = nn.Linear(self.hidden_dim * self.num_directions, self.num_labels).to(self.device)
 
-    def forward(self, input, target, seq_length, train=True):
+    def forward(self, input, target, train=True):
         input = input.to(self.device)
         target = target.to(self.device)
         out = self.cnn1(input)
