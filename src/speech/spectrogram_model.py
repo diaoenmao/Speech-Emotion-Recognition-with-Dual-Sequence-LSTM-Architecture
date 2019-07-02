@@ -76,7 +76,7 @@ class SpectrogramModel(nn.Module):
 #        print(out.shape)
         out = self.max_pool(out)
 #        print(out.shape)
-
+        pdb.set_trace()
         out, hn = self.lstm(out)
 #        print(out.shape)
         out = torch.mean(out, dim=1)
