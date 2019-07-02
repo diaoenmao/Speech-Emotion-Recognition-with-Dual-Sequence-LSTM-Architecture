@@ -113,6 +113,7 @@ for epoch in range(300):  # again, normally you would NOT do 300 epochs, it is t
                 print(j)
                 print(torch.argmax(torch.sum(out[temp:temp1,:],dim=0)))
                 print("=========")
+                pdb.set_trace()
                 if j==torch.argmax(torch.sum(out[temp:temp1,:],dim=0)):
                     correct_test+=1
                 temp=temp1
