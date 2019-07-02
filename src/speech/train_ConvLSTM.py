@@ -106,7 +106,7 @@ for epoch in range(300):  # again, normally you would NOT do 300 epochs, it is t
             temp=0
             temp1=0
             for i,j in enumerate(target_index):
-                temp1+=seq_length[i]
+                temp1+=seq_length[i].item()
                 print("=========")
                 print(temp)
                 print(temp1)
