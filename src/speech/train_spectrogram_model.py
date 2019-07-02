@@ -41,6 +41,7 @@ for epoch in range(200):  # again, normally you would NOT do 300 epochs, it is t
        # if (j+1)%50==0: print("================================= Batch"+ str(j+1)+ "===================================================")
         input=input.float()
         #input = input.unsqueeze(1)
+        input = input.permute(2, 0, 1)
         model.zero_grad()
         out, loss = model(input, target)
         loss = torch.mean(loss)
