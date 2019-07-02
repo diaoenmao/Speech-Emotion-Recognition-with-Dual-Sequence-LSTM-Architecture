@@ -46,6 +46,9 @@ test_loss=[]
 train_loss=[]
 epoch=0
 #torch.save(model.module.state_dict(), "/scratch/speech/models/classification/ConvLSTM_checkpoint_epoch_{}.pt".format(epoch))
+hidden_channels=[64,32,16]
+kernel_size=[9,5,5]
+step=100
 losses_test = 0
 correct_test = 0
 model1=ConvLSTM(1, hidden_channels,kernel_size,step,True)
