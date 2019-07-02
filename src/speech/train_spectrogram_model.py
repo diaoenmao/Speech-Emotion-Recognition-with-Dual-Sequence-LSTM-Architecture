@@ -10,7 +10,7 @@ from torch.nn import DataParallel
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-model = SpectrogramModel(3, 64, 3, 1, 1, 4, 4, 200, 2, 0.2, 4, 100, True)
+model = SpectrogramModel(3, 64, 3, 1, 1, 4, 4, 200, 2, 0.2, 4, 40, True)
 model.cuda()
 model=DataParallel(model,device_ids=[0,1,2,3])
 model.train()
@@ -21,9 +21,9 @@ optimizer = optim.SGD(model.parameters(), lr=0.1)
 scheduler =Cos(optimizer, T_max=100, eta_min=0.0001)
 # Load the training data
 training_data = IEMOCAP(train=True)
-train_loader = DataLoader(dataset=training_data, batch_size=100, shuffle=True, collate_fn=my_collate, num_workers=0)
+train_loader = DataLoader(dataset=training_data, batch_size=40, shuffle=True, collate_fn=my_collate, num_workers=0)
 testing_data = IEMOCAP(train=False)
-test_loader = DataLoader(dataset=testing_data, batch_size=100, shuffle=True, collate_fn=my_collate, num_workers=0)
+test_loader = DataLoader(dataset=testing_data, batch_size=40, shuffle=True, collate_fn=my_collate, num_workers=0)
 
 test_acc=[]
 train_acc=[]
