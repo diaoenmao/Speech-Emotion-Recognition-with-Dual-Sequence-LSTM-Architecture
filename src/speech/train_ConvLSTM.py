@@ -30,9 +30,9 @@ scheduler = ReduceLROnPlateau(optimizer=optimizer,factor=0.5, patience=2, thresh
 #scheduler2=ReduceLROnPlateau(optimizer=optimizer2, factor=0.5, patience=2, threshold=1e-3)
 scheduler2 =CosineAnnealingLR(optimizer2, T_max=300, eta_min=0.0001)
 # Load the training data
-training_data = IEMOCAP(train=True, mike=True)
+training_data = IEMOCAP(train=True, segment=True)
 train_loader = DataLoader(dataset=training_data, batch_size=100, shuffle=True, collate_fn=my_collate, num_workers=0)
-testing_data = IEMOCAP(train=False, mike=True)
+testing_data = IEMOCAP(train=False, segment=True)
 test_loader = DataLoader(dataset=testing_data, batch_size=100, shuffle=True, collate_fn=my_collate, num_workers=0)
 print("=================")
 print(len(training_data))
@@ -83,10 +83,19 @@ for epoch in range(300):  # again, normally you would NOT do 300 epochs, it is t
 
     model.eval()
     with torch.no_grad():
-        for test_case, target, _ in test_loader:
+        for test_case, target, seq_length in test_loader:
+            temp=[]
+            for i in test_case:
+                for j in i:
+                    temp.append(i)
+            test_case=temp
+            test_case=torch.from_numpy(np.array([i for i in test_case])).to(device)
+
             test_case=test_case.float()
             test_case = test_case.unsqueeze(1)
             test_case=torch.split(test_case,int(32000/step),dim=2)
+
+
             res=target.shape[0]%num_devices
             quo=target.shape[0]//num_devices
             if res !=0:
@@ -94,14 +103,20 @@ for epoch in range(300):  # again, normally you would NOT do 300 epochs, it is t
                 test_case=[t[:num_devices*quo] for t in test_case]
             out, loss = model(test_case, target)
 
-            loss = torch.mean(loss,dim=0)
+            loss = torch.flatten(loss,start_dim=0, end_dim=1)
             out=torch.flatten(out,start_dim=0,end_dim=1)
 
-            index = torch.argmax(out, dim=1)
+
             target_index = torch.argmax(target, dim=1).to(device)
-            loss = torch.mean(loss)
-            losses_test += loss.item() * index.shape[0]
-            correct_test += sum(index == target_index).item()
+
+            temp=0
+            temp1=0
+            for i,j in enumerate(target_index):
+                temp1+=seq_length[i]
+                if j==torch.argmax(torch.sum(out[temp:temp1,:],dim=0)):
+                    correct_test+=1
+                losses_test+=torch.sum(out[temp:temp1,j]).item()
+
     accuracy_test = correct_test * 1.0 / (len(testing_data)-res)
     losses_test = losses_test / (len(testing_data)-res)
     #if losses_test<0.95: scheduler=scheduler2; optimizer=optimizer2
