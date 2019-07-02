@@ -52,7 +52,8 @@ model1=DataParallel(model1,device_ids=[0])
 model.eval()
 print("success")
 with torch.no_grad():
-    for test_case, target, seq_length in test_loader:
+    for j,(test_case, target, seq_length) in enumerate(test_loader):
+        print(j)
         temp=[]
         for i in test_case:
             for j in i:
@@ -76,6 +77,7 @@ with torch.no_grad():
             temp1+=seq_length[i]
             if j==torch.argmax(torch.sum(out[temp:temp1,:],dim=0)):
                 correct_test+=1
+        print(correct_test)
 accuracy_test = correct_test * 1.0 / (len(testing_data)-res)
 print(accuracy_test)
 
