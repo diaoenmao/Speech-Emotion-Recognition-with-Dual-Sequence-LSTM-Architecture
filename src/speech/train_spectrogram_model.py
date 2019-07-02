@@ -46,6 +46,7 @@ for epoch in range(200):  # again, normally you would NOT do 300 epochs, it is t
         model.zero_grad()
         out, loss = model(input, target)
         loss = torch.mean(loss)
+        print(loss)
         losses += loss.item() * target.shape[0]
         loss.backward()
         optimizer.step()
