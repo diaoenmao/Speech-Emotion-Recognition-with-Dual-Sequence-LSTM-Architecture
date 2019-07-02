@@ -20,8 +20,11 @@ class IEMOCAP(Dataset):
         return len(self.input)
 
     def __getitem__(self, index):
-        sample = {'input': (self.input[index]).tolist(),
-                  'target': self.target[index]}
+        try:
+            sample = {'input': (self.input[index]).tolist(),
+                    'target': self.target[index]}
+        except:
+            pdb.set_trace()
         return sample
 
 def my_collate(batch):
