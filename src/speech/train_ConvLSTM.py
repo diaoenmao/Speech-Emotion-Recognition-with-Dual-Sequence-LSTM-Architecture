@@ -20,7 +20,7 @@ model = ConvLSTM(1, hidden_channels,kernel_size,step,True)
 print("============================ Number of parameters ====================================")
 print(str(sum(p.numel() for p in model.parameters() if p.requires_grad)))
 model.cuda()
-device_ids=[0,1,2,3]
+device_ids=[0,1]
 num_devices=len(device_ids)
 model=DataParallel(model,device_ids=device_ids)
 model.train()
@@ -115,7 +115,7 @@ for epoch in range(300):  # again, normally you would NOT do 300 epochs, it is t
     train_loss.append(losses)
     print("Epoch: {}-----------Training Loss: {}  -------- Training Acc: {} -------- Testing Acc: {}".format(epoch+1,losses, accuracy, accuracy_test)+"\n")
     with open("/scratch/speech/models/classification/ConvLSTM_checkpoint_stats.txt","a+") as f:
-        if epoch==0: f.write("=============================  Begining New Model =======================================================")
+        if epoch==0: f.write("+\n"+"=============================  Begining New Model ======================================================="+"\n")
         f.write("Epoch: {}-----------Training Loss: {} -------- Training Acc: {} -------- Testing Acc: {}".format(epoch+1,losses, accuracy, accuracy_test)+"\n")
     scheduler.step(losses)
     #scheduler2.step()
