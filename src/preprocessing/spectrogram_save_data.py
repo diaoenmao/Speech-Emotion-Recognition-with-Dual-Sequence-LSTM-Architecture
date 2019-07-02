@@ -31,9 +31,8 @@ def extract_features(dataframe):
         #plt.show()
         index = file.rfind('/')
         basename = file[(index + 1):-4]
-        if i >= 1288:
-            plt.savefig(endpoint + '{}_spec.png'.format(basename), bbox_inches='tight', pad_inches=0)
-        print(i)
+        #plt.savefig(endpoint + '{}_spec.png'.format(basename), bbox_inches='tight', pad_inches=0)
+        #print(i)
         im = cv2.imread(endpoint + '{}_spec.png'.format(basename))
         input.append(im)
         target.append(encode[emotion])
