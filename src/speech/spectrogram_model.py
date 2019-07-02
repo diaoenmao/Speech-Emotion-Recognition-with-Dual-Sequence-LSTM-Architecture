@@ -78,7 +78,7 @@ class SpectrogramModel(nn.Module):
         out = self.max_pool4(out)
         print(out.shape)
         #out = torch.flatten(out, start_dim=2, end_dim=3)
-        out = torch.view(list(out.size())[0], list(out.size())[1], -1)
+        out = out.view(list(out.size())[0], list(out.size())[1], -1)
         #pdb.set_trace()
         out, hn = self.lstm(out)
 #        print(out.shape)
