@@ -6,6 +6,7 @@ import pandas as pd
 import matplotlib.ticker as ticker
 import cv2
 from sklearn.model_selection import train_test_split
+import pickle
 
 in_file = '/scratch/speech/raw_audio_dataset/audio_paths_labels_updated.csv'
 df = pd.read_csv(in_file)
