@@ -35,7 +35,7 @@ scheduler2 =CosineAnnealingLR(optimizer2, T_max=300, eta_min=0.0001)
 
 # Load the training data
 training_data = IEMOCAP(train=True, segment=True)
-train_loader = DataLoader(dataset=training_data, batch_size=100, shuffle=True, collate_fn=my_collate_train, num_workers=0)
+train_loader = DataLoader(dataset=training_data, batch_size=300, shuffle=True, collate_fn=my_collate_train, num_workers=0)
 testing_data = IEMOCAP(train=False, segment=True)
 test_loader = DataLoader(dataset=testing_data, batch_size=100, shuffle=True, collate_fn=my_collate_test, num_workers=0)
 print("=================")
@@ -85,18 +85,16 @@ for epoch in range(300):  # again, normally you would NOT do 300 epochs, it is t
     # we save the model, and run it on single gpu
     torch.save(model.module.state_dict(), "/scratch/speech/models/classification/ConvLSTM_checkpoint_epoch_{}.pt".format(epoch+1))
     model1=ConvLSTM(1, hidden_channels,kernel_size,step,True)
-    model1.load_state_dict(torch.load("/scratch/speech/models/classification/ConvLSTM_checkpoint_epoch_{}.pt".format(epoch)))
+    model1.load_state_dict(torch.load("/scratch/speech/models/classification/ConvLSTM_checkpoint_epoch_{}.pt".format(epoch+1)))
     model1.eval()
     with torch.cuda.device(0):
         model1.cuda()
-    print("success")
     with torch.no_grad():
-        for j,(test_case, target, seq_length) in enumerate(test_loader):
-            print(j)
+        for test_case, target, seq_length in test_loader:
             temp=[]
             for i in test_case:
-                for j in i:
-                    temp.append(j)
+                for k in i:
+                    temp.append(k)
             test_case=torch.from_numpy(np.array([i for i in temp])).to(device)
             length=test_case.shape[0]
 
@@ -111,7 +109,8 @@ for epoch in range(300):  # again, normally you would NOT do 300 epochs, it is t
                 temp1+=seq_length[i]
                 if j==torch.argmax(torch.sum(out[temp:temp1,:],dim=0)):
                     correct_test+=1
-            print(correct_test)
+                temp=temp1
+
     accuracy_test = correct_test * 1.0 / (len(testing_data))
     #if losses_test<0.95: scheduler=scheduler2; optimizer=optimizer2
 
@@ -121,9 +120,8 @@ for epoch in range(300):  # again, normally you would NOT do 300 epochs, it is t
     train_loss.append(losses)
     print("Epoch: {}-----------Training Loss: {}  -------- Training Acc: {} -------- Testing Acc: {}".format(epoch+1,losses, accuracy, accuracy_test)+"\n")
     with open("/scratch/speech/models/classification/ConvLSTM_checkpoint_stats.txt","a+") as f:
+        if epoch==0: f.write("=============================  Begining New Model =======================================================")
         f.write("Epoch: {}-----------Training Loss: {} -------- Training Acc: {} -------- Testing Acc: {}".format(epoch+1,losses, accuracy, accuracy_test)+"\n")
-
-
     scheduler.step(losses)
     #scheduler2.step()
 
