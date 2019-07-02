@@ -39,7 +39,7 @@ def extract_features(dataframe):
             x = len(im)
             input.append(im)
         except:
-            print("no data found at index" + i)
+            print("no data found at index" + str(i))
         target.append(encode[emotion])
 
     return input, target
