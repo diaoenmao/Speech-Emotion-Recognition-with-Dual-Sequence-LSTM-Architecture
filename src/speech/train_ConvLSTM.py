@@ -67,14 +67,10 @@ with torch.no_grad():
         test_case=test_case.float()
         test_case = test_case.unsqueeze(1)
         test_case=torch.split(test_case,int(32000/step),dim=2)
-        pdb.set_trace()
         out = model1(test_case, target, False)
-
+        pdb.set_trace()
         out=torch.flatten(out,start_dim=0,end_dim=1)
-
-
         target_index = torch.argmax(target, dim=1).to(device)
-
         temp=0
         temp1=0
         for i,j in enumerate(target_index):
