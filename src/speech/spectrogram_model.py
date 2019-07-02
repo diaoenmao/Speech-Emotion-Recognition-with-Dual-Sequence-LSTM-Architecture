@@ -32,7 +32,7 @@ class SpectrogramModel(nn.Module):
         self.batch2 = nn.BatchNorm2d(self.out_channels)
         self.cnn3 = nn.Conv2d(self.out_channels, self.out_channels*2, self.kernel_size_cnn, stride=self.stride_cnn, padding=self.padding_cnn).to(self.device)
         self.batch3 = nn.BatchNorm2d(self.out_channels*2)
-        self.cnn4 = nn.Conv2d(self.out_channels*2, self.out_channels*2, self.kernel_size_cnn, stride=self.stride_cnn, padding=self.padding_cnn).to(self.device)
+        self.cnn4 = nn.Conv2d(self.out_channels*2, self.out_channels*2, int(self.kernel_size_cnn*5/4), stride=int(self.stride_cnn*5/4), padding=self.padding_cnn).to(self.device)
         self.batch4 = nn.BatchNorm2d(self.out_channels*2)
         self.relu = nn.ReLU()
         self.max_pool1 = nn.MaxPool2d(self.kernel_size_pool//2, stride=self.stride_pool//2)
