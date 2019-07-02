@@ -53,9 +53,8 @@ with torch.no_grad():
         temp=[]
         for i in test_case:
             for j in i:
-                temp.append(i)
+                temp.append(j)
         test_case=temp
-        pdb.set_trace()
         test_case=torch.from_numpy(np.array([i for i in test_case])).to(device)
 
         test_case=test_case.float()
