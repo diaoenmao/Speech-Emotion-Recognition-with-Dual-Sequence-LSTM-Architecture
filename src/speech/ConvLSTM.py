@@ -94,7 +94,7 @@ class ConvLSTM(nn.Module):
     def forward(self, input, target, seq_length):
         # input should be a list of inputs, like a time stamp, maybe 1280 for 100 times.
         ##data process here
-        print("input:",len(input))
+        print(seq_length)
         temp=[]
         pdb.set_trace()
         for i in input:
