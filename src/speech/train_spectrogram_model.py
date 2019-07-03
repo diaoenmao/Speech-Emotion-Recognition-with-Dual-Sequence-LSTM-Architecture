@@ -10,7 +10,7 @@ from torch.nn import DataParallel
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-model = SpectrogramModel(3, 64, 3, 1, 1, 4, 4, 200, 2, 0.2, 4, 64, True)
+model = SpectrogramModel(3, 64, 3, 1, 1, 4, 4, 200, 2, 0.2, 4, 80, True)
 #with torch.cuda.device(2):
     #model.cuda()
 model=DataParallel(model,device_ids=[0,1,2,3])
@@ -23,9 +23,9 @@ optimizer = optim.Adam(model.parameters(), lr=0.001)
 #scheduler =Cos(optimizer, T_max=100, eta_min=0.0001)
 # Load the training data
 training_data = IEMOCAP(train=True)
-train_loader = DataLoader(dataset=training_data, batch_size=64, shuffle=True, collate_fn=my_collate, num_workers=0,drop_last=True)
+train_loader = DataLoader(dataset=training_data, batch_size=80, shuffle=True, collate_fn=my_collate, num_workers=0,drop_last=True)
 testing_data = IEMOCAP(train=False)
-test_loader = DataLoader(dataset=testing_data, batch_size=64, shuffle=True, collate_fn=my_collate, num_workers=0,drop_last=True)
+test_loader = DataLoader(dataset=testing_data, batch_size=80, shuffle=True, collate_fn=my_collate, num_workers=0,drop_last=True)
 
 test_acc=[]
 train_acc=[]
@@ -40,7 +40,7 @@ for epoch in range(200):  # again, normally you would NOT do 300 epochs, it is t
     correct_test = 0
     model.train()
     for j, (input, target) in enumerate(train_loader):
-       # if (j+1)%50==0: print("================================= Batch"+ str(j+1)+ "===================================================")
+       if (j+1)%10==0: print("================================= Batch"+ str(j+1)+ "===================================================")
         #input=input.float()
         #input = input.unsqueeze(1)
         #pdb.set_trace()
@@ -48,7 +48,6 @@ for epoch in range(200):  # again, normally you would NOT do 300 epochs, it is t
         model.zero_grad()
         out, loss = model(input, target)
         loss = torch.mean(loss)
-        print(loss)
         losses += loss.item() * target.shape[0]
         loss.backward()
         optimizer.step()
