@@ -10,7 +10,7 @@ from torch.nn import DataParallel
 
 device = torch.device('cuda:2' if torch.cuda.is_available() else 'cpu')
 
-model = SpectrogramModel(3, 64, 3, 1, 1, 4, 4, 200, 2, 0.2, 4, 40, True)
+model = SpectrogramModel(3, 64, 3, 1, 1, 4, 4, 200, 2, 0.2, 4, 20, True)
 with torch.cuda.device(2):
     model.cuda()
 model=DataParallel(model,device_ids=[2,3])
@@ -22,9 +22,9 @@ optimizer = optim.SGD(model.parameters(), lr=0.1)
 scheduler =Cos(optimizer, T_max=100, eta_min=0.0001)
 # Load the training data
 training_data = IEMOCAP(train=True)
-train_loader = DataLoader(dataset=training_data, batch_size=40, shuffle=True, collate_fn=my_collate, num_workers=0)
+train_loader = DataLoader(dataset=training_data, batch_size=20, shuffle=True, collate_fn=my_collate, num_workers=0)
 testing_data = IEMOCAP(train=False)
-test_loader = DataLoader(dataset=testing_data, batch_size=40, shuffle=True, collate_fn=my_collate, num_workers=0)
+test_loader = DataLoader(dataset=testing_data, batch_size=20, shuffle=True, collate_fn=my_collate, num_workers=0)
 
 test_acc=[]
 train_acc=[]
@@ -78,15 +78,15 @@ for epoch in range(200):  # again, normally you would NOT do 300 epochs, it is t
     test_loss.append(losses_test)
     train_loss.append(losses)
     print("Epoch: {}-----------Training Loss: {} -------- Testing Loss: {} -------- Training Acc: {} -------- Testing Acc: {}".format(epoch+1,losses,losses_test, accuracy, accuracy_test)+"\n")
-    #with open("/scratch/speech/models/classification/spectrogram_stats.txt","a+") as f:
-        #f.write("Epoch: {}-----------Training Loss: {} -------- Testing Loss: {} -------- Training Acc: {} -------- Testing Acc: {}".format(epoch+1,losses,losses_test, accuracy, accuracy_test)+"\n")
+    with open("/scratch/speech/models/classification/spectrogram_stats.txt","a+") as f:
+        f.write("Epoch: {}-----------Training Loss: {} -------- Testing Loss: {} -------- Training Acc: {} -------- Testing Acc: {}".format(epoch+1,losses,losses_test, accuracy, accuracy_test)+"\n")
 
 
     scheduler.step()
 
 
-#pickle_out=open("/scratch/speech/models/classification/spectrogram_checkpoint_stats.pkl","wb")
-#pickle.dump({"test_acc":test_acc, "train_acc": train_acc, "test_loss": test_loss, "train_loss": train_loss},pickle_out)
-#pickle_out.close()
+pickle_out=open("/scratch/speech/models/classification/spectrogram_checkpoint_stats.pkl","wb")
+pickle.dump({"test_acc":test_acc, "train_acc": train_acc, "test_loss": test_loss, "train_loss": train_loss},pickle_out)
+pickle_out.close()
 
 #torch.save(model.state_dict(), model_path)
