@@ -56,7 +56,7 @@ for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is t
     model.train()
     for j, (input, target, seq_length, segment_labels) in enumerate(train_loader):
         model.zero_grad()
-        losses_batch,correct_batch, length= model(input, target,seq_length)
+        losses_batch= model(input, target,seq_length)
         loss=torch.mean(losses_batch,dim=0)
         length=torch.sum(length,dim=0)
         losses+=(loss*length).item()
