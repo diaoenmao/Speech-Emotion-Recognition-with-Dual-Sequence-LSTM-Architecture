@@ -61,7 +61,7 @@ for epoch in range(200):  # again, normally you would NOT do 300 epochs, it is t
 
     model.eval()
     for test_case, target in test_loader:
-        test_case=test_case.float()
+        #test_case=test_case.float()
         #test_case = test_case.unsqueeze(1)
         out, loss = model(test_case, target, train=False)
         index = torch.argmax(out, dim=1)
