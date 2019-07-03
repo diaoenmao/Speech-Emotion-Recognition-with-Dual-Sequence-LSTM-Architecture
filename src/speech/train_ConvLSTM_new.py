@@ -50,6 +50,7 @@ for epoch in range(300):  # again, normally you would NOT do 300 epochs, it is t
     correct=0
     losses_test = 0
     correct_test = 0
+    length_full=0
     model.train()
     for j, (input, target, seq_length, segment_labels) in enumerate(train_loader):
         if (j+1)%5==0: print("================================= Batch"+ str(j+1)+ "===================================================")
@@ -71,9 +72,10 @@ for epoch in range(300):  # again, normally you would NOT do 300 epochs, it is t
         correct+=correct_batch
         losses_batch.backward()
         optimizer.step()
+        length_full+=length
 
     accuracy=correct*1.0/(len(training_data))
-    losses=losses / (len(training_data))
+    losses=losses / (length_full)
 
     model.eval()
     with torch.no_grad():
@@ -89,7 +91,7 @@ for epoch in range(300):  # again, normally you would NOT do 300 epochs, it is t
             test_case = test_case.unsqueeze(1)
             test_case=torch.split(test_case,int(32000/step),dim=2)
             _,losses_batch,correct_batch = model(test_case, target,seq_length, length)
-            correct_test+=correct_batch*length
+            correct_test+=correct_batch
 
 
     accuracy_test = correct_test * 1.0 / (len(testing_data))
