@@ -67,10 +67,10 @@ for epoch in range(300):  # again, normally you would NOT do 300 epochs, it is t
         temp=[]
 
         model.zero_grad()
-        out,losses,correct_batch = model(input, target,seq_length)
+        out,losses_batch,correct_batch = model(input, target,seq_length,length)
+        losses+=losses_batch*length
         correct+=correct_batch
-        losses_mean=losses/length
-        losses.backward()
+        losses_batch.backward()
         optimizer.step()
 
     accuracy=correct*1.0/(len(training_data))
