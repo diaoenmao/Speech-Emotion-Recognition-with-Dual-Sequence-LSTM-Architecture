@@ -19,7 +19,7 @@ kernel_size=[9,5,5]
 step=100
 device_ids=[0,1]
 num_devices=len(device_ids)
-model = ConvLSTM(1, hidden_channels,kernel_size,num_devices,step,True)
+model = ConvLSTM(1, hidden_channels,kernel_size,step,num_devices,True)
 print("============================ Number of parameters ====================================")
 print(str(sum(p.numel() for p in model.parameters() if p.requires_grad)))
 model.cuda()
