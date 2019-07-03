@@ -54,8 +54,22 @@ for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is t
     correct_test = 0
     length_full=0
     model.train()
+    with open("/scratch/speech/models/classification/ConvLSTM_checkpoint_stats.txt","a+") as f:
+        if epoch==0: f.write("+\n"+"=============================  Begining New Model ======================================================="+"\n")
     for j, (input, target, seq_length, segment_labels) in enumerate(train_loader):
-        #print(seq_length)
+        batch_size=len(input)
+        if (j+1)%50==0: print("========================= Batch"+ str(j+1)+"=====================================")
+        all_lengths=[sum(seq_length[int(i*batch_size/num_devices):int((i+1)*batch_size/num_devices)])for i in range(num_devices)]
+        flag=False
+        for a in all_lengths:
+            if a >=120:
+                flag=True
+                break
+        if flag:
+            with open("/scratch/speech/models/classification/ConvLSTM_checkpoint_stats.txt","a+") as f:
+                print("Warning of memory overflow, skip batch"+str(j+1)+"batch_size"+str(max(all_lengths)))
+                f.write("\n"+"Warning of memory overflow, skip batch"+str(j+1)+"batch_size"+str(max(all_lengths))+"\n")
+            continue
         model.zero_grad()
         losses_batch,correct_batch, length= model(input, target,seq_length)
         loss=torch.mean(losses_batch,dim=0)
@@ -65,7 +79,6 @@ for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is t
         loss.backward()
         optimizer.step()
         length_full+=length.item()
-        if (j+1)%10==0: print("========================= Batch"+ str(j+1)+ str(length)+"=====================================")
     accuracy=correct*1.0/(len(training_data))
     losses=losses / (length_full)
 
