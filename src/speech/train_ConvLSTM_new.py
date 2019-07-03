@@ -61,7 +61,7 @@ for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is t
         loss=torch.mean(losses_batch,dim=0)
         length=torch.sum(length,dim=0)
         losses+=(loss*length).item()
-        correct+=(torch.sum(correct_batch,dim=0)*length).item()
+        correct+=(torch.sum(correct_batch,dim=0)).item()
         loss.backward()
         optimizer.step()
         length_full+=length.item()
@@ -73,7 +73,7 @@ for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is t
     with torch.no_grad():
         for test_case, target, seq_length,segment_labels in test_loader:
             losses_batch,correct_batch, length = model(test_case, target,seq_length)
-            correct_test+=(torch.sum(correct_batch,dim=0)*torch.sum(length,dim=0)).item()
+            correct_test+=(torch.sum(correct_batch,dim=0)).item()
 
     accuracy_test = correct_test * 1.0 / (len(testing_data))
     #if losses_test<0.95: scheduler=scheduler2; optimizer=optimizer2
