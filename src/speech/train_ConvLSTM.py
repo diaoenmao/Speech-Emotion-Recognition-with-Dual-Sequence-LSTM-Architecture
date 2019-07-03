@@ -62,6 +62,7 @@ for epoch in range(300):  # again, normally you would NOT do 300 epochs, it is t
 
         model.zero_grad()
         out, loss = model(input, target)
+        print(loss)
         #pdb.set_trace()
         loss = torch.mean(loss,dim=0)
         out=torch.flatten(out,start_dim=0,end_dim=1)
@@ -73,7 +74,6 @@ for epoch in range(300):  # again, normally you would NOT do 300 epochs, it is t
         index = torch.argmax(out, dim=1)
         target_index = torch.argmax(target, dim=1).to(device)
         correct += sum(index == target_index).item()
-
     accuracy=correct*1.0/(len(training_data))
     losses=losses / (len(training_data))
 
