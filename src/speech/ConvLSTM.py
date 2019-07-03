@@ -88,7 +88,7 @@ class ConvLSTM(nn.Module):
             self._all_layers.append(cell)
 
 
-    def forward(self, input, target, train=True):
+    def forward(self, input, target, multi_gpu=False):
         # input should be a list of inputs, like a time stamp, maybe 1280 for 100 times.
         internal_state = []
         outputs = []
@@ -117,11 +117,10 @@ class ConvLSTM(nn.Module):
             out=torch.mean(torch.cat(out,dim=3))
 
         out=self.classification(out)
-        if train:
+        loss=None
+        if multi_gpu:
             loss = F.cross_entropy(out, torch.max(target, 1)[1].to(self.device))
             out=torch.unsqueeze(out,dim=0)
             loss=torch.unsqueeze(loss, dim=0)
-        else:
-            loss=None
         return out, loss
 
