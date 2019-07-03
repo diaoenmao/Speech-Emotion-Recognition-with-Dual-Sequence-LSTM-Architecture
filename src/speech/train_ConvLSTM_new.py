@@ -60,9 +60,10 @@ for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is t
         batch_size=len(input)
         if (j+1)%50==0: print("========================= Batch"+ str(j+1)+"=====================================")
         all_lengths=[sum(seq_length[int(i*batch_size/num_devices):int((i+1)*batch_size/num_devices)])for i in range(num_devices)]
+        flag=False
         for a in all_lengths:
             if a >=80:
-                flag="warn"
+                flag=True
                 break
         if flag:
             with open("/scratch/speech/models/classification/ConvLSTM_checkpoint_stats.txt","a+") as f:
