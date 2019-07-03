@@ -124,13 +124,14 @@ class ConvLSTM(nn.Module):
         temp1=0
         correct_batch=0
         losses_batch=0
+
         for i,j in enumerate(target_index):
             temp1+=seq_length[i].item()
             loss=-1.0*torch.sum(F.log_softmax(out[temp:temp1,:],dim=1)[:,j],dim=0)
             if j==torch.argmax(torch.sum(out[temp:temp1,:],dim=0)):
                 correct_batch+=1
             temp=temp1
-        losses_batch += loss
+            losses_batch += loss
         losses_batch=losses_batch/length
         if multi_gpu:
             loss = F.cross_entropy(out, torch.max(target, 1)[1].to(self.device))
