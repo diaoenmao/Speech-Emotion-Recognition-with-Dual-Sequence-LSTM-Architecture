@@ -98,7 +98,7 @@ class ConvLSTM(nn.Module):
         batch_size=len(input)
         for i in range(self.num_devices):
             if seq_length.device.index==i:
-                input=[int(i*batch_size/self.num_devices):int((i+1)*batch_size/self.num_devices)]
+                input=input[int(i*batch_size/self.num_devices):int((i+1)*batch_size/self.num_devices)]
         for i in input:
             print(len(i).to(self.device))
         temp=[]
