@@ -135,7 +135,7 @@ class ConvLSTM(nn.Module):
         target_index = torch.argmax(target, dim=1).to(self.device)
         temp=0
         temp1=0
-        correct_batch=0
+        correct_batch=torch.tensor([0])
         losses_batch=0
 
         for i,j in enumerate(target_index):
