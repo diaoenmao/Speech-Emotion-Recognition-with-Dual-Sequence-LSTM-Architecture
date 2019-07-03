@@ -62,7 +62,7 @@ for epoch in range(300):  # again, normally you would NOT do 300 epochs, it is t
         input=input.float()
         input = input.unsqueeze(1)
         input=torch.split(input,int(32000/step),dim=2)
-
+        pdb.set_trace()
         temp=[]
 
         model.zero_grad()
