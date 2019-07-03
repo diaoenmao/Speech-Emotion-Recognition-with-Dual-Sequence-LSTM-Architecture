@@ -59,7 +59,6 @@ for epoch in range(300):  # again, normally you would NOT do 300 epochs, it is t
                 temp.append(k)
         input=torch.from_numpy(np.array([i for i in temp])).to(device)
         length=input.shape[0]
-        print(length)
         input=input.float()
         input = input.unsqueeze(1)
         input=torch.split(input,int(32000/step),dim=2)
