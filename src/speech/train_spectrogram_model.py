@@ -8,23 +8,24 @@ from torch.optim.lr_scheduler import CosineAnnealingLR as Cos
 import pdb
 from torch.nn import DataParallel
 
-device = torch.device('cuda:2' if torch.cuda.is_available() else 'cpu')
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-model = SpectrogramModel(3, 64, 3, 1, 1, 4, 4, 200, 2, 0.2, 4, 20, True)
-with torch.cuda.device(2):
-    model.cuda()
-model=DataParallel(model,device_ids=[2,3])
+model = SpectrogramModel(3, 64, 3, 1, 1, 4, 4, 200, 2, 0.2, 4, 64, True)
+#with torch.cuda.device(2):
+    #model.cuda()
+model=DataParallel(model,device_ids=[0,1,2,3])
+model.cuda()
 model.train()
 
 # Use Adam as the optimizer with learning rate 0.01 to make it fast for testing purposes
-optimizer = optim.SGD(model.parameters(), lr=0.1)
+optimizer = optim.Adam(model.parameters(), lr=0.001)
 #scheduler = ReduceLROnPlateau(optimizer=optimizer,factor=0.3, patience=5, threshold=1e-3)
-scheduler =Cos(optimizer, T_max=100, eta_min=0.0001)
+#scheduler =Cos(optimizer, T_max=100, eta_min=0.0001)
 # Load the training data
 training_data = IEMOCAP(train=True)
-train_loader = DataLoader(dataset=training_data, batch_size=20, shuffle=True, collate_fn=my_collate, num_workers=0)
+train_loader = DataLoader(dataset=training_data, batch_size=64, shuffle=True, collate_fn=my_collate, num_workers=0,drop_last=True)
 testing_data = IEMOCAP(train=False)
-test_loader = DataLoader(dataset=testing_data, batch_size=20, shuffle=True, collate_fn=my_collate, num_workers=0)
+test_loader = DataLoader(dataset=testing_data, batch_size=64, shuffle=True, collate_fn=my_collate, num_workers=0,drop_last=True)
 
 test_acc=[]
 train_acc=[]
@@ -82,7 +83,7 @@ for epoch in range(200):  # again, normally you would NOT do 300 epochs, it is t
         f.write("Epoch: {}-----------Training Loss: {} -------- Testing Loss: {} -------- Training Acc: {} -------- Testing Acc: {}".format(epoch+1,losses,losses_test, accuracy, accuracy_test)+"\n")
 
 
-    scheduler.step()
+    #scheduler.step()
 
 
 pickle_out=open("/scratch/speech/models/classification/spectrogram_checkpoint_stats.pkl","wb")
