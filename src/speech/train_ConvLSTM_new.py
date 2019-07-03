@@ -62,7 +62,7 @@ for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is t
         all_lengths=[sum(seq_length[int(i*batch_size/num_devices):int((i+1)*batch_size/num_devices)])for i in range(num_devices)]
         flag=False
         for a in all_lengths:
-            if a >=80:
+            if a >=120:
                 flag=True
                 break
         if flag:
