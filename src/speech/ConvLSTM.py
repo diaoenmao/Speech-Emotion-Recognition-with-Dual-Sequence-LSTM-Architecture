@@ -40,6 +40,7 @@ class ConvLSTMCell(nn.Module):
         self.Wci = None
         self.Wcf = None
         self.Wco = None
+        self.device=torch.device('cuda:1' if torch.cuda.is_available() else 'cpu')
 
     def forward(self, x, h, c):
         pdb.set_trace()
@@ -55,12 +56,12 @@ class ConvLSTMCell(nn.Module):
     def init_hidden(self, batch_size, hidden, shape):
 
         if self.Wci is None:
-            self.Wci = nn.Parameter(torch.zeros(1, hidden, shape))
-            self.Wcf = nn.Parameter(torch.zeros(1, hidden, shape))
-            self.Wco = nn.Parameter(torch.zeros(1, hidden, shape))
+            self.Wci = nn.Parameter(torch.zeros(1, hidden, shape)).to(self.device)
+            self.Wcf = nn.Parameter(torch.zeros(1, hidden, shape)).to(self.device)
+            self.Wco = nn.Parameter(torch.zeros(1, hidden, shape)).to(self.device)
 
-        return (nn.Parameter(torch.zeros(batch_size, hidden, shape)),
-                nn.Parameter(torch.zeros(batch_size, hidden, shape)))
+        return (nn.Parameter(torch.zeros(batch_size, hidden, shape)).to(self.device),
+                nn.Parameter(torch.zeros(batch_size, hidden, shape)).to(self.device))
 
 
 class ConvLSTM(nn.Module):
