@@ -62,7 +62,6 @@ for epoch in range(300):  # again, normally you would NOT do 300 epochs, it is t
 
         model.zero_grad()
         out, loss = model(input, target)
-        print(loss)
         #pdb.set_trace()
         loss = torch.mean(loss,dim=0)
         out=torch.flatten(out,start_dim=0,end_dim=1)
