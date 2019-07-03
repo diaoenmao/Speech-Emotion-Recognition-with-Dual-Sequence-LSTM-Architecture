@@ -68,7 +68,7 @@ for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is t
             with open("/scratch/speech/models/classification/ConvLSTM_checkpoint_stats.txt","a+") as f:
                 print("Warning of memory overflow, skip batch")
                 f.write("Warning of memory overflow, skip batch"+str(j+1))
-            continue()
+            continue
         model.zero_grad()
         losses_batch,correct_batch, length= model(input, target,seq_length)
         loss=torch.mean(losses_batch,dim=0)
