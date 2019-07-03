@@ -53,46 +53,24 @@ for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is t
     length_full=0
     model.train()
     for j, (input, target, seq_length, segment_labels) in enumerate(train_loader):
-        #if (j+1)%5==0: print("================================= Batch"+ str(j+1)+ "===================================================")
-        temp=[]
-        for i in input:
-            for k in i:
-                temp.append(k)
-        input=torch.from_numpy(np.array([i for i in temp])).to(device)
-        length=input.shape[0]
-        input=input.float()
-        input = input.unsqueeze(1)
-        input=torch.split(input,int(32000/step),dim=2)
-        #pdb.set_trace()
-        temp=[]
-
         model.zero_grad()
-        _,losses_batch,correct_batch = model(input, target,seq_length,length)
-        #print(losses_batch.item())
-        losses+=losses_batch*length
-        correct+=correct_batch
-        losses_batch.backward()
+        _,losses_batch,correct_batch, length= model(input, target,seq_length)
+        loss=torch.mean(losses_batch,dim=0)
+        length=torch.sum(length,dim=0)
+        losses+=(loss*length).item()
+        correct+=(torch.sum(correct_batch,dim=0)*length).item()
+        loss.backward()
         optimizer.step()
-        length_full+=length
+        length_full+=length.item()
+        if (j+1)%10==0: print("========================= Batch"+ str(j+1)+ str(length)+"=====================================")
     accuracy=correct*1.0/(len(training_data))
     losses=losses / (length_full)
 
     model.eval()
     with torch.no_grad():
         for test_case, target, seq_length,segment_labels in test_loader:
-            temp=[]
-            for i in test_case:
-                for k in i:
-                    temp.append(k)
-            test_case=torch.from_numpy(np.array([i for i in temp])).to(device)
-            length=test_case.shape[0]
-
-            test_case=test_case.float()
-            test_case = test_case.unsqueeze(1)
-            test_case=torch.split(test_case,int(32000/step),dim=2)
-            _,losses_batch,correct_batch = model(test_case, target,seq_length, length)
-            correct_test+=correct_batch
-
+            _,losses_batch,correct_batch, length = model(test_case, target,seq_length, length)
+            correct_test+=(torch.sum(correct_batch,dim=0)*torch.sum(length,dim=0)).item()
 
     accuracy_test = correct_test * 1.0 / (len(testing_data))
     #if losses_test<0.95: scheduler=scheduler2; optimizer=optimizer2
