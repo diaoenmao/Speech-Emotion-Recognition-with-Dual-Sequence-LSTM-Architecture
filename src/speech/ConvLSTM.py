@@ -99,7 +99,7 @@ class ConvLSTM(nn.Module):
             for k in i:
                 temp.append(k)
         input=torch.from_numpy(np.array([i for i in temp])).to(self.device)
-        length=input.shape[0]
+        length=torch.tensor([input.shape[0]])
         input=input.float()
         input = input.unsqueeze(1)
         input=torch.split(input,int(32000/self.step),dim=2)
