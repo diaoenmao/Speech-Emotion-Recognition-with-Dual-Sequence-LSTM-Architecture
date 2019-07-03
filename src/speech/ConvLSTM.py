@@ -149,5 +149,7 @@ class ConvLSTM(nn.Module):
         # losses_batch is normalized
         correct_batch=torch.unsqueeze(correct_batch,dim=0)
         losses_batch=torch.unsqueeze(losses_batch, dim=0)
+        length=torch.unsqueeze(length,dim=0)
+
         return out, losses_batch,correct_batch, length
 
