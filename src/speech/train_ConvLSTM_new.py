@@ -10,6 +10,7 @@ import pdb
 from torch.nn import DataParallel
 import pickle
 import numpy as np
+import torch.nn.functional as F
 
 path="/scratch/speech/models/classification/ConvLSTM_data_debug.pickle"
 device = torch.device('cuda:1' if torch.cuda.is_available() else 'cpu')
