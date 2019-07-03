@@ -96,10 +96,8 @@ class ConvLSTM(nn.Module):
         ##data process here
         print("input:",len(input))
         temp=[]
+        pdb.set_trace()
         for i in input:
-            print(self.device)
-            print(len(i))
-            print(self.device)
             for k in i:
                 temp.append(k)
         input=torch.from_numpy(np.array([i for i in temp])).to(self.device)
