@@ -79,10 +79,12 @@ class ConvLSTM(nn.Module):
         self.step = step
         self._all_layers = []
         self.num_labels=4
+
+        
         # max pooling
-        self.stride1=(4,4)
-        self.stride2=(4,2)
-        self.stride3=(3,2)
+        self.stride_pool1=(4,4)
+        self.stride_pool2=(4,2)
+        self.stride_pool3=(3,2)
 
         self.kernel_size_pool1=(8,8)
         self.kernel_size_pool2=(8,4)
@@ -95,7 +97,7 @@ class ConvLSTM(nn.Module):
 
 
         self.device= torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        self.linear_dim=int(self.hidden_channels[-1]*640/(self.step*self.stride1[1]*self.stride2[1]*self.stride3[1])*480/(self.stride1[0]*self.stride2[0]*self.stride3[0]))
+        self.linear_dim=int(self.hidden_channels[-1]*640/(self.step*self.stride_pool1[1]*self.stride_pool2[1]*self.stride_pool3[1])*480/(self.stride_pool1[0]*self.stride_pool2[0]*self.stride_pool3[0]))
         self.classification = nn.Linear(self.linear_dim, self.num_labels)
         self.attention=nn.Parameter(torch.zeros(self.linear_dim))
         self.attention_flag=attention_flag
