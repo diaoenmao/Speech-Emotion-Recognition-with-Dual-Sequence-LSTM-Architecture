@@ -12,14 +12,15 @@ import pickle
 import numpy as np
 
 path="/scratch/speech/models/classification/ConvLSTM_data_debug.pickle"
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+device = torch.device('cuda:1' if torch.cuda.is_available() else 'cpu')
 hidden_channels=[64,32,16]
 kernel_size=[9,5,5]
 step=100
 model = ConvLSTM(1, hidden_channels,kernel_size,step,True)
 print("============================ Number of parameters ====================================")
 print(str(sum(p.numel() for p in model.parameters() if p.requires_grad)))
-model.cuda()
+with torch.cuda.device(1):
+    model.cuda()
 model.train()
 
 # Use Adam as the optimizer with learning rate 0.01 to make it fast for testing purposes
@@ -61,6 +62,8 @@ for epoch in range(300):  # again, normally you would NOT do 300 epochs, it is t
         input = input.unsqueeze(1)
         input=torch.split(input,int(32000/step),dim=2)
 
+        temp=[]
+
         model.zero_grad()
         out,_ = model(input, target)
         target_index = torch.argmax(target, dim=1).to(device)
@@ -81,8 +84,6 @@ for epoch in range(300):  # again, normally you would NOT do 300 epochs, it is t
     losses=losses / (len(training_data))
 
     model.eval()
-    with torch.cuda.device(0):
-        model.cuda()
     with torch.no_grad():
         for test_case, target, seq_length,segment_labels in test_loader:
             temp=[]
