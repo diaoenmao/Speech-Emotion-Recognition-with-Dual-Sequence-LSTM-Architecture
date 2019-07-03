@@ -77,7 +77,7 @@ for epoch in range(300):  # again, normally you would NOT do 300 epochs, it is t
             if j==torch.argmax(torch.sum(out[temp:temp1,:],dim=0)):
                 correct+=1
             temp=temp1
-        losses += loss.item()
+        losses += loss
         losses_mean=losses/length
         losses.backward()
         optimizer.step()
