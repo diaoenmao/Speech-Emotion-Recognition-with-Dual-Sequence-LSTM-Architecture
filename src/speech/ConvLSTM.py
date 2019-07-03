@@ -148,8 +148,8 @@ class ConvLSTM(nn.Module):
                 correct_batch+=1
             temp=temp1
             losses_batch += loss
-        losses_batch=losses_batch/length
         pdb.set_trace()
+        losses_batch=losses_batch/length
         # losses_batch is normalized
         correct_batch=torch.unsqueeze(correct_batch,dim=0).float().to(self.device)
         losses_batch=torch.unsqueeze(losses_batch, dim=0).float().to(self.device)
