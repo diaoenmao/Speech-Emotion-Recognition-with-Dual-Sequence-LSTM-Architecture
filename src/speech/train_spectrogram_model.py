@@ -43,7 +43,6 @@ for epoch in range(200):  # again, normally you would NOT do 300 epochs, it is t
         if (j+1)%10==0: print("================================= Batch"+ str(j+1)+ "===================================================")
         model.zero_grad()
         out, loss = model(input, target,multi_gpu=True)
-        loss=torch.flatten(loss, start_dim=0,end_dim=1)
         loss = torch.mean(loss, dim=0)
         losses += loss.item() * target.shape[0]
         loss.backward()
