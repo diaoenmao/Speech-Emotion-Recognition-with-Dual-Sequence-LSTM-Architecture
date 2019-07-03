@@ -65,7 +65,7 @@ for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is t
         loss.backward()
         optimizer.step()
         length_full+=length.item()
-        if (j+1)%1==10: print("========================= Batch"+ str(j+1)+ str(length)+"=====================================")
+        if (j+1)%1==1: print("========================= Batch"+ str(j+1)+ str(length)+"=====================================")
     accuracy=correct*1.0/(len(training_data))
     losses=losses / (length_full)
 
