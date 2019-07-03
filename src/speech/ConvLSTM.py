@@ -102,7 +102,7 @@ class ConvLSTM(nn.Module):
         length=input.shape[0]
         input=input.float()
         input = input.unsqueeze(1)
-        input=torch.split(input,int(32000/step),dim=2)
+        input=torch.split(input,int(32000/self.step),dim=2)
 
 
         internal_state = []

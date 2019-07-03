@@ -13,7 +13,7 @@ import numpy as np
 import torch.nn.functional as F
 
 path="/scratch/speech/models/classification/ConvLSTM_data_debug.pickle"
-device = torch.device('cuda:1' if torch.cuda.is_available() else 'cpu')
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 hidden_channels=[64,32,16]
 kernel_size=[9,5,5]
 step=100
