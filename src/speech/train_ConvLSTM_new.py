@@ -10,6 +10,7 @@ import pdb
 from torch.nn import DataParallel
 import pickle
 import numpy as np
+import torch.nn.functional as F
 
 path="/scratch/speech/models/classification/ConvLSTM_data_debug.pickle"
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -20,7 +21,7 @@ model = ConvLSTM(1, hidden_channels,kernel_size,step,True)
 print("============================ Number of parameters ====================================")
 print(str(sum(p.numel() for p in model.parameters() if p.requires_grad)))
 model.cuda()
-device_ids=[0,1]
+device_ids=[0,1,2,3]
 num_devices=len(device_ids)
 model=DataParallel(model,device_ids=device_ids)
 model.train()
@@ -33,11 +34,11 @@ scheduler = ReduceLROnPlateau(optimizer=optimizer,factor=0.5, patience=2, thresh
 scheduler2 =CosineAnnealingLR(optimizer2, T_max=300, eta_min=0.0001)
 
 
-# Load the training data
+# Load the training data, both use collate_test
 training_data = IEMOCAP(train=True, segment=True)
-train_loader = DataLoader(dataset=training_data, batch_size=200, shuffle=True, collate_fn=my_collate_train, num_workers=0, drop_last=True)
+train_loader = DataLoader(dataset=training_data, batch_size=32, shuffle=True, collate_fn=my_collate_test, num_workers=0, drop_last=True)
 testing_data = IEMOCAP(train=False, segment=True)
-test_loader = DataLoader(dataset=testing_data, batch_size=100, shuffle=True, collate_fn=my_collate_test, num_workers=0)
+test_loader = DataLoader(dataset=testing_data, batch_size=32, shuffle=True, collate_fn=my_collate_test, num_workers=0,drop_last=True)
 print("=================")
 print(len(training_data))
 print("===================")
@@ -45,65 +46,33 @@ test_acc=[]
 train_acc=[]
 test_loss=[]
 train_loss=[]
-epoch=0
-torch.save(model.module.state_dict(), "/scratch/speech/models/classification/ConvLSTM_checkpoint_epoch_{}.pt".format(epoch))
-for epoch in range(300):  # again, normally you would NOT do 300 epochs, it is toy data
+for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is toy data
     print("===================================" + str(epoch+1) + "==============================================")
     losses = 0
     correct=0
     losses_test = 0
     correct_test = 0
+    length_full=0
     model.train()
-    for j, (input, target, _) in enumerate(train_loader):
-        if (j+1)%5==0: print("================================= Batch"+ str(j+1)+ "===================================================")
-        input=input.float()
-        input = input.unsqueeze(1)
-        input=torch.split(input,int(32000/step),dim=2)
-
+    for j, (input, target, seq_length, segment_labels) in enumerate(train_loader):
         model.zero_grad()
-        out, loss = model(input, target)
-        #pdb.set_trace()
-        loss = torch.mean(loss,dim=0)
-        out=torch.flatten(out,start_dim=0,end_dim=1)
-        #pdb.set_trace()
-        losses += loss.item() * target.shape[0]
+        losses_batch,correct_batch, length= model(input, target,seq_length)
+        loss=torch.mean(losses_batch,dim=0)
+        length=torch.sum(length,dim=0)
+        losses+=(loss*length).item()
+        correct+=(torch.sum(correct_batch,dim=0)*length).item()
         loss.backward()
         optimizer.step()
-
-        index = torch.argmax(out, dim=1)
-        target_index = torch.argmax(target, dim=1).to(device)
-        correct += sum(index == target_index).item()
+        length_full+=length.item()
+        if (j+1)%1==0: print("========================= Batch"+ str(j+1)+ str(length)+"=====================================")
     accuracy=correct*1.0/(len(training_data))
-    losses=losses / (len(training_data))
+    losses=losses / (length_full)
 
-    # we save the model, and run it on single gpu
-    torch.save(model.module.state_dict(), "/scratch/speech/models/classification/ConvLSTM_checkpoint_epoch_{}.pt".format(epoch+1))
-    model1=ConvLSTM(1, hidden_channels,kernel_size,step,True)
-    model1.load_state_dict(torch.load("/scratch/speech/models/classification/ConvLSTM_checkpoint_epoch_{}.pt".format(epoch+1)))
-    model1.eval()
-    with torch.cuda.device(0):
-        model1.cuda()
+    model.eval()
     with torch.no_grad():
-        for test_case, target, seq_length in test_loader:
-            temp=[]
-            for i in test_case:
-                for k in i:
-                    temp.append(k)
-            test_case=torch.from_numpy(np.array([i for i in temp])).to(device)
-            length=test_case.shape[0]
-
-            test_case=test_case.float()
-            test_case = test_case.unsqueeze(1)
-            test_case=torch.split(test_case,int(32000/step),dim=2)
-            out,_ = model1(test_case, target, False)
-            target_index = torch.argmax(target, dim=1).to(device)
-            temp=0
-            temp1=0
-            for i,j in enumerate(target_index):
-                temp1+=seq_length[i].item()
-                if j==torch.argmax(torch.sum(out[temp:temp1,:],dim=0)):
-                    correct_test+=1
-                temp=temp1
+        for test_case, target, seq_length,segment_labels in test_loader:
+            losses_batch,correct_batch, length = model(test_case, target,seq_length, length)
+            correct_test+=(torch.sum(correct_batch,dim=0)*torch.sum(length,dim=0)).item()
 
     accuracy_test = correct_test * 1.0 / (len(testing_data))
     #if losses_test<0.95: scheduler=scheduler2; optimizer=optimizer2
