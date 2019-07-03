@@ -21,7 +21,7 @@ model = ConvLSTM(1, hidden_channels,kernel_size,step,True)
 print("============================ Number of parameters ====================================")
 print(str(sum(p.numel() for p in model.parameters() if p.requires_grad)))
 model.cuda()
-device_ids=[0,1]
+device_ids=[0]
 num_devices=len(device_ids)
 model=DataParallel(model,device_ids=device_ids)
 model.train()
