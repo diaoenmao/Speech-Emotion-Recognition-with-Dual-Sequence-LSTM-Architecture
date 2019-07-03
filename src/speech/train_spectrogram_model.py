@@ -47,7 +47,7 @@ for epoch in range(200):  # again, normally you would NOT do 300 epochs, it is t
         losses += loss.item() * target.shape[0]
         loss.backward()
         optimizer.step()
-
+        print("out:",out.shape)
         index = torch.argmax(out, dim=1)
         target_index = torch.argmax(target, dim=1).to(device)
         correct += sum(index == target_index).item()
