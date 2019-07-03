@@ -34,9 +34,9 @@ scheduler2 =CosineAnnealingLR(optimizer2, T_max=300, eta_min=0.0001)
 
 # Load the training data, both use collate_test
 training_data = IEMOCAP(train=True, segment=True)
-train_loader = DataLoader(dataset=training_data, batch_size=20, shuffle=True, collate_fn=my_collate_test, num_workers=0, drop_last=True)
+train_loader = DataLoader(dataset=training_data, batch_size=10, shuffle=True, collate_fn=my_collate_test, num_workers=0, drop_last=True)
 testing_data = IEMOCAP(train=False, segment=True)
-test_loader = DataLoader(dataset=testing_data, batch_size=20, shuffle=True, collate_fn=my_collate_test, num_workers=0)
+test_loader = DataLoader(dataset=testing_data, batch_size=10, shuffle=True, collate_fn=my_collate_test, num_workers=0)
 print("=================")
 print(len(training_data))
 print("===================")
@@ -44,7 +44,7 @@ test_acc=[]
 train_acc=[]
 test_loss=[]
 train_loss=[]
-for epoch in range(300):  # again, normally you would NOT do 300 epochs, it is toy data
+for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is toy data
     print("===================================" + str(epoch+1) + "==============================================")
     losses = 0
     correct=0
@@ -53,7 +53,7 @@ for epoch in range(300):  # again, normally you would NOT do 300 epochs, it is t
     length_full=0
     model.train()
     for j, (input, target, seq_length, segment_labels) in enumerate(train_loader):
-        if (j+1)%5==0: print("================================= Batch"+ str(j+1)+ "===================================================")
+        #if (j+1)%5==0: print("================================= Batch"+ str(j+1)+ "===================================================")
         temp=[]
         for i in input:
             for k in i:
