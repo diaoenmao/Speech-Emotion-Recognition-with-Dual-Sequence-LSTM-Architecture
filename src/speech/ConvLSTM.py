@@ -99,9 +99,6 @@ class ConvLSTM(nn.Module):
         for i in range(self.num_devices):
             if seq_length.device.index==i:
                 input=input[int(i*batch_size/self.num_devices):int((i+1)*batch_size/self.num_devices)]
-        for i in input:
-            print(torch.tensor(len(i)).to(self.device))
-        print(len(input))
         temp=[]
         for i in input:
             for k in i:
