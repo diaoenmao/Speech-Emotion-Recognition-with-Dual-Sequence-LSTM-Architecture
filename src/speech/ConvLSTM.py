@@ -94,6 +94,7 @@ class ConvLSTM(nn.Module):
     def forward(self, input, target, seq_length):
         # input should be a list of inputs, like a time stamp, maybe 1280 for 100 times.
         ##data process here
+        print("input:",len(input))
         temp=[]
         for i in input:
             for k in i:
@@ -103,6 +104,7 @@ class ConvLSTM(nn.Module):
         input=input.float()
         input = input.unsqueeze(1)
         input=torch.split(input,int(32000/self.step),dim=2)
+        print("length:",length)
 
 
         internal_state = []
