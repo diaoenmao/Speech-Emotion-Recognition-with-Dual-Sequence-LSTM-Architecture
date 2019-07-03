@@ -67,7 +67,8 @@ for epoch in range(300):  # again, normally you would NOT do 300 epochs, it is t
         temp=[]
 
         model.zero_grad()
-        out,losses = model(input, target,seq_length)
+        out,losses,correct_batch = model(input, target,seq_length)
+        correct+=correct_batch
         losses_mean=losses/length
         losses.backward()
         optimizer.step()
