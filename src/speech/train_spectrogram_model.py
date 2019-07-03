@@ -42,8 +42,8 @@ for epoch in range(200):  # again, normally you would NOT do 300 epochs, it is t
     for j, (input, target) in enumerate(train_loader):
         if (j+1)%10==0: print("================================= Batch"+ str(j+1)+ "===================================================")
         model.zero_grad()
-        out, loss = model(input, target)
-        loss = torch.mean(loss)
+        out, loss = model(input, target,multi_gpu=True)
+        loss = torch.mean(loss, dim=0)
         losses += loss.item() * target.shape[0]
         loss.backward()
         optimizer.step()
@@ -59,10 +59,10 @@ for epoch in range(200):  # again, normally you would NOT do 300 epochs, it is t
     for test_case, target in test_loader:
         #test_case=test_case.float()
         #test_case = test_case.unsqueeze(1)
-        out, loss = model(test_case, target, train=False)
+        out, loss = model(test_case, target, train=False,multi_gpu=True)
         index = torch.argmax(out, dim=1)
         target_index = torch.argmax(target, dim=1).to(device)
-        loss = torch.mean(loss)
+        loss = torch.mean(loss,dim=0)
         losses_test += loss.item() * index.shape[0]
         correct_test += sum(index == target_index).item()
     accuracy_test = correct_test * 1.0 / len(testing_data)
