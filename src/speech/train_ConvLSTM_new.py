@@ -68,12 +68,13 @@ for epoch in range(300):  # again, normally you would NOT do 300 epochs, it is t
 
         model.zero_grad()
         _,losses_batch,correct_batch = model(input, target,seq_length,length)
+        print(losses_batch)
         losses+=losses_batch*length
         correct+=correct_batch
         losses_batch.backward()
         optimizer.step()
         length_full+=length
-
+    print(length_full)
     accuracy=correct*1.0/(len(training_data))
     losses=losses / (length_full)
 
