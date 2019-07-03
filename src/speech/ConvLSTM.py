@@ -100,7 +100,7 @@ class ConvLSTM(nn.Module):
             for k in i:
                 temp.append(k)
         input=torch.from_numpy(np.array([i for i in temp])).to(self.device)
-        length=torch.tensor([input.shape[0]])
+        length=torch.tensor([input.shape[0]]).float()
         input=input.float()
         input = input.unsqueeze(1)
         input=torch.split(input,int(32000/self.step),dim=2)
@@ -143,18 +143,15 @@ class ConvLSTM(nn.Module):
         for i,j in enumerate(target_index):
             temp1+=seq_length[i].item()
             loss=-1.0*torch.sum(F.log_softmax(out[temp:temp1,:],dim=1)[:,j],dim=0)
-            print(loss)
             if j==torch.argmax(torch.sum(out[temp:temp1,:],dim=0)):
                 correct_batch+=1
             temp=temp1
             losses_batch += loss
-        pdb.set_trace()
         losses_batch=losses_batch/length
         # losses_batch is normalized
         correct_batch=torch.unsqueeze(correct_batch,dim=0).float().to(self.device)
         losses_batch=torch.unsqueeze(losses_batch, dim=0).float().to(self.device)
         length=torch.unsqueeze(length,dim=0).float().to(self.device)
-        print(losses_batch)
 
         return  losses_batch, correct_batch, length
 
