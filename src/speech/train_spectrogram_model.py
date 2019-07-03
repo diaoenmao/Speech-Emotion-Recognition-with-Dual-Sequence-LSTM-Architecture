@@ -40,11 +40,7 @@ for epoch in range(200):  # again, normally you would NOT do 300 epochs, it is t
     correct_test = 0
     model.train()
     for j, (input, target) in enumerate(train_loader):
-       if (j+1)%10==0: print("================================= Batch"+ str(j+1)+ "===================================================")
-        #input=input.float()
-        #input = input.unsqueeze(1)
-        #pdb.set_trace()
-        #input = input.permute(0, 3, 1, 2)
+        if (j+1)%10==0: print("================================= Batch"+ str(j+1)+ "===================================================")
         model.zero_grad()
         out, loss = model(input, target)
         loss = torch.mean(loss)
