@@ -67,17 +67,7 @@ for epoch in range(300):  # again, normally you would NOT do 300 epochs, it is t
         temp=[]
 
         model.zero_grad()
-        out,_ = model(input, target)
-        target_index = torch.argmax(target, dim=1).to(device)
-        temp=0
-        temp1=0
-        for i,j in enumerate(target_index):
-            temp1+=seq_length[i].item()
-            loss=torch.sum(out[temp:temp1,j],dim=0)
-            if j==torch.argmax(torch.sum(out[temp:temp1,:],dim=0)):
-                correct+=1
-            temp=temp1
-        losses += loss
+        out,losses = model(input, target,seq_length)
         losses_mean=losses/length
         losses.backward()
         optimizer.step()
