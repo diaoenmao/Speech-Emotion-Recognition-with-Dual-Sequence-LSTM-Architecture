@@ -142,7 +142,6 @@ class ConvLSTM(nn.Module):
 
         for i,j in enumerate(target_index):
             temp1+=seq_length[i].item()
-            pdb.set_trace()
             loss=-1.0*torch.sum(F.log_softmax(out[temp:temp1,:],dim=1)[:,j],dim=0)
             if j==torch.argmax(torch.sum(out[temp:temp1,:],dim=0)):
                 correct_batch+=1
@@ -153,6 +152,7 @@ class ConvLSTM(nn.Module):
         correct_batch=torch.unsqueeze(correct_batch,dim=0).float().to(self.device)
         losses_batch=torch.unsqueeze(losses_batch, dim=0).float().to(self.device)
         length=torch.unsqueeze(length,dim=0).float().to(self.device)
+        print(losses_batch)
 
         return  losses_batch, correct_batch, length
 
