@@ -80,7 +80,6 @@ class SpectrogramModel(nn.Module):
         #out = torch.flatten(out, start_dim=2, end_dim=3)
         out = out.view(list(out.size())[0], list(out.size())[1], -1)
         #pdb.set_trace()
-        self.lstm.flatten_parameters()
         out, hn = self.lstm(out)
 #        print(out.shape)
         out = torch.mean(out, dim=1)
