@@ -72,7 +72,7 @@ for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is t
     model.eval()
     with torch.no_grad():
         for test_case, target, seq_length,segment_labels in test_loader:
-            losses_batch,correct_batch, length = model(test_case, target,seq_length, length)
+            losses_batch,correct_batch, length = model(test_case, target,seq_length)
             correct_test+=(torch.sum(correct_batch,dim=0)*torch.sum(length,dim=0)).item()
 
     accuracy_test = correct_test * 1.0 / (len(testing_data))
