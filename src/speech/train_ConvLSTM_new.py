@@ -61,6 +61,7 @@ for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is t
         length=torch.sum(length,dim=0)
         losses+=(loss*length).item()
         correct+=(torch.sum(correct_batch,dim=0)*length).item()
+        pdb.set_trace()
         loss.backward()
         optimizer.step()
         length_full+=length.item()
