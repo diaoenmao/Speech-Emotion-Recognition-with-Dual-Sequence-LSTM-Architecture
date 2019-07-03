@@ -68,7 +68,7 @@ for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is t
 
         model.zero_grad()
         _,losses_batch,correct_batch = model(input, target,seq_length,length)
-        print(losses_batch.item())
+        #print(losses_batch.item())
         losses+=losses_batch*length
         correct+=correct_batch
         losses_batch.backward()
