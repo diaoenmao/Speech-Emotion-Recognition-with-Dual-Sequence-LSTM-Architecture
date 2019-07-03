@@ -98,6 +98,7 @@ class ConvLSTM(nn.Module):
         batch_size=len(input)
         for i in range(self.num_devices):
             if seq_length.device.index==i:
+                pdb.set_trace()
                 input=input[int(i*batch_size/self.num_devices):int((i+1)*batch_size/self.num_devices)]
         for i in input:
             print(len(i).to(self.device))
@@ -110,7 +111,6 @@ class ConvLSTM(nn.Module):
         length=torch.tensor([input.shape[0]]).float().to(self.device)
         input=input.float()
         input = input.unsqueeze(1)
-        pdb.set_trace()
         input=torch.split(input,int(32000/self.step),dim=2)
         print("length:",length)
 
