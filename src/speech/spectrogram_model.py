@@ -42,7 +42,7 @@ class SpectrogramModel(nn.Module):
                            dropout=self.dropout_rate, bidirectional=self.bidirectional).to(self.device)
         self.classification = nn.Linear(self.hidden_dim * self.num_directions, self.num_labels).to(self.device)
 
-    def forward(self, input, target, train=True):
+    def forward(self, input, target, train=True, multi_gpu=False):
         input = input.to(self.device)
         target = target.to(self.device)
         out = self.cnn1(input)
@@ -87,4 +87,8 @@ class SpectrogramModel(nn.Module):
         out = self.classification(out)
 
         loss = F.cross_entropy(out, torch.max(target, 1)[1])
+
+        if multi_gpu:
+            out=torch.unsqueeze(out, dim=0)
+            loss=torch.unsqueeze(loss,dim=0)
         return out, loss
