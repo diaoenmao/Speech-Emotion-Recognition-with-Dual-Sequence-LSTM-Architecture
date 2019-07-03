@@ -17,12 +17,12 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 hidden_channels=[64,32,16]
 kernel_size=[9,5,5]
 step=100
-model = ConvLSTM(1, hidden_channels,kernel_size,step,True)
+device_ids=[0,1]
+num_devices=len(device_ids)
+model = ConvLSTM(1, hidden_channels,kernel_size,num_devices,step,True)
 print("============================ Number of parameters ====================================")
 print(str(sum(p.numel() for p in model.parameters() if p.requires_grad)))
 model.cuda()
-device_ids=[0,1]
-num_devices=len(device_ids)
 model=DataParallel(model,device_ids=device_ids)
 model.train()
 
@@ -58,6 +58,7 @@ for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is t
         print(seq_length)
         model.zero_grad()
         losses_batch,correct_batch, length= model(input, target,seq_length)
+        pdb.set_trace()
         loss=torch.mean(losses_batch,dim=0)
         length=torch.sum(length,dim=0)
         losses+=(loss*length).item()
