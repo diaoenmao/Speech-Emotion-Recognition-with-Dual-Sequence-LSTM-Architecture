@@ -66,8 +66,8 @@ for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is t
                 break
         if flag:
             with open("/scratch/speech/models/classification/ConvLSTM_checkpoint_stats.txt","a+") as f:
-                print("Warning of memory overflow, skip batch")
-                f.write("Warning of memory overflow, skip batch"+str(j+1))
+                print("Warning of memory overflow, skip batch"+str(j+1)+"batch_size"+str(max(all_lengths)))
+                f.write("\n"+"Warning of memory overflow, skip batch"+str(j+1)+"batch_size"+str(max(all_lengths))+"\n")
             continue
         model.zero_grad()
         losses_batch,correct_batch, length= model(input, target,seq_length)
