@@ -69,7 +69,7 @@ class ConvLSTM(nn.Module):
     # input_channels corresponds to the first input feature map
     # hidden state is a list of succeeding lstm layers.
     # kernel size is also a list, same length as hidden_channels
-    def __init__(self, input_channels, hidden_channels, kernel_size, step,attention_flag=False):
+    def __init__(self, input_channels, hidden_channels, kernel_size, step,num_devices,attention_flag=False):
         super(ConvLSTM, self).__init__()
         assert len(hidden_channels)==len(kernel_size), "size mismatch"
         self.input_channels = [input_channels] + hidden_channels
@@ -79,6 +79,7 @@ class ConvLSTM(nn.Module):
         self.step = step
         self._all_layers = []
         self.num_labels=4
+        self.num_devices=num_devices
         self.device= torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.linear_dim=int(self.hidden_channels[-1]*(32000/step)/(4**self.num_layers))
         self.classification = nn.Linear(self.linear_dim, self.num_labels)
@@ -94,9 +95,13 @@ class ConvLSTM(nn.Module):
     def forward(self, input, target, seq_length):
         # input should be a list of inputs, like a time stamp, maybe 1280 for 100 times.
         ##data process here
-        print(seq_length)
+        batch_size=len(input)
+        for i in range(self.num_devices):
+            if seq_length.device.index==i:
+                input=[int(i*batch_size/self.num_devices):int((i+1)*batch_size/self.num_devices)]
+        for i in input:
+            print(len(i).to(self.device))
         temp=[]
-        pdb.set_trace()
         for i in input:
             for k in i:
                 temp.append(k)
