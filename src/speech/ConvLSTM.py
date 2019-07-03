@@ -146,7 +146,7 @@ class ConvLSTM(nn.Module):
             if j==torch.argmax(torch.sum(out[temp:temp1,:],dim=0)):
                 correct_batch+=1
             temp=temp1
-            losses_batch += loss
+            losses_batch += loss.item()
         losses_batch=losses_batch/length
         # losses_batch is normalized
         correct_batch=torch.unsqueeze(correct_batch,dim=0).float().to(self.device)
