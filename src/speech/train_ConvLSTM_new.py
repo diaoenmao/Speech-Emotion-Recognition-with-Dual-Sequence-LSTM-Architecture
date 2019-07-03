@@ -36,9 +36,9 @@ scheduler2 =CosineAnnealingLR(optimizer2, T_max=300, eta_min=0.0001)
 
 # Load the training data, both use collate_test
 training_data = IEMOCAP(train=True, segment=True)
-train_loader = DataLoader(dataset=training_data, batch_size=40, shuffle=True, collate_fn=my_collate_test, num_workers=0, drop_last=True)
+train_loader = DataLoader(dataset=training_data, batch_size=32, shuffle=True, collate_fn=my_collate_test, num_workers=0, drop_last=True)
 testing_data = IEMOCAP(train=False, segment=True)
-test_loader = DataLoader(dataset=testing_data, batch_size=40, shuffle=True, collate_fn=my_collate_test, num_workers=0,drop_last=True)
+test_loader = DataLoader(dataset=testing_data, batch_size=32, shuffle=True, collate_fn=my_collate_test, num_workers=0,drop_last=True)
 print("=================")
 print(len(training_data))
 print("===================")
@@ -64,7 +64,7 @@ for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is t
         loss.backward()
         optimizer.step()
         length_full+=length.item()
-        if (j+1)%10==0: print("========================= Batch"+ str(j+1)+ str(length)+"=====================================")
+        if (j+1)%1==0: print("========================= Batch"+ str(j+1)+ str(length)+"=====================================")
     accuracy=correct*1.0/(len(training_data))
     losses=losses / (length_full)
 
