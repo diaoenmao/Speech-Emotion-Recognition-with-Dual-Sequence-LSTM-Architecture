@@ -20,8 +20,10 @@ step=100
 model = ConvLSTM(1, hidden_channels,kernel_size,step,True)
 print("============================ Number of parameters ====================================")
 print(str(sum(p.numel() for p in model.parameters() if p.requires_grad)))
-with torch.cuda.device(1):
-    model.cuda()
+model.cuda()
+device_ids=[0,1,2,3]
+num_devices=len(device_ids)
+model=DataParallel(model,device_ids=device_ids)
 model.train()
 
 # Use Adam as the optimizer with learning rate 0.01 to make it fast for testing purposes
