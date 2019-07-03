@@ -11,8 +11,8 @@ from torch.nn import DataParallel
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 model = SpectrogramModel(3, 64, 3, 1, 1, 4, 4, 200, 2, 0.2, 4, 80, True)
-#with torch.cuda.device(2):
-    #model.cuda()
+print("============================ Number of parameters ====================================")
+print(str(sum(p.numel() for p in model.parameters() if p.requires_grad)))
 model=DataParallel(model,device_ids=[0,1,2,3])
 model.cuda()
 model.train()
