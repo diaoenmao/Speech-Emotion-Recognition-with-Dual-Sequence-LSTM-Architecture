@@ -34,9 +34,9 @@ scheduler2 =CosineAnnealingLR(optimizer2, T_max=300, eta_min=0.0001)
 
 # Load the training data, both use collate_test
 training_data = IEMOCAP(train=True, segment=True)
-train_loader = DataLoader(dataset=training_data, batch_size=100, shuffle=True, collate_fn=my_collate_test, num_workers=0, drop_last=True)
+train_loader = DataLoader(dataset=training_data, batch_size=80, shuffle=True, collate_fn=my_collate_test, num_workers=0, drop_last=True)
 testing_data = IEMOCAP(train=False, segment=True)
-test_loader = DataLoader(dataset=testing_data, batch_size=100, shuffle=True, collate_fn=my_collate_test, num_workers=0)
+test_loader = DataLoader(dataset=testing_data, batch_size=80, shuffle=True, collate_fn=my_collate_test, num_workers=0)
 print("=================")
 print(len(training_data))
 print("===================")
