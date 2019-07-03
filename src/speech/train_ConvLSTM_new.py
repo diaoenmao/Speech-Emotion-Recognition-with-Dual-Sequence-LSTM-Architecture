@@ -66,7 +66,7 @@ for epoch in range(300):  # again, normally you would NOT do 300 epochs, it is t
         temp=[]
 
         model.zero_grad()
-        out,losses_batch,correct_batch = model(input, target,seq_length,length)
+        _,losses_batch,correct_batch = model(input, target,seq_length,length)
         losses+=losses_batch*length
         correct+=correct_batch
         losses_batch.backward()
@@ -88,15 +88,9 @@ for epoch in range(300):  # again, normally you would NOT do 300 epochs, it is t
             test_case=test_case.float()
             test_case = test_case.unsqueeze(1)
             test_case=torch.split(test_case,int(32000/step),dim=2)
-            out,_ = model(test_case, target)
-            target_index = torch.argmax(target, dim=1).to(device)
-            temp=0
-            temp1=0
-            for i,j in enumerate(target_index):
-                temp1+=seq_length[i].item()
-                if j==torch.argmax(torch.sum(out[temp:temp1,:],dim=0)):
-                    correct_test+=1
-                temp=temp1
+            _,losses_batch,correct_batch = model(test_case, target,seq_length, length)
+            correct_test+=correct_batch*length
+
 
     accuracy_test = correct_test * 1.0 / (len(testing_data))
     #if losses_test<0.95: scheduler=scheduler2; optimizer=optimizer2
