@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import pdb
+import numpy as np
 
 
 
@@ -40,9 +41,10 @@ class ConvLSTMCell(nn.Module):
         self.Wci = None
         self.Wcf = None
         self.Wco = None
+        self.device=torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
     def forward(self, x, h, c):
-
+        #pdb.set_trace()
         ci = torch.sigmoid(self.Wxi(x) + self.Whi(h) + c * self.Wci)
         cf = torch.sigmoid(self.Wxf(x) + self.Whf(h) + c * self.Wcf)
         cc = cf * c + ci * torch.tanh(self.Wxc(x) + self.Whc(h))
@@ -53,13 +55,14 @@ class ConvLSTMCell(nn.Module):
         return ch_pool, ch, cc
 
     def init_hidden(self, batch_size, hidden, shape):
-        if self.Wci is None:
-            self.Wci = nn.Parameter(torch.zeros(1, hidden, shape)).cuda()
-            self.Wcf = nn.Parameter(torch.zeros(1, hidden, shape)).cuda()
-            self.Wco = nn.Parameter(torch.zeros(1, hidden, shape)).cuda()
 
-        return (nn.Parameter(torch.zeros(batch_size, hidden, shape)).cuda(),
-                nn.Parameter(torch.zeros(batch_size, hidden, shape)).cuda())
+        if self.Wci is None:
+            self.Wci = nn.Parameter(torch.zeros(1, hidden, shape)).to(self.device)
+            self.Wcf = nn.Parameter(torch.zeros(1, hidden, shape)).to(self.device)
+            self.Wco = nn.Parameter(torch.zeros(1, hidden, shape)).to(self.device)
+
+        return (nn.Parameter(torch.zeros(batch_size, hidden, shape)).to(self.device),
+                nn.Parameter(torch.zeros(batch_size, hidden, shape)).to(self.device))
 
 
 class ConvLSTM(nn.Module):
@@ -88,8 +91,20 @@ class ConvLSTM(nn.Module):
             self._all_layers.append(cell)
 
 
-    def forward(self, input, target, train=True):
+    def forward(self, input, target, seq_length):
         # input should be a list of inputs, like a time stamp, maybe 1280 for 100 times.
+        ##data process here
+        temp=[]
+        for i in input:
+            for k in i:
+                temp.append(k)
+        input=torch.from_numpy(np.array([i for i in temp])).to(self.device)
+        length=torch.tensor([input.shape[0]])
+        input=input.float()
+        input = input.unsqueeze(1)
+        input=torch.split(input,int(32000/self.step),dim=2)
+
+
         internal_state = []
         outputs = []
         for step in range(self.step):
@@ -117,11 +132,24 @@ class ConvLSTM(nn.Module):
             out=torch.mean(torch.cat(out,dim=3))
 
         out=self.classification(out)
-        if train:
-            loss = F.cross_entropy(out, torch.max(target, 1)[1].to(self.device))
-            out=torch.unsqueeze(out,dim=0)
-            loss=torch.unsqueeze(loss, dim=0)
-        else:
-            loss=None
-        return out, loss
+        target_index = torch.argmax(target, dim=1).to(self.device)
+        temp=0
+        temp1=0
+        correct_batch=torch.tensor([0])
+        losses_batch=0
+
+        for i,j in enumerate(target_index):
+            temp1+=seq_length[i].item()
+            loss=-1.0*torch.sum(F.log_softmax(out[temp:temp1,:],dim=1)[:,j],dim=0)
+            if j==torch.argmax(torch.sum(out[temp:temp1,:],dim=0)):
+                correct_batch+=1
+            temp=temp1
+            losses_batch += loss
+        losses_batch=losses_batch/length
+        # losses_batch is normalized
+        correct_batch=torch.unsqueeze(correct_batch,dim=0)
+        losses_batch=torch.unsqueeze(losses_batch, dim=0)
+        length=torch.unsqueeze(length,dim=0)
+
+        return  losses_batch,correct_batch, length
 
