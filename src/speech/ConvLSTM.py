@@ -142,11 +142,12 @@ class ConvLSTM(nn.Module):
 
         for i,j in enumerate(target_index):
             temp1+=seq_length[i].item()
+            pdb.set_trace()
             loss=-1.0*torch.sum(F.log_softmax(out[temp:temp1,:],dim=1)[:,j],dim=0)
             if j==torch.argmax(torch.sum(out[temp:temp1,:],dim=0)):
                 correct_batch+=1
             temp=temp1
-            losses_batch += loss.item()
+            losses_batch += loss
         losses_batch=losses_batch/length
         # losses_batch is normalized
         correct_batch=torch.unsqueeze(correct_batch,dim=0).float().to(self.device)
