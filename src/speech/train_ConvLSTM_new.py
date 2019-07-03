@@ -17,12 +17,12 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 hidden_channels=[64,32,16]
 kernel_size=[9,5,5]
 step=100
-model = ConvLSTM(1, hidden_channels,kernel_size,step,True)
+device_ids=[0,1]
+num_devices=len(device_ids)
+model = ConvLSTM(1, hidden_channels,kernel_size,step,num_devices,True)
 print("============================ Number of parameters ====================================")
 print(str(sum(p.numel() for p in model.parameters() if p.requires_grad)))
 model.cuda()
-device_ids=[0,1,2,3]
-num_devices=len(device_ids)
 model=DataParallel(model,device_ids=device_ids)
 model.train()
 
@@ -55,24 +55,25 @@ for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is t
     length_full=0
     model.train()
     for j, (input, target, seq_length, segment_labels) in enumerate(train_loader):
+        #print(seq_length)
         model.zero_grad()
         losses_batch,correct_batch, length= model(input, target,seq_length)
         loss=torch.mean(losses_batch,dim=0)
         length=torch.sum(length,dim=0)
         losses+=(loss*length).item()
-        correct+=(torch.sum(correct_batch,dim=0)*length).item()
+        correct+=(torch.sum(correct_batch,dim=0)).item()
         loss.backward()
         optimizer.step()
         length_full+=length.item()
-        if (j+1)%1==0: print("========================= Batch"+ str(j+1)+ str(length)+"=====================================")
+        if (j+1)%10==0: print("========================= Batch"+ str(j+1)+ str(length)+"=====================================")
     accuracy=correct*1.0/(len(training_data))
     losses=losses / (length_full)
 
     model.eval()
     with torch.no_grad():
         for test_case, target, seq_length,segment_labels in test_loader:
-            losses_batch,correct_batch, length = model(test_case, target,seq_length, length)
-            correct_test+=(torch.sum(correct_batch,dim=0)*torch.sum(length,dim=0)).item()
+            losses_batch,correct_batch, length = model(test_case, target,seq_length)
+            correct_test+=(torch.sum(correct_batch,dim=0)).item()
 
     accuracy_test = correct_test * 1.0 / (len(testing_data))
     #if losses_test<0.95: scheduler=scheduler2; optimizer=optimizer2
