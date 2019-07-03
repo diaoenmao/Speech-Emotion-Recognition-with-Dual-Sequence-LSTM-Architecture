@@ -119,7 +119,7 @@ class ConvLSTM(nn.Module):
             out=torch.mean(torch.cat(out,dim=3))
 
         out=self.classification(out)
-        target_index = torch.argmax(target, dim=1).to(device)
+        target_index = torch.argmax(target, dim=1).to(self.device)
         temp=0
         temp1=0
         for i,j in enumerate(target_index):
