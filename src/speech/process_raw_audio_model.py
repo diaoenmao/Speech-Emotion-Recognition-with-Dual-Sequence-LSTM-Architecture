@@ -57,4 +57,4 @@ def my_collate_test(batch):
     segment_labels=[item["segment_labels"] for item in batch]
     # seq_length = [x[0] for x in seq_length]
     # seq_length = torch.from_numpy(np.array(seq_length))
-    return [input, target, seq_length]
+    return [input, target, seq_length,segment_labels]
