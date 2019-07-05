@@ -7,19 +7,18 @@ import numpy as np
 
 
 class ConvLSTMCell(nn.Module):
-    def __init__(self, input_channels, hidden_channels, kernel_size, dropout=0.1, kernel_size_pool=8, stride_pool=4):
+    def __init__(self, input_channels, hidden_channels, kernel_size, kernel_size_pool, kernel_stride_pool,device, dropout=0.1):
         super(ConvLSTMCell, self).__init__()
-
-        assert hidden_channels % 2 == 0
 
         self.input_channels = input_channels
         self.hidden_channels = hidden_channels
         self.kernel_size = kernel_size
         self.stride=1
-        self.padding = int((kernel_size-1) / 2)
+        self.padding = (int((kernel_size[0]-1) / 2),int((kernel_size[1]-1) / 2))
         self.kernel_size_pool=kernel_size_pool
-        self.stride_pool=stride_pool
-        self.padding_pool=int((kernel_size_pool-1)/2)
+        self.kernel_stride_pool=kernel_stride_pool
+        self.padding_pool=(int((kernel_size_pool[0]-1)/2),int((kernel_size_pool[1]-1)/2))
+
 
         self.Wxi = nn.Conv2d(self.input_channels, self.hidden_channels, self.kernel_size, self.stride,self.padding,  bias=True)
         self.Whi = nn.Conv2d(self.hidden_channels, self.hidden_channels, self.kernel_size, self.stride, self.padding, bias=False)
@@ -33,7 +32,7 @@ class ConvLSTMCell(nn.Module):
         self.Wxo = nn.Conv2d(self.input_channels, self.hidden_channels, self.kernel_size, self.stride,self.padding,  bias=True)
         self.Who = nn.Conv2d(self.hidden_channels, self.hidden_channels, self.kernel_size, self.stride, self.padding, bias=False)
 
-        self.max_pool = nn.MaxPool2d(self.kernel_size_pool, stride=self.stride_pool, padding=self.padding_pool)
+        self.max_pool = nn.MaxPool2d(self.kernel_size_pool, stride=self.kernel_stride_pool, padding=self.padding_pool)
         self.batch = nn.BatchNorm2d(self.hidden_channels)
 
         self.dropout=nn.Dropout(p=dropout, inplace=False)
@@ -41,7 +40,7 @@ class ConvLSTMCell(nn.Module):
         self.Wci = None
         self.Wcf = None
         self.Wco = None
-        self.device=torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        self.device=device
 
     def forward(self, x, h, c):
         #pdb.set_trace()
@@ -57,21 +56,22 @@ class ConvLSTMCell(nn.Module):
     def init_hidden(self, batch_size, hidden, shape):
 
         if self.Wci is None:
-            self.Wci = nn.Parameter(torch.zeros(1, hidden, shape)).to(self.device)
-            self.Wcf = nn.Parameter(torch.zeros(1, hidden, shape)).to(self.device)
-            self.Wco = nn.Parameter(torch.zeros(1, hidden, shape)).to(self.device)
+            self.Wci = nn.Parameter(torch.zeros(1, hidden, shape[0],shape[1])).to(self.device)
+            self.Wcf = nn.Parameter(torch.zeros(1, hidden, shape[0],shape[1])).to(self.device)
+            self.Wco = nn.Parameter(torch.zeros(1, hidden, shape[0],shape[1])).to(self.device)
 
-        return (nn.Parameter(torch.zeros(batch_size, hidden, shape)).to(self.device),
-                nn.Parameter(torch.zeros(batch_size, hidden, shape)).to(self.device))
+        return (nn.Parameter(torch.zeros(batch_size, hidden, shape[0],shape[1])).to(self.device),
+                nn.Parameter(torch.zeros(batch_size, hidden, shape[0],shape[1])).to(self.device))
 
 
 class ConvLSTM(nn.Module):
     # input_channels corresponds to the first input feature map
     # hidden state is a list of succeeding lstm layers.
     # kernel size is also a list, same length as hidden_channels
-    def __init__(self, input_channels, hidden_channels, kernel_size, step,attention_flag=False):
+    def __init__(self, input_channels, hidden_channels, kernel_size, kernel_size_pool,kernel_stride_pool,step,device,attention_flag=False):
         super(ConvLSTM, self).__init__()
-        assert len(hidden_channels)==len(kernel_size), "size mismatch"
+        self.device= device
+
         self.input_channels = [input_channels] + hidden_channels
         self.hidden_channels = hidden_channels
         self.kernel_size = kernel_size
@@ -82,37 +82,33 @@ class ConvLSTM(nn.Module):
 
         
         # max pooling
-        self.stride_pool1=(4,4)
-        self.stride_pool2=(4,2)
-        self.stride_pool3=(3,2)
-
-        self.kernel_size_pool1=(8,8)
-        self.kernel_size_pool2=(8,4)
-        self.kernel_size_pool=(5,5)
-
-        self.padding_pool1=(int((self.kernel_size_pool1[0]-1)/2),int((self.kernel_size_pool1[1]-1)/2))
-        self.padding_pool2=(int((self.kernel_size_pool2[0]-1)/2),int((self.kernel_size_pool2[1]-1)/2))
-        self.padding_pool3=(int((self.kernel_size_pool3[0]-1)/2),int((self.kernel_size_pool3[1]-1)/2))
+        self.kernel_size_pool=kernel_size_pool
+        self.kernel_stride_pool=kernel_stride_pool
 
 
-
-        self.device= torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        self.linear_dim=int(self.hidden_channels[-1]*640/(self.step*self.stride_pool1[1]*self.stride_pool2[1]*self.stride_pool3[1])*480/(self.stride_pool1[0]*self.stride_pool2[0]*self.stride_pool3[0]))
-        self.classification = nn.Linear(self.linear_dim, self.num_labels)
         self.attention=nn.Parameter(torch.zeros(self.linear_dim))
         self.attention_flag=attention_flag
+
+        strideF=1
+        strideT=1
         for i in range(self.num_layers):
             name = 'cell{}'.format(i)
-            cell = ConvLSTMCell(self.input_channels[i], self.hidden_channels[i], self.kernel_size[i])
+            cell = ConvLSTMCell(self.input_channels[i], self.hidden_channels[i], self.kernel_size[i],self.kernel_size_pool[i],self.kernel_stride_pool[i],self.device)
             setattr(self, name, cell)
             self._all_layers.append(cell)
+            strideF*=self.kernel_stride_pool[i][0]
+            strideT*=self.kernel_stride_pool[i][1]
+
+        self.linear_dim=int(self.hidden_channels[-1]*(480/strideF)*(640/(self.step*strideT)))
+        self.classification = nn.Linear(self.linear_dim, self.num_labels)
 
 
-    def forward(self, input, target, seq_length):
+
+    def forward(self, input, target):
         # input should be a list of inputs, like a time stamp, maybe 1280 for 100 times.
         ##data process here
         input=input.float().to(self.device)
-        input=torch.split(input,int(640/self.step),dim=2)
+        input=torch.split(input,int(640/self.step),dim=3)
         internal_state = []
         outputs = []
         for step in range(self.step):
@@ -142,22 +138,12 @@ class ConvLSTM(nn.Module):
 
         out=self.classification(out)
         target_index = torch.argmax(target, dim=1).to(self.device)
-        temp=0
-        temp1=0
-        correct_batch=torch.tensor([0])
-        losses_batch=0
+        correct_batch=torch.sum(target_index==torch.argmax(out))
+        losses_batch=F.cross_entropy(out,target_index,reduction="mean")
 
-        for i,j in enumerate(target_index):
-            temp1+=seq_length[i].item()
-            loss=-1.0*torch.sum(F.log_softmax(out[temp:temp1,:],dim=1)[:,j],dim=0)
-            if j==torch.argmax(torch.sum(out[temp:temp1,:],dim=0)):
-                correct_batch+=1
-            temp=temp1
-            losses_batch += loss
-        losses_batch=losses_batch/length
-        # losses_batch is normalized
+
         correct_batch=torch.unsqueeze(correct_batch,dim=0)
         losses_batch=torch.unsqueeze(losses_batch, dim=0)
-        length=torch.unsqueeze(length,dim=0)
 
-        return  losses_batch,correct_batch, length
+
+        return  losses_batch,correct_batch
