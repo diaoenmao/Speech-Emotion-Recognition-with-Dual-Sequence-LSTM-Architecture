@@ -141,6 +141,7 @@ class ConvLSTM(nn.Module):
         out=self.classification(out)
         target_index = torch.argmax(target, dim=1).to(self.device)
         correct_batch=torch.sum(target_index==torch.argmax(out))
+        pdb.set_trace()
         losses_batch=F.cross_entropy(out,torch.max(target,1)[1])
 
 
