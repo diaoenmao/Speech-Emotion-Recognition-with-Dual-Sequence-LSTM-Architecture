@@ -108,6 +108,7 @@ class ConvLSTM(nn.Module):
         # input should be a list of inputs, like a time stamp, maybe 1280 for 100 times.
         ##data process here
         input=input.float().to(self.device)
+        target=target.to(self.device)
         input=torch.split(input,int(640/self.step),dim=3)
         internal_state = []
         outputs = []
@@ -140,8 +141,7 @@ class ConvLSTM(nn.Module):
         out=self.classification(out)
         target_index = torch.argmax(target, dim=1).to(self.device)
         correct_batch=torch.sum(target_index==torch.argmax(out))
-        pdb.set_trace()
-        losses_batch=F.cross_entropy(out,target_index,reduction="mean")
+        losses_batch=F.cross_entropy(out,torch.max(target,1)[1])
 
 
         correct_batch=torch.unsqueeze(correct_batch,dim=0)
