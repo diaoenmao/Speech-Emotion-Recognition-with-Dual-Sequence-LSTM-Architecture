@@ -61,12 +61,12 @@ for epoch in range(10):  # again, normally you would NOT do 300 epochs, it is to
         model.zero_grad()
         losses_batch,correct_batch= model(input, target)
         loss = torch.mean(losses_batch,dim=0)
-        pdb.set_trace()
         correct_batch=torch.sum(correct_batch,dim=0)
         losses += loss.item() * batch_size
         loss.backward()
         optimizer.step()
         correct += correct_batch.item()
+        print(correct)
     accuracy=correct*1.0/((j+1)*batch_size)
     losses=losses / ((j+1)*batch_size)
 
