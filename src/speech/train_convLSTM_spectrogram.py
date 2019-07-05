@@ -1,6 +1,6 @@
 import torch
 from torch import optim
-from ConvLSTM_spectrogram.py import ConvLSTM
+from ConvLSTM_spectrogram import ConvLSTM
 from process_spectrogram_model import IEMOCAP, my_collate
 from torch.utils.data import DataLoader
 from torch.optim.lr_scheduler import ReduceLROnPlateau, CosineAnnealingLR
