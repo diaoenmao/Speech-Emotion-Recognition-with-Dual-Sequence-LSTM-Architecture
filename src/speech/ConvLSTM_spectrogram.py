@@ -135,7 +135,7 @@ class ConvLSTM(nn.Module):
             alpha=torch.unsqueeze(F.softmax(torch.matmul(self.attention,out),dim=1),dim=2)
             out=torch.squeeze(torch.bmm(out,alpha),dim=2)
         else:
-            out=torch.mean(torch.cat(out,dim=4))
+            out=torch.mean(out,dim=2)
 
         out=self.classification(out)
         target_index = torch.argmax(target, dim=1).to(self.device)
