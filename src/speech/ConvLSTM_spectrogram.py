@@ -117,8 +117,8 @@ class ConvLSTM(nn.Module):
             for i in range(self.num_layers):
                 name = 'cell{}'.format(i)
                 if step == 0:
-                    bsize, _, F,T = x.size()
-                    shape=(F,T)
+                    bsize, _, shapeF,shapeT = x.size()
+                    shape=(shapeF,shapeT)
                     (h, c) = getattr(self, name).init_hidden(batch_size=bsize, hidden=self.hidden_channels[i],
                                                              shape=shape)
                     internal_state.append((h, c))
@@ -141,7 +141,6 @@ class ConvLSTM(nn.Module):
         out=self.classification(out)
         target_index = torch.argmax(target, dim=1).to(self.device)
         correct_batch=torch.sum(target_index==torch.argmax(out))
-        pdb.set_trace()
         losses_batch=F.cross_entropy(out,torch.max(target,1)[1])
 
 
