@@ -49,7 +49,6 @@ test_acc=[]
 train_acc=[]
 test_loss=[]
 train_loss=[]
-epoch=0
 for epoch in range(10):  # again, normally you would NOT do 300 epochs, it is toy data
     print("===================================" + str(epoch+1) + "==============================================")
     losses = 0
@@ -71,6 +70,7 @@ for epoch in range(10):  # again, normally you would NOT do 300 epochs, it is to
 
     losses_test = 0
     correct_test = 0
+    torch.save(model.module.state_dict(), "/scratch/speech/models/classification/ConvLSTM_Spectrogram_checkpoint_epoch_{}.pt".format(epoch+1))
     model.eval()
     with torch.no_grad():
         for j,(input, target) in enumerate(test_loader):
