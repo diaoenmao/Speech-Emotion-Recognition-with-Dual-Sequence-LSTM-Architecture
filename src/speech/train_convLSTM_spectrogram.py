@@ -14,10 +14,10 @@ path="/scratch/speech/models/classification/ConvLSTM_data_debug.pickle"
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 input_channels=3
 hidden_channels=[64,32,16]
-kernel_size=[(9,5),(5,5),(5,5)]
+kernel_size=[(3,3),(3,3),(3,3)]
 kernel_size_pool=[(8,8),(8,4),(5,5)]
-kernel_stride_pool=[(4,4),(4,2),(3,2)]
-step=10
+kernel_stride_pool=[(4,1),(4,1),(3,1)]
+step=40
 batch_size=60
 
 model = ConvLSTM(input_channels,hidden_channels,kernel_size,kernel_size_pool,kernel_stride_pool,step,device)
@@ -56,7 +56,7 @@ for epoch in range(10):  # again, normally you would NOT do 300 epochs, it is to
     correct=0
     model.train()
     for j, (input, target) in enumerate(train_loader):
-        if (j+1)%5==0: print("================================= Batch"+ str(j+1)+ "===================================================")
+        if (j+1)%10==0: print("=================================Train Batch"+ str(j+1)+ "===================================================")
 
         model.zero_grad()
         losses_batch,correct_batch= model(input, target)
@@ -74,6 +74,7 @@ for epoch in range(10):  # again, normally you would NOT do 300 epochs, it is to
     model.eval()
     with torch.no_grad():
         for j,(input, target) in enumerate(test_loader):
+            if (j+1)%10==0: print("=================================Test Batch"+ str(j+1)+ "===================================================")
             losses_batch,correct_batch = model(input, target)
             loss = torch.mean(losses_batch,dim=0)
             correct_batch=torch.sum(correct_batch,dim=0)
