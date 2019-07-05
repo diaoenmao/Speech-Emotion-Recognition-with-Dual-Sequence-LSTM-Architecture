@@ -86,9 +86,6 @@ class ConvLSTM(nn.Module):
         self.kernel_stride_pool=kernel_stride_pool
 
 
-        self.attention=nn.Parameter(torch.zeros(self.linear_dim))
-        self.attention_flag=attention_flag
-
         strideF=1
         strideT=1
         for i in range(self.num_layers):
@@ -101,6 +98,9 @@ class ConvLSTM(nn.Module):
 
         self.linear_dim=int(self.hidden_channels[-1]*(480/strideF)*(640/(self.step*strideT)))
         self.classification = nn.Linear(self.linear_dim, self.num_labels)
+
+        self.attention=nn.Parameter(torch.zeros(self.linear_dim))
+        self.attention_flag=attention_flag
 
 
 
