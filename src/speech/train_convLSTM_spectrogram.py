@@ -1,11 +1,9 @@
 import torch
 from torch import optim
-from raw_audio_model import RawAudioModel
-from ConvLSTM import ConvLSTM
+from ConvLSTM_spectrogram.py import ConvLSTM
 from process_spectrogram_model import IEMOCAP, my_collate
 from torch.utils.data import DataLoader
-from torch.optim.lr_scheduler import ReduceLROnPlateau
-from torch.optim.lr_scheduler import CosineAnnealingLR
+from torch.optim.lr_scheduler import ReduceLROnPlateau, CosineAnnealingLR
 import pdb
 from torch.nn import DataParallel
 import pickle
@@ -14,6 +12,7 @@ import numpy as np
 path="/scratch/speech/models/classification/ConvLSTM_data_debug.pickle"
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+input_channels=3
 hidden_channels=[64,32,16]
 kernel_size=[(9,5),(5,5),(5,5)]
 kernel_size_pool=[(8,8),(8,4),(5,5)]
@@ -21,7 +20,7 @@ kernel_stride_pool=[(4,4),(4,2),(3,2)]
 step=10
 batch_size=100
 
-model = ConvLSTM(3, hidden_channels,kernel_size,kernel_size_pool,kernel_stride_pool,step,device)
+model = ConvLSTM(input_channels,hidden_channels,kernel_size,kernel_size_pool,kernel_stride_pool,step,device)
 print("============================ Number of parameters ====================================")
 print(str(sum(p.numel() for p in model.parameters() if p.requires_grad)))
 model.cuda()
