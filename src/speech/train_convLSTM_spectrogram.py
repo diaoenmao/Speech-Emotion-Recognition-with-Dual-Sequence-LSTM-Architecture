@@ -66,7 +66,6 @@ for epoch in range(10):  # again, normally you would NOT do 300 epochs, it is to
         loss.backward()
         optimizer.step()
         correct += correct_batch.item()
-        print(correct)
     accuracy=correct*1.0/((j+1)*batch_size)
     losses=losses / ((j+1)*batch_size)
 
