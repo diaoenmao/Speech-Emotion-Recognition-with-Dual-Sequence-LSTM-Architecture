@@ -18,7 +18,7 @@ kernel_size=[(3,3),(3,3),(3,3)]
 kernel_size_pool=[(4,4),(4,4),(4,4)]
 kernel_stride_pool=[(4,1),(4,1),(3,1)]
 step=80
-batch_size=60
+batch_size=100
 
 model = ConvLSTM(input_channels,hidden_channels,kernel_size,kernel_size_pool,kernel_stride_pool,step,device)
 print("============================ Number of parameters ====================================")
