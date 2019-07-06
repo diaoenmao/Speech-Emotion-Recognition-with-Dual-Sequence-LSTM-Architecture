@@ -13,11 +13,11 @@ path="/scratch/speech/models/classification/ConvLSTM_data_debug.pickle"
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 input_channels=3
-hidden_channels=[64,64,16]
+hidden_channels=[32,16,8]
 kernel_size=[(3,3),(3,3),(3,3)]
-kernel_size_pool=[(8,8),(8,4),(5,5)]
-kernel_stride_pool=[(4,4),(4,2),(3,1)]
-step=10
+kernel_size_pool=[(4,4),(4,4),(4,4)]
+kernel_stride_pool=[(4,1),(4,1),(3,1)]
+step=80
 batch_size=60
 
 model = ConvLSTM(input_channels,hidden_channels,kernel_size,kernel_size_pool,kernel_stride_pool,step,device)
@@ -81,7 +81,7 @@ for epoch in range(10):  # again, normally you would NOT do 300 epochs, it is to
             losses_test += loss.item() * batch_size
             correct_test += correct_batch.item()
 
-
+    print("how many correct:", correct_test)
     accuracy_test = correct_test * 1.0 / ((j+1)*batch_size)
     losses_test = losses_test / ((j+1)*batch_size)
 
