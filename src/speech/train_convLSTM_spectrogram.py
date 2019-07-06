@@ -16,8 +16,8 @@ input_channels=3
 hidden_channels=[32,16,8]
 kernel_size=[(3,3),(3,3),(3,3)]
 kernel_size_pool=[(4,4),(4,4),(4,4)]
-kernel_stride_pool=[(4,1),(4,1),(3,1)]
-step=80
+kernel_stride_pool=[(4,2),(4,1),(3,1)]
+step=40
 batch_size=100
 
 model = ConvLSTM(input_channels,hidden_channels,kernel_size,kernel_size_pool,kernel_stride_pool,step,device)
@@ -49,7 +49,7 @@ test_acc=[]
 train_acc=[]
 test_loss=[]
 train_loss=[]
-for epoch in range(10):  # again, normally you would NOT do 300 epochs, it is toy data
+for epoch in range(50):  # again, normally you would NOT do 300 epochs, it is toy data
     print("===================================" + str(epoch+1) + "==============================================")
     losses = 0
     correct=0
