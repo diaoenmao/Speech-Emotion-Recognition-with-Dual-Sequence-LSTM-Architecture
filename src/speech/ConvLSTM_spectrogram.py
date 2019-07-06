@@ -130,14 +130,16 @@ class ConvLSTM(nn.Module):
             outputs.append(x)
         ## mean pooling and loss function
         out=[torch.unsqueeze(o, dim=4) for o in outputs]
+        pdb.set_trace()
         out=torch.flatten(torch.cat(out,dim=4),start_dim=1,end_dim=3)
+        pdb.set_trace()
         # out.shape batch*kf1f2*T
         if self.attention_flag:
             alpha=torch.unsqueeze(F.softmax(torch.matmul(self.attention,out),dim=1),dim=2)
             out=torch.squeeze(torch.bmm(out,alpha),dim=2)
         else:
             out=torch.mean(out,dim=2)
-
+        pdb.set_trace()
         out=self.classification(out)
         target_index = torch.argmax(target, dim=1).to(self.device)
         correct_batch=torch.sum(target_index==torch.argmax(out,dim=1))
