@@ -62,7 +62,7 @@ def save(dataset):
     with open(save_path + 'spectrogram_segmented' + '_test.pkl', 'wb') as f:
         pickle.dump(test, f)
 
-def create_data(i, (file, emotion)):
+def create_data(i, file, emotion):
     sample_rate, sample = wavfile.read(file)
     segments = np.array_split(sample, 20)
     utterance = []
