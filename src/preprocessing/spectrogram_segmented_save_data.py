@@ -8,6 +8,7 @@ import cv2
 from sklearn.model_selection import train_test_split
 import pickle
 import concurrent.futures
+import pdb
 
 in_file = '/scratch/speech/raw_audio_dataset/audio_paths_labels_updated.csv'
 df = pd.read_csv(in_file)
@@ -63,7 +64,8 @@ def save(dataset):
         pickle.dump(test, f)
 
 def create_data(df_value):
-    i, (file, emotion) = enumerate(df_value)
+    pdb.set_trace()
+    file, emotion = df_value
     sample_rate, sample = wavfile.read(file)
     segments = np.array_split(sample, 20)
     utterance = []
@@ -78,7 +80,7 @@ def create_data(df_value):
         index = file.rfind('/')
         basename = file[(index + 1):-4]
         plt.savefig(endpoint + '{}_spec_{}.png'.format(basename, j), bbox_inches='tight', pad_inches=0)
-        print(i, j)
+        #print(i, j)
         im = cv2.imread(endpoint + '{}_spec_{}.png'.format(basename, j))
         utterance.append(im)
     label = encode[emotion]
