@@ -64,7 +64,7 @@ def save(dataset):
         pickle.dump(test, f)
 
 def create_data(df_value):
-    pdb.set_trace()
+    #pdb.set_trace()
     file, emotion = df_value
     sample_rate, sample = wavfile.read(file)
     segments = np.array_split(sample, 20)
@@ -91,7 +91,7 @@ if __name__ == '__main__':
     target = []
     with concurrent.futures.ProcessPoolExecutor() as executor:
         for (file, emotion), (utterance, label) in zip(df.values, executor.map(create_data, df.values)):
-            pdb.set_trace()
+            #pdb.set_trace()
             input.append(utterance)
             target.append(label)
         dataset = {'input': input, 'target': target}
