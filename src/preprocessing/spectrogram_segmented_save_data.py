@@ -15,57 +15,14 @@ df = pd.read_csv(in_file)
 
 encode = {"hap": [1, 0, 0, 0], "exc": [1, 0, 0, 0], "neu": [0, 1, 0, 0], "ang": [0, 0, 1, 0], "sad": [0, 0, 0, 1]}
 
-#endpoint = '/scratch/speech/spectrograms/'
-endpoint = '/scratch/speech/spectest/'
+endpoint = '/scratch/speech/spectrograms/'
 
 input = []
-utterance = []
 target = []
 
 save_path = '/scratch/speech/raw_audio_dataset/'
 
-def extract_features(dataframe):
-    for i, (file, emotion) in enumerate(dataframe.values):
-        sample_rate, sample = wavfile.read(file)
-        segments = np.array_split(sample, 20)
-        for j, segment in enumerate(segments):
-            spectrum, freqs, t, im = plt.specgram(segment, Fs=sample_rate)
-            plt.gca().set_axis_off()
-            plt.subplots_adjust(top = 1, bottom = 0, right = 1, left = 0, hspace = 0, wspace = 0)
-            plt.margins(0,0)
-            plt.gca().xaxis.set_major_locator(ticker.NullLocator())
-            plt.gca().yaxis.set_major_locator(ticker.NullLocator())
-            #plt.show()
-            index = file.rfind('/')
-            basename = file[(index + 1):-4]
-            plt.savefig(endpoint + '{}_spec_{}.png'.format(basename, j), bbox_inches='tight', pad_inches=0)
-            print(i, j)
-            im = cv2.imread(endpoint + '{}_spec_{}.png'.format(basename, j))
-            utterance.append(im)
-        input.append(utterance)
-        utterance = []
-        target.append(encode[emotion])
-
-    return input, target
-
-def split_data(data):
-    input_train, input_test, target_train, target_test = train_test_split(
-        data["input"], data["target"], test_size=0.2, random_state=42)
-    train = {'input': input_train, 'target': target_train}
-    test = {'input': input_test, 'target': target_test}
-    return train, test
-
-def save(dataset):
-    train, test = split_data(dataset)
-    with open(save_path + 'spectrogram_segmented' + '_full.pkl', 'wb') as f:
-        pickle.dump(dataset, f)
-    with open(save_path + 'spectrogram_segmented' + '_train.pkl', 'wb') as f:
-        pickle.dump(train, f)
-    with open(save_path + 'spectrogram_segmented' + '_test.pkl', 'wb') as f:
-        pickle.dump(test, f)
-
 def create_data(df_value):
-    #print(df_value)
     file, emotion = df_value
     sample_rate, sample = wavfile.read(file)
     segments = np.array_split(sample, 20)
@@ -81,19 +38,57 @@ def create_data(df_value):
         index = file.rfind('/')
         basename = file[(index + 1):-4]
         plt.savefig(endpoint + '{}_spec_{}.png'.format(basename, j), bbox_inches='tight', pad_inches=0)
-        #print(i, j)
-        print(j)
         im = cv2.imread(endpoint + '{}_spec_{}.png'.format(basename, j))
         utterance.append(im)
     label = encode[emotion]
-    print(label)
     return utterance, label
+
+#def extract_features(dataframe):
+#    for i, (file, emotion) in enumerate(dataframe.values):
+#        sample_rate, sample = wavfile.read(file)
+#        segments = np.array_split(sample, 20)
+#        for j, segment in enumerate(segments):
+#            spectrum, freqs, t, im = plt.specgram(segment, Fs=sample_rate)
+#            plt.gca().set_axis_off()
+#            plt.subplots_adjust(top = 1, bottom = 0, right = 1, left = 0, hspace = 0, wspace = 0)
+#            plt.margins(0,0)
+#            plt.gca().xaxis.set_major_locator(ticker.NullLocator())
+#            plt.gca().yaxis.set_major_locator(ticker.NullLocator())
+#            #plt.show()
+#            index = file.rfind('/')
+#            basename = file[(index + 1):-4]
+#            plt.savefig(endpoint + '{}_spec_{}.png'.format(basename, j), bbox_inches='tight', pad_inches=0)
+#            print(i, j)
+#            im = cv2.imread(endpoint + '{}_spec_{}.png'.format(basename, j))
+#            utterance.append(im)
+#        input.append(utterance)
+#        utterance = []
+#        target.append(encode[emotion])
+#
+#    return input, target
+
+def split_data(data):
+    input_train, input_test, target_train, target_test = train_test_split(
+        data['input'], data['target'], test_size=0.2, random_state=42)
+    train = {'input': input_train, 'target': target_train}
+    test = {'input': input_test, 'target': target_test}
+    return train, test
+
+def save(dataset):
+    train, test = split_data(dataset)
+    with open(save_path + 'spectrogram_segmented' + '_full.pkl', 'wb') as f:
+        pickle.dump(dataset, f)
+    with open(save_path + 'spectrogram_segmented' + '_train.pkl', 'wb') as f:
+        pickle.dump(train, f)
+    with open(save_path + 'spectrogram_segmented' + '_test.pkl', 'wb') as f:
+        pickle.dump(test, f)
 
 if __name__ == '__main__':
     input = []
     target = []
     with concurrent.futures.ProcessPoolExecutor() as executor:
-        for utterance, label in executor.map(create_data, df.values):
+        for i, (utterance, label) in zip(range(df.shape[0]), executor.map(create_data, df.values)):
+            print('Succcessfully generated spectrograms for file #' + str(i))
             input.append(utterance)
             target.append(label)
         dataset = {'input': input, 'target': target}
