@@ -15,7 +15,7 @@ df = pd.read_csv(in_file)
 
 encode = {"hap": [1, 0, 0, 0], "exc": [1, 0, 0, 0], "neu": [0, 1, 0, 0], "ang": [0, 0, 1, 0], "sad": [0, 0, 0, 1]}
 
-endpoint = '/scratch/speech/spectrograms/'
+endpoint = '/scratch/speech/spectrograms_segmented/'
 
 input = []
 target = []
@@ -25,7 +25,7 @@ save_path = '/scratch/speech/raw_audio_dataset/'
 def create_data(df_value):
     file, emotion = df_value
     sample_rate, sample = wavfile.read(file)
-    segments = np.array_split(sample, 20)
+    segments = np.array_split(sample, 10)
     utterance = []
     for j, segment in enumerate(segments):
         spectrum, freqs, t, im = plt.specgram(segment, Fs=sample_rate)
@@ -35,6 +35,7 @@ def create_data(df_value):
         plt.gca().xaxis.set_major_locator(ticker.NullLocator())
         plt.gca().yaxis.set_major_locator(ticker.NullLocator())
         #plt.show()
+        print(j)
         index = file.rfind('/')
         basename = file[(index + 1):-4]
         plt.savefig(endpoint + '{}_spec_{}.png'.format(basename, j), bbox_inches='tight', pad_inches=0)
