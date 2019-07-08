@@ -35,7 +35,6 @@ def create_data(df_value):
         plt.gca().xaxis.set_major_locator(ticker.NullLocator())
         plt.gca().yaxis.set_major_locator(ticker.NullLocator())
         #plt.show()
-        print(j)
         index = file.rfind('/')
         basename = file[(index + 1):-4]
         plt.savefig(endpoint + '{}_spec_{}.png'.format(basename, j), bbox_inches='tight', pad_inches=0)
