@@ -15,7 +15,8 @@ df = pd.read_csv(in_file)
 
 encode = {"hap": [1, 0, 0, 0], "exc": [1, 0, 0, 0], "neu": [0, 1, 0, 0], "ang": [0, 0, 1, 0], "sad": [0, 0, 0, 1]}
 
-endpoint = '/scratch/speech/spectrograms/'
+#endpoint = '/scratch/speech/spectrograms/'
+endpoint = '/scratch/speech/spectest/'
 
 input = []
 utterance = []
@@ -64,7 +65,7 @@ def save(dataset):
         pickle.dump(test, f)
 
 def create_data(df_value):
-    print(df_value)
+    #print(df_value)
     file, emotion = df_value
     sample_rate, sample = wavfile.read(file)
     segments = np.array_split(sample, 20)
@@ -81,17 +82,18 @@ def create_data(df_value):
         basename = file[(index + 1):-4]
         plt.savefig(endpoint + '{}_spec_{}.png'.format(basename, j), bbox_inches='tight', pad_inches=0)
         #print(i, j)
+        print(j)
         im = cv2.imread(endpoint + '{}_spec_{}.png'.format(basename, j))
         utterance.append(im)
     label = encode[emotion]
+    print(label)
     return utterance, label
 
 if __name__ == '__main__':
     input = []
     target = []
     with concurrent.futures.ProcessPoolExecutor() as executor:
-        for (file, emotion), (utterance, label) in zip(df.values, executor.map(create_data, df.values)):
-            print(file, emotion, utterance, label)
+        for utterance, label in executor.map(create_data, df.values):
             input.append(utterance)
             target.append(label)
         dataset = {'input': input, 'target': target}
