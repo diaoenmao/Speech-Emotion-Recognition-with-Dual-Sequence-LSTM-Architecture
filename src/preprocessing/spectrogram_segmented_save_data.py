@@ -62,8 +62,8 @@ def save(dataset):
     with open(save_path + 'spectrogram_segmented' + '_test.pkl', 'wb') as f:
         pickle.dump(test, f)
 
-def create_data(i, df_value):
-    file, emotion = df_value
+def create_data(df_value):
+    i, (file, emotion) = enumerate(df_value)
     sample_rate, sample = wavfile.read(file)
     segments = np.array_split(sample, 20)
     utterance = []
@@ -88,7 +88,7 @@ if __name__ == '__main__':
     input = []
     target = []
     with concurrent.futures.ProcessPoolExecutor() as executor:
-        for (i, (file, emotion)), (utterance, label) in zip(enumerate(df.values), executor.map(create_data, df.values)):
+        for (file, emotion), (utterance, label) in zip(df.values, executor.map(create_data, df.values)):
             input.append(utterance)
             target.append(label)
         dataset = {'input': input, 'target': target}
