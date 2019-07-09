@@ -58,7 +58,6 @@ for epoch in range(50):  # again, normally you would NOT do 300 epochs, it is to
     for j, (input_lstm,input, target,seq_length) in enumerate(train_loader):
         if (j+1)%10==0: print("=================================Train Batch"+ str(j+1)+ "===================================================")
         input_lstm = pad_sequence(sequences=input_lstm, batch_first=True)
-        input_lstm = pack_padded_sequence(input_lstm, lengths=seq_length, batch_first=True, enforce_sorted=False)
         pdb.set_trace()
         model.zero_grad()
         losses_batch,correct_batch= model(input_lstm,input, target)
