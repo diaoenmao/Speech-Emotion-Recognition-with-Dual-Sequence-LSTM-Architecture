@@ -17,9 +17,6 @@ encode = {"hap": [1, 0, 0, 0], "exc": [1, 0, 0, 0], "neu": [0, 1, 0, 0], "ang": 
 
 endpoint = '/scratch/speech/spectrograms_segmented_new/'
 
-input = []
-target = []
-
 save_path = '/scratch/speech/raw_audio_dataset/'
 
 def create_data(df_value):
@@ -85,12 +82,17 @@ def save(dataset):
         pickle.dump(test, f)
 
 if __name__ == '__main__':
+    data = []
     input = []
     target = []
+
     with concurrent.futures.ProcessPoolExecutor() as executor:
         for i, (utterance, label) in zip(range(df.shape[0]), executor.map(create_data, df.values)):
             print('Succcessfully generated spectrograms for file #' + str(i))
-            input.append(utterance)
-            target.append(label)
-        dataset = {'input': input, 'target': target}
-        save(dataset)
+            data.append((utterance,label))
+
+    for i in data:
+        input.append(i[0])
+        target.append(i[1])
+    dataset = {'input': input, 'target': target}
+    save(dataset)
