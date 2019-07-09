@@ -37,7 +37,6 @@ def create_data(df_value):
         basename = file[(index + 1):-4]
         plt.savefig(endpoint + '{}_spec_{}.png'.format(basename, j), dpi=20, bbox_inches='tight', pad_inches=0)
         im = cv2.imread(endpoint + '{}_spec_{}.png'.format(basename, j))
-        print(im.shape)
         utterance.append(im)
     label = encode[emotion]
     return utterance, label
