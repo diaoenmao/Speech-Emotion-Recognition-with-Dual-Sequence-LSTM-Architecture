@@ -130,9 +130,7 @@ class ConvLSTM(nn.Module):
         # input should be a list of inputs, like a time stamp, maybe 1280 for 100 times.
         ##data process here
         batch_size=len(input_lstm)
-        for i in range(self.num_devices):
-            if seq_length.device.index==i:
-                input_lstm=input_lstm[int(i*batch_size/self.num_devices):int((i+1)*batch_size/self.num_devices)]
+        input_lstm=input_lstm[int(seq_length.device.index*batch_size/self.num_devices):int((seq_length.device.index+1)*batch_size/self.num_devices)]
         input_lstm = pad_sequence(sequences=input_lstm, batch_first=True)
         input_lstm=pack_padded_sequence(input_lstm, lengths=seq_length, batch_first=True, enforce_sorted=False)
         pdb.set_trace()
