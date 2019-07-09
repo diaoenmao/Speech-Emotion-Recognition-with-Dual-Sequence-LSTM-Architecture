@@ -131,9 +131,7 @@ class ConvLSTM(nn.Module):
         ##data process here
         batch_size=len(input_lstm)
         input_lstm=input_lstm[int(seq_length.device.index*batch_size/self.num_devices):int((seq_length.device.index+1)*batch_size/self.num_devices)]
-        seq_length=seq_length[int(seq_length.device.index*batch_size/self.num_devices):int((seq_length.device.index+1)*batch_size/self.num_devices)]
-        print(seq_length.shape)
-        print(len(input_lstm))
+        pdb.set_trace()
         input_lstm = pad_sequence(sequences=input_lstm, batch_first=True)
         input_lstm=pack_padded_sequence(input_lstm, lengths=seq_length, batch_first=True, enforce_sorted=False)
         internal_state = []
