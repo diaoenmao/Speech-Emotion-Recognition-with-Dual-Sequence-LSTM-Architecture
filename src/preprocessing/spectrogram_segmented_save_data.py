@@ -15,7 +15,7 @@ df = pd.read_csv(in_file)
 
 encode = {"hap": [1, 0, 0, 0], "exc": [1, 0, 0, 0], "neu": [0, 1, 0, 0], "ang": [0, 0, 1, 0], "sad": [0, 0, 0, 1]}
 
-endpoint = '/scratch/speech/spectrograms_segmented_new/'
+endpoint = '/scratch/speech/spectrograms_segmented/'
 
 save_path = '/scratch/speech/raw_audio_dataset/'
 
@@ -85,12 +85,10 @@ if __name__ == '__main__':
     data = []
     input = []
     target = []
-
     with concurrent.futures.ProcessPoolExecutor() as executor:
         for i, (utterance, label) in zip(range(df.shape[0]), executor.map(create_data, df.values)):
             print('Succcessfully generated spectrograms for file #' + str(i))
-            data.append((utterance,label))
-
+            data.append((utterance, label))
     for i in data:
         input.append(i[0])
         target.append(i[1])
