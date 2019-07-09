@@ -20,7 +20,6 @@ class LSTM_Audio(nn.Module):
     def forward(self, input):
         input = input.to(self.device)
         out, hn = self.lstm(input)
-        out, _ = pad_packed_sequence(out, batch_first=True)
         return out
 
 class ConvLSTMCell(nn.Module):
@@ -132,8 +131,7 @@ class ConvLSTM(nn.Module):
         batch_size=len(input_lstm)
         input_lstm=input_lstm[int(input.device.index*batch_size/self.num_devices):int((input.device.index+1)*batch_size/self.num_devices)]
         seq_length=seq_length[int(input.device.index*batch_size/self.num_devices):int((input.device.index+1)*batch_size/self.num_devices)]
-        input_lstm = pad_sequence(sequences=input_lstm, batch_first=True)
-        input_lstm=pack_padded_sequence(input_lstm, lengths=seq_length, batch_first=True, enforce_sorted=False)
+        input_lstm = torch.tensor(pad_sequence(sequences=input_lstm, batch_first=True)).to(self.device)
         internal_state = []
         outputs = []
         for step in range(self.step):
@@ -155,6 +153,8 @@ class ConvLSTM(nn.Module):
         out=[torch.unsqueeze(o, dim=4) for o in outputs]
         out=torch.flatten(torch.cat(out,dim=4),start_dim=1,end_dim=3)
         out_lstm=getattr(self,"lstm")(input_lstm)
+        pdb.set_trace()
+
         # out.shape batch*kf1f2*T
 
         if self.attention_flag:
