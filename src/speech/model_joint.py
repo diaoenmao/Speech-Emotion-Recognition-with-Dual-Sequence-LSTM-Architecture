@@ -149,15 +149,13 @@ class ConvLSTM(nn.Module):
         out=[torch.unsqueeze(o, dim=4) for o in outputs]
         out=torch.flatten(torch.cat(out,dim=4),start_dim=1,end_dim=3)
 
-        print(seq_length)
         batch_size=len(input_lstm)
         input_lstm=input_lstm[int(input.device.index*batch_size/self.num_devices):int((input.device.index+1)*batch_size/self.num_devices)]
         seq_length=seq_length[int(input.device.index*batch_size/self.num_devices):int((input.device.index+1)*batch_size/self.num_devices)]
         input_lstm = torch.tensor(pad_sequence(sequences=input_lstm)).to(self.device)
         print(input_lstm.shape,input_lstm.device.index)
         out_lstm=getattr(self,"lstm")(input_lstm)
-        pdb.set_trace()
-
+        out_lstm=out_lstm.permute(1,2,0)
         # out.shape batch*kf1f2*T
 
         if self.attention_flag:
@@ -165,7 +163,7 @@ class ConvLSTM(nn.Module):
             out=torch.squeeze(torch.bmm(out,alpha),dim=2)
         else:
             out=torch.mean(out,dim=2)
-            out_lstm=torch.mean(out_lstm,dim=2)
+            out_lstm=torch.tensor([torch.mean(out_lstm[:s],dim=2) for s in seq_length])
         out=torch.cat([out,out_lstm],dim=1)
         print(out.shape)
         out=self.classification(out)
