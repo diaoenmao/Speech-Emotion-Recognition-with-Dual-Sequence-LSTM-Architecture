@@ -15,14 +15,14 @@ df = pd.read_csv(in_file)
 
 encode = {"hap": [1, 0, 0, 0], "exc": [1, 0, 0, 0], "neu": [0, 1, 0, 0], "ang": [0, 0, 1, 0], "sad": [0, 0, 0, 1]}
 
-endpoint = '/scratch/speech/spectrograms_segmented_small/'
+endpoint = '/scratch/speech/spectrograms_segmented_dpi15_step40/'
 
 save_path = '/scratch/speech/raw_audio_dataset/'
 
 def create_data(df_value):
     file, emotion = df_value
     sample_rate, sample = wavfile.read(file)
-    segments = np.array_split(sample, 10)
+    segments = np.array_split(sample, 40)
     utterance = []
     for j, segment in enumerate(segments):
         plt.clf()
@@ -35,7 +35,7 @@ def create_data(df_value):
         #plt.show()
         index = file.rfind('/')
         basename = file[(index + 1):-4]
-        plt.savefig(endpoint + '{}_spec_{}.png'.format(basename, j), dpi=20, bbox_inches='tight', pad_inches=0)
+        plt.savefig(endpoint + '{}_spec_{}.png'.format(basename, j), dpi=15, bbox_inches='tight', pad_inches=0)
         im = cv2.imread(endpoint + '{}_spec_{}.png'.format(basename, j))
         utterance.append(im)
     label = encode[emotion]
@@ -74,11 +74,11 @@ def split_data(data):
 
 def save(dataset):
     train, test = split_data(dataset)
-    with open(save_path + 'spectrogram_segmented_small' + '_full.pkl', 'wb') as f:
+    with open(save_path + 'spectrogram_segmented_dpi15_step40' + '_full.pkl', 'wb') as f:
         pickle.dump(dataset, f)
-    with open(save_path + 'spectrogram_segmented_small' + '_train.pkl', 'wb') as f:
+    with open(save_path + 'spectrogram_segmented_dpi15_step40' + '_train.pkl', 'wb') as f:
         pickle.dump(train, f)
-    with open(save_path + 'spectrogram_segmented_small' + '_test.pkl', 'wb') as f:
+    with open(save_path + 'spectrogram_segmented_dpi15_step40' + '_test.pkl', 'wb') as f:
         pickle.dump(test, f)
 
 if __name__ == '__main__':
