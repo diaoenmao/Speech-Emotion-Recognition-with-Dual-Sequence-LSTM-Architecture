@@ -33,7 +33,7 @@ class IEMOCAP(Dataset):
 
 
 def my_collate(batch):
-    input_lstm = [i['input_lstm'] for i in batch]i
+    input_lstm = [i['input_lstm'] for i in batch]
     seq_length = torch.from_numpy(np.array([i['seq_length'] for i in batch]))
     input = torch.cat([torch.unsqueeze(i['input'],dim=0) for i in batch],dim=0)
     target = torch.from_numpy(np.array([i['target'] for i in batch]))
