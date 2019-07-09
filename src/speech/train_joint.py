@@ -11,7 +11,7 @@ import numpy as np
 from torch.nn.utils.rnn import pad_sequence, pack_padded_sequence
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 input_channels=3
-hidden_channels=[64,32,16]
+hidden_channels=[64,64,32]
 kernel_size=[(3,3),(3,3),(3,3)]
 kernel_size_pool=[(4,4),(4,4),(4,4)]
 kernel_stride_pool=[(4,4),(4,4),(3,4)]
@@ -48,7 +48,7 @@ test_acc=[]
 train_acc=[]
 test_loss=[]
 train_loss=[]
-for epoch in range(50):  # again, normally you would NOT do 300 epochs, it is toy data
+for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is toy data
     print("===================================" + str(epoch+1) + "==============================================")
     losses = 0
     correct=0
@@ -56,7 +56,6 @@ for epoch in range(50):  # again, normally you would NOT do 300 epochs, it is to
     for j, (input_lstm,input, target,seq_length) in enumerate(train_loader):
         if (j+1)%10==0: print("=================================Train Batch"+ str(j+1)+ "===================================================")
         model.zero_grad()
-        print(max(seq_length))
         input_lstm = pad_sequence(sequences=input_lstm,batch_first=True)
         losses_batch,correct_batch= model(input_lstm,input, target,seq_length)
         loss = torch.mean(losses_batch,dim=0)
