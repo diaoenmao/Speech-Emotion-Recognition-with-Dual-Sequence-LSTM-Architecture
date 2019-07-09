@@ -26,7 +26,7 @@ class IEMOCAP(Dataset):
     def __getitem__(self, index):
         temp=[torch.unsqueeze(torch.from_numpy(i),dim=3).permute(2,0,1,3) for i in self.input[index]]
         sample = {'input_lstm': torch.from_numpy(self.input_lstm[index]).float(),
-                  'seq_length': torch.tensor(self.seq_length[index]),
+                  'seq_length': self.seq_length[index],
                   'input': torch.cat(temp,dim=3).float(),
                   'target': self.target[index]}
         return sample
@@ -34,7 +34,7 @@ class IEMOCAP(Dataset):
 
 def my_collate(batch):
     input_lstm = [i['input_lstm'] for i in batch]
-    seq_length = torch.from_numpy(np.array([i['seq_length'] for i in batch]))
+    seq_length = [i['seq_length'] for i in batch]
     input = torch.cat([torch.unsqueeze(i['input'],dim=0) for i in batch],dim=0)
     target = torch.from_numpy(np.array([i['target'] for i in batch]))
     return input_lstm,input,target,seq_length
