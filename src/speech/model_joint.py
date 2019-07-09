@@ -59,6 +59,8 @@ class ConvLSTMCell(nn.Module):
         self.Wco = None
         self.device=device
 
+        self.lol=0
+
     def forward(self, x, h, c):
         try:
             ci = torch.sigmoid(self.Wxi(x) + self.Whi(h) + c * self.Wci)
@@ -69,7 +71,8 @@ class ConvLSTMCell(nn.Module):
         co = torch.sigmoid(self.Wxo(x) + self.Who(h) + cc * self.Wco)
         ch = co * torch.tanh(cc)
         ch_pool=self.batch(self.max_pool(ch))
-        print("success")
+        self.lol+=1
+        print(self.lol)
         #ch_pool=self.dropout(ch_pool)
         return ch_pool, ch, cc
 
