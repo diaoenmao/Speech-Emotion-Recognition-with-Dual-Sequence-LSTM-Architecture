@@ -149,12 +149,12 @@ class ConvLSTM(nn.Module):
         out=[torch.unsqueeze(o, dim=4) for o in outputs]
         out=torch.flatten(torch.cat(out,dim=4),start_dim=1,end_dim=3)
 
-        pdb.set_trace()
+        print(seq_length)
         batch_size=len(input_lstm)
         input_lstm=input_lstm[int(input.device.index*batch_size/self.num_devices):int((input.device.index+1)*batch_size/self.num_devices)]
         seq_length=seq_length[int(input.device.index*batch_size/self.num_devices):int((input.device.index+1)*batch_size/self.num_devices)]
         input_lstm = torch.tensor(pad_sequence(sequences=input_lstm)).to(self.device)
-        pdb.set_trace()
+        print(input_lstm.shape,input_lstm.device.index)
         out_lstm=getattr(self,"lstm")(input_lstm)
         pdb.set_trace()
 
