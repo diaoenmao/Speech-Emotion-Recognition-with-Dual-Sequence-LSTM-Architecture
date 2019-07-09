@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import pdb
 import numpy as np
-from torch.nn.utils.rnn import pad_packed_sequence
+from torch.nn.utils.rnn import pad_packed_sequence, pad_sequence, pack_padded_sequence
 
 class LSTM_Audio(nn.Module):
     def __init__(self, hidden_dim, num_layers, device,dropout_rate=0 ,bidirectional=False):
@@ -85,9 +85,10 @@ class ConvLSTM(nn.Module):
     # input_channels corresponds to the first input feature map
     # hidden state is a list of succeeding lstm layers.
     # kernel size is also a list, same length as hidden_channels
-    def __init__(self, input_channels, hidden_channels, kernel_size, kernel_size_pool,kernel_stride_pool,step,device,hidden_dim_lstm,num_layers_lstm,attention_flag=False):
+    def __init__(self, input_channels, hidden_channels, kernel_size, kernel_size_pool,kernel_stride_pool,step,device,num_devices,hidden_dim_lstm,num_layers_lstm,attention_flag=False):
         super(ConvLSTM, self).__init__()
         self.device= device
+        self.num_devices=num_devices
         self.input_channels = [input_channels] + hidden_channels
         self.hidden_channels = hidden_channels
         self.kernel_size = kernel_size
@@ -125,9 +126,15 @@ class ConvLSTM(nn.Module):
 
 
 
-    def forward(self, input_lstm,input,target):
+    def forward(self, input_lstm,input,target,seq_length):
         # input should be a list of inputs, like a time stamp, maybe 1280 for 100 times.
         ##data process here
+        batch_size=len(input_lstm)
+        for i in range(self.num_devices):
+            if seq_length.device.index==i:
+                input_lstm=input_lstm[int(i*batch_size/self.num_devices):int((i+1)*batch_size/self.num_devices)]
+        input_lstm = pad_sequence(sequences=input_lstm, batch_first=True)
+        input_lstm=pack_padded_sequence(input_lstm, lengths=seq_length, batch_first=True, enforce_sorted=False)
         pdb.set_trace()
         input_lstm=input_lstm.to(self.device)
         input=input.to(self.device)

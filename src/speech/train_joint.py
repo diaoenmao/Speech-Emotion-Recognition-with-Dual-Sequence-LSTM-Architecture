@@ -20,13 +20,12 @@ step=10
 batch_size=100
 hidden_dim_lstm=200
 num_layers_lstm=2
-
-model = ConvLSTM(input_channels,hidden_channels,kernel_size,kernel_size_pool,kernel_stride_pool,step,device,hidden_dim_lstm,num_layers_lstm)
+device_ids=[0,1,2,3]
+num_devices=len(device_ids)
+model = ConvLSTM(input_channels,hidden_channels,kernel_size,kernel_size_pool,kernel_stride_pool,step,device,num_devices,hidden_dim_lstm,num_layers_lstm)
 print("============================ Number of parameters ====================================")
 print(str(sum(p.numel() for p in model.parameters() if p.requires_grad)))
 model.cuda()
-device_ids=[0,1,2,3]
-num_devices=len(device_ids)
 model=DataParallel(model,device_ids=device_ids)
 model.train()
 
@@ -57,10 +56,8 @@ for epoch in range(50):  # again, normally you would NOT do 300 epochs, it is to
     model.train()
     for j, (input_lstm,input, target,seq_length) in enumerate(train_loader):
         if (j+1)%10==0: print("=================================Train Batch"+ str(j+1)+ "===================================================")
-        input_lstm = pad_sequence(sequences=input_lstm, batch_first=True)
-        pdb.set_trace()
         model.zero_grad()
-        losses_batch,correct_batch= model(input_lstm,input, target)
+        losses_batch,correct_batch= model(input_lstm,input, target,seq_length)
         loss = torch.mean(losses_batch,dim=0)
         correct_batch=torch.sum(correct_batch,dim=0)
         losses += loss.item() * batch_size
