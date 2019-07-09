@@ -117,7 +117,7 @@ class ConvLSTM(nn.Module):
 
 
 
-        self.linear_dim=int(self.hidden_channels[-1]*(96/strideF)*(128/strideT)+self.hidden_dim_lstm)
+        self.linear_dim=int(self.hidden_channels[-1]*(96/strideF)*(128/strideT)+self.hidden_dim_lstm*2)
         self.classification = nn.Linear(self.linear_dim, self.num_labels)
 
         self.attention=nn.Parameter(torch.zeros(self.linear_dim))
@@ -153,7 +153,6 @@ class ConvLSTM(nn.Module):
         seq_length=seq_length.to(self.device)
         out_lstm=getattr(self,"lstm")(input_lstm)
         out_lstm=out_lstm.permute(0,2,1)
-        print(out_lstm.shape)
         # out.shape batch*kf1f2*T
 
         if self.attention_flag:
@@ -163,9 +162,7 @@ class ConvLSTM(nn.Module):
             out=torch.mean(out,dim=2)
             temp=[torch.unsqueeze(torch.mean(out_lstm[k,:,:s],dim=1),dim=0) for k,s in enumerate(seq_length)]
             out_lstm=torch.cat(temp,dim=0)
-            print(out_lstm.shape)
         out=torch.cat([out,out_lstm],dim=1)
-        print(out.shape)
         out=self.classification(out)
         target_index = torch.argmax(target, dim=1).to(self.device)
         correct_batch=torch.sum(target_index==torch.argmax(out,dim=1))
