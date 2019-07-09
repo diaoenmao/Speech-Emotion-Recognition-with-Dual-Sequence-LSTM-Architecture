@@ -1,4 +1,4 @@
-from torch.nn.utils.rnn import pad_sequence, pack_padded_sequenc
+from torch.nn.utils.rnn import pad_sequence, pack_padded_sequence
 import torch
 import pickle
 import numpy as np
