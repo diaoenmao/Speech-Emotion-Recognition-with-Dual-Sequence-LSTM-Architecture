@@ -28,6 +28,7 @@ def create_data(df_value):
     segments = np.array_split(sample, 10)
     utterance = []
     for j, segment in enumerate(segments):
+        plt.clf()
         spectrum, freqs, t, im = plt.specgram(segment, Fs=sample_rate)
         plt.gca().set_axis_off()
         plt.subplots_adjust(top = 1, bottom = 0, right = 1, left = 0, hspace = 0, wspace = 0)
@@ -38,7 +39,6 @@ def create_data(df_value):
         index = file.rfind('/')
         basename = file[(index + 1):-4]
         plt.savefig(endpoint + '{}_spec_{}.png'.format(basename, j), bbox_inches='tight', pad_inches=0)
-        plt.clf()
         im = cv2.imread(endpoint + '{}_spec_{}.png'.format(basename, j))
         utterance.append(im)
     label = encode[emotion]
