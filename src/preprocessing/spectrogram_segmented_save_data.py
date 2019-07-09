@@ -15,7 +15,7 @@ df = pd.read_csv(in_file)
 
 encode = {"hap": [1, 0, 0, 0], "exc": [1, 0, 0, 0], "neu": [0, 1, 0, 0], "ang": [0, 0, 1, 0], "sad": [0, 0, 0, 1]}
 
-endpoint = '/scratch/speech/spectrograms_segmented/'
+endpoint = '/scratch/speech/spectrograms_segmented_new/'
 
 save_path = '/scratch/speech/raw_audio_dataset/'
 
@@ -35,7 +35,7 @@ def create_data(df_value):
         #plt.show()
         index = file.rfind('/')
         basename = file[(index + 1):-4]
-        plt.savefig(endpoint + '{}_spec_{}.png'.format(basename, j), bbox_inches='tight', pad_inches=0)
+        plt.savefig(endpoint + '{}_spec_{}.png'.format(basename, j), dpi=10, bbox_inches='tight', pad_inches=0)
         im = cv2.imread(endpoint + '{}_spec_{}.png'.format(basename, j))
         utterance.append(im)
     label = encode[emotion]
