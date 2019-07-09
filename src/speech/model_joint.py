@@ -3,8 +3,25 @@ import torch.nn as nn
 import torch.nn.functional as F
 import pdb
 import numpy as np
+from torch.nn.utils.rnn import pad_packed_sequence
 
+class LSTM_Audio(nn.Module):
+    def __init__(self, hidden_dim, num_layers, device,dropout_rate=0, ,bidirectional=False):
+        super(LSTM_Audio, self).__init__()
+        self.device = device
+        self.num_features = 39
+        self.hidden_dim = hidden_dim
+        self.num_layers = num_layers
+        self.dropout_rate = dropout_rate
+        self.bidirectional = bidirectional
+        self.lstm = nn.LSTM(self.num_features, self.hidden_dim, self.num_layers, batch_first=True,
+                           dropout=self.dropout_rate, bidirectional=self.bidirectional).to(self.device)
 
+    def forward(self, input):
+        input = input.to(self.device)
+        out, hn = self.lstm(input)
+        out, _ = pad_packed_sequence(out, batch_first=True)
+        return out
 
 class ConvLSTMCell(nn.Module):
     def __init__(self, input_channels, hidden_channels, kernel_size, kernel_size_pool, kernel_stride_pool,device, dropout=0.1):
@@ -68,10 +85,9 @@ class ConvLSTM(nn.Module):
     # input_channels corresponds to the first input feature map
     # hidden state is a list of succeeding lstm layers.
     # kernel size is also a list, same length as hidden_channels
-    def __init__(self, input_channels, hidden_channels, kernel_size, kernel_size_pool,kernel_stride_pool,step,device,attention_flag=False):
+    def __init__(self, input_channels, hidden_channels, kernel_size, kernel_size_pool,kernel_stride_pool,step,device,hidden_dim_lstm,num_layers_lstm,attention_flag=False):
         super(ConvLSTM, self).__init__()
         self.device= device
-
         self.input_channels = [input_channels] + hidden_channels
         self.hidden_channels = hidden_channels
         self.kernel_size = kernel_size
@@ -79,27 +95,29 @@ class ConvLSTM(nn.Module):
         self.step = step
         self._all_layers = []
         self.num_labels=4
-
-        
-        # max pooling
+        self.hidden_dim_lstm = hidden_dim_lstm
+        self.num_layers_lstm = num_layers_lstm
         self.kernel_size_pool=kernel_size_pool
         self.kernel_stride_pool=kernel_stride_pool
-
-
         strideF=1
         strideT=1
-        for i in range(self.num_layers):
-            name = 'cell{}'.format(i)
-            cell = ConvLSTMCell(self.input_channels[i], self.hidden_channels[i], self.kernel_size[i],self.kernel_size_pool[i],self.kernel_stride_pool[i],self.device)
-            setattr(self, name, cell)
-            self._all_layers.append(cell)
-            strideF*=self.kernel_stride_pool[i][0]
-            strideT*=self.kernel_stride_pool[i][1]
+        for i in range(self.num_layers+1):
+            if i<self.num_layers:
+                name = 'cell{}'.format(i)
+                cell = ConvLSTMCell(self.input_channels[i], self.hidden_channels[i], self.kernel_size[i],self.kernel_size_pool[i],self.kernel_stride_pool[i],self.device)
+                setattr(self, name, cell)
+                self._all_layers.append(cell)
+                strideF*=self.kernel_stride_pool[i][0]
+                strideT*=self.kernel_stride_pool[i][1]
+            else:
+                name="lstm"
+                cell=LSTM_Audio(self.hidden_dim_lstm,self.num_layers_lstm,device=self.device,bidirectional=True)
+                setattr(self,name,cell)
+                self._all_layers.append(cell)
 
 
 
-        #self.linear_dim=int(self.hidden_channels[-1]*(480/strideF)*(640/(self.step*strideT)))
-        self.linear_dim=480
+        self.linear_dim=int(self.hidden_channels[-1]*(480/strideF)*(640/(self.step*strideT)))
         self.classification = nn.Linear(self.linear_dim, self.num_labels)
 
         self.attention=nn.Parameter(torch.zeros(self.linear_dim))
@@ -107,17 +125,15 @@ class ConvLSTM(nn.Module):
 
 
 
-    def forward(self, input, input_lstm,target):
+    def forward(self, input_lstm,input,target):
         # input should be a list of inputs, like a time stamp, maybe 1280 for 100 times.
         ##data process here
-        input=input.float().to(self.device)
-        input_lstm=input.float().to(self.device)
+        input_lstm=input_lstm.to(self.device)
         target=target.to(self.device)
-        input=torch.split(input,int(640/self.step),dim=3)
         internal_state = []
         outputs = []
         for step in range(self.step):
-            x=input[step]
+            x=input[step].to(self.device)
             for i in range(self.num_layers):
                 name = 'cell{}'.format(i)
                 if step == 0:
@@ -132,10 +148,11 @@ class ConvLSTM(nn.Module):
                 x, new_h, new_c = getattr(self, name)(x, h, c)
                 internal_state[i] = (new_h, new_c)
             outputs.append(x)
-        ## mean pooling and loss function
         out=[torch.unsqueeze(o, dim=4) for o in outputs]
         out=torch.flatten(torch.cat(out,dim=4),start_dim=1,end_dim=3)
+        out_lstm=getattr(self,"lstm")(input_lstm)
         # out.shape batch*kf1f2*T
+        out=torch.cat([out,out_lstm],dim=1)
         if self.attention_flag:
             alpha=torch.unsqueeze(F.softmax(torch.matmul(self.attention,out),dim=1),dim=2)
             out=torch.squeeze(torch.bmm(out,alpha),dim=2)
@@ -152,4 +169,3 @@ class ConvLSTM(nn.Module):
 
 
         return  losses_batch,correct_batch
-
