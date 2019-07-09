@@ -149,12 +149,8 @@ class ConvLSTM(nn.Module):
         out=[torch.unsqueeze(o, dim=4) for o in outputs]
         out=torch.flatten(torch.cat(out,dim=4),start_dim=1,end_dim=3)
 
-        pdb.set_trace()
-        batch_size=len(input_lstm)
-        input_lstm=input_lstm[int(input.device.index*batch_size/self.num_devices):int((input.device.index+1)*batch_size/self.num_devices)]
-        seq_length=seq_length[int(input.device.index*batch_size/self.num_devices):int((input.device.index+1)*batch_size/self.num_devices)]
-        pdb.set_trace()
-        input_lstm = pad_sequence(sequences=input_lstm).to(self.device)
+        input_lstm=input_lstm.to(self.device)
+        seq_length=seq_length.to(self.device)
         assert input_lstm.shape[0]==max(seq_length), "size mismatch pad"
         out_lstm=getattr(self,"lstm")(input_lstm)
         out_lstm=out_lstm.permute(1,2,0)
