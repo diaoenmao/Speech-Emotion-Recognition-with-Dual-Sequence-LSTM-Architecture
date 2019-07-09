@@ -72,9 +72,9 @@ for epoch in range(50):  # again, normally you would NOT do 300 epochs, it is to
     torch.save(model.module.state_dict(), "/scratch/speech/models/classification/joint_checkpoint_epoch_{}.pt".format(epoch+1))
     model.eval()
     with torch.no_grad():
-        for j,(input_lstm,input, target) in enumerate(test_loader):
+        for j,(input_lstm,input, target,seq_length) in enumerate(test_loader):
             if (j+1)%10==0: print("=================================Test Batch"+ str(j+1)+ "===================================================")
-            losses_batch,correct_batch = model(input_lstm,input, target)
+            losses_batch,correct_batch = model(input_lstm,input, target,seq_length)
             loss = torch.mean(losses_batch,dim=0)
             correct_batch=torch.sum(correct_batch,dim=0)
             losses_test += loss.item() * batch_size
