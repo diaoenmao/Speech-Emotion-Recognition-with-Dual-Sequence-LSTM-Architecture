@@ -33,8 +33,7 @@ class IEMOCAP(Dataset):
 
 
 def my_collate(batch):
-    pdb.set_trace()
-    input_lstm = torch.from_numpy(np.array([i['input_lstm'] for i in batch]))
+    input_lstm = [i['input_lstm'] for i in batch]
     seq_length = torch.from_numpy(np.array([i['seq_length'] for i in batch]))
     input_lstm = pad_sequence(sequences=input_lstm, batch_first=True)
     input_lstm = pack_padded_sequence(input_lstm, lengths=seq_length, batch_first=True, enforce_sorted=False)
