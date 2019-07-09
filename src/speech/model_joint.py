@@ -59,20 +59,14 @@ class ConvLSTMCell(nn.Module):
         self.Wco = None
         self.device=device
 
-        self.lol=0
 
     def forward(self, x, h, c):
-        try:
-            ci = torch.sigmoid(self.Wxi(x) + self.Whi(h) + c * self.Wci)
-        except:
-            pdb.set_trace()
+        ci = torch.sigmoid(self.Wxi(x) + self.Whi(h) + c * self.Wci)
         cf = torch.sigmoid(self.Wxf(x) + self.Whf(h) + c * self.Wcf)
         cc = cf * c + ci * torch.tanh(self.Wxc(x) + self.Whc(h))
         co = torch.sigmoid(self.Wxo(x) + self.Who(h) + cc * self.Wco)
         ch = co * torch.tanh(cc)
         ch_pool=self.batch(self.max_pool(ch))
-        self.lol+=1
-        print(self.lol)
         #ch_pool=self.dropout(ch_pool)
         return ch_pool, ch, cc
 
@@ -154,8 +148,13 @@ class ConvLSTM(nn.Module):
 
                 # do forward
                 (h, c) = internal_state[i]
-                x, new_h, new_c = getattr(self, name)(x, h, c)
+                try:
+                    x, new_h, new_c = getattr(self, name)(x, h, c)
+                except:
+                    pdb.set_trace()
                 internal_state[i] = (new_h, new_c)
+                print("step:",step,"i:",i)
+
             outputs.append(x)
         out=[torch.unsqueeze(o, dim=4) for o in outputs]
         out=torch.flatten(torch.cat(out,dim=4),start_dim=1,end_dim=3)
