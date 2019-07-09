@@ -6,7 +6,7 @@ import numpy as np
 from torch.nn.utils.rnn import pad_packed_sequence
 
 class LSTM_Audio(nn.Module):
-    def __init__(self, hidden_dim, num_layers, device,dropout_rate=0, ,bidirectional=False):
+    def __init__(self, hidden_dim, num_layers, device,dropout_rate=0 ,bidirectional=False):
         super(LSTM_Audio, self).__init__()
         self.device = device
         self.num_features = 39
