@@ -153,7 +153,7 @@ class ConvLSTM(nn.Module):
         seq_length=seq_length.to(self.device)
         assert input_lstm.shape[0]==max(seq_length), "size mismatch pad"
         out_lstm=getattr(self,"lstm")(input_lstm)
-        out_lstm=out_lstm.permute(1,2,0)
+        out_lstm=out_lstm.permute(0,2,1)
         assert out_lstm.shape[2]==max(seq_length), "size mismatch out"
         # out.shape batch*kf1f2*T
 
