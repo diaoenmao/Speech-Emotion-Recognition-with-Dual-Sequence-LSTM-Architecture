@@ -13,12 +13,12 @@ path="/scratch/speech/models/classification/ConvLSTM_data_debug.pickle"
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 input_channels=3
-hidden_channels=[4,4,4]
+hidden_channels=[32,16,8]
 kernel_size=[(3,3),(3,3),(3,3)]
-kernel_size_pool=[(2,2),(2,2),(2,2)]
+kernel_size_pool=[(4,4),(4,4),(4,4)]
 kernel_stride_pool=[(4,4),(4,4),(3,4)]
 step=10
-batch_size=100
+batch_size=60
 
 model = ConvLSTM(input_channels,hidden_channels,kernel_size,kernel_size_pool,kernel_stride_pool,step,device)
 print("============================ Number of parameters ====================================")
