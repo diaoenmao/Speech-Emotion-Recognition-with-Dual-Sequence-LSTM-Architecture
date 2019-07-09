@@ -111,7 +111,7 @@ class ConvLSTM(nn.Module):
         # input should be a list of inputs, like a time stamp, maybe 1280 for 100 times.
         ##data process here
         target=target.to(self.device)
-        input=torch.to(self.device)
+        input=input.to(self.device)
         internal_state = []
         outputs = []
         for step in range(self.step):
