@@ -161,8 +161,8 @@ class ConvLSTM(nn.Module):
             out=torch.squeeze(torch.bmm(out,alpha),dim=2)
         else:
             out=torch.mean(out,dim=2)
-            temp=[torch.mean(out_lstm[k,:,:s],dim=1) for k,s in enumerate(seq_length)]
-            out_lstm=torch.tensor(temp)
+            temp=[torch.unsqueeze(torch.mean(out_lstm[k,:,:s],dim=1),dim=0) for k,s in enumerate(seq_length)]
+            out_lstm=torch.cat(temp,dim=0)
             print(out_lstm.shape)
         out=torch.cat([out,out_lstm],dim=1)
         print(out.shape)
