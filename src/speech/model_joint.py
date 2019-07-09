@@ -148,17 +148,15 @@ class ConvLSTM(nn.Module):
 
                 # do forward
                 (h, c) = internal_state[i]
-                try:
-                    x, new_h, new_c = getattr(self, name)(x, h, c)
-                except:
-                    pdb.set_trace()
+                x, new_h, new_c = getattr(self, name)(x, h, c)
                 internal_state[i] = (new_h, new_c)
-                print("machine:",seq_length.device.index,"step:",step,"i:",i)
-
             outputs.append(x)
         out=[torch.unsqueeze(o, dim=4) for o in outputs]
         out=torch.flatten(torch.cat(out,dim=4),start_dim=1,end_dim=3)
-        out_lstm=getattr(self,"lstm")(input_lstm)
+        try:
+            out_lstm=getattr(self,"lstm")(input_lstm)
+        except:
+            pdb.set_trace()
         # out.shape batch*kf1f2*T
 
         if self.attention_flag:
