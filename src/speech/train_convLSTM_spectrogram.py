@@ -54,7 +54,7 @@ for epoch in range(50):  # again, normally you would NOT do 300 epochs, it is to
     losses = 0
     correct=0
     model.train()
-    for j, (_,input, target) in enumerate(train_loader):
+    for j, (_,input, target,_) in enumerate(train_loader):
         if (j+1)%10==0: print("=================================Train Batch"+ str(j+1)+ "===================================================")
 
         model.zero_grad()
@@ -73,7 +73,7 @@ for epoch in range(50):  # again, normally you would NOT do 300 epochs, it is to
     torch.save(model.module.state_dict(), "/scratch/speech/models/classification/ConvLSTM_Spectrogram_checkpoint_epoch_{}.pt".format(epoch+1))
     model.eval()
     with torch.no_grad():
-        for j,(_,input, target) in enumerate(test_loader):
+        for j,(_,input, target,_) in enumerate(test_loader):
             if (j+1)%10==0: print("=================================Test Batch"+ str(j+1)+ "===================================================")
             losses_batch,correct_batch = model(input, target)
             loss = torch.mean(losses_batch,dim=0)
