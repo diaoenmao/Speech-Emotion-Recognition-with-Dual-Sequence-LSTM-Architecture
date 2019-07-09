@@ -39,5 +39,6 @@ def my_collate(batch):
     input_lstm = pack_padded_sequence(input_lstm, lengths=seq_length, batch_first=True, enforce_sorted=False)
     input = torch.cat([torch.unsqueeze(i['input'],dim=0) for i in batch],dim=0)
     target = torch.from_numpy(np.array([i['target'] for i in batch]))
+    pdb.set_trace()
     return input_lstm,input,target
 
