@@ -164,6 +164,7 @@ class ConvLSTM(nn.Module):
             out=torch.mean(out,dim=2)
             out_lstm=torch.mean(out_lstm,dim=2)
         out=torch.cat([out,out_lstm],dim=1)
+        print(out.shape)
         out=self.classification(out)
         target_index = torch.argmax(target, dim=1).to(self.device)
         correct_batch=torch.sum(target_index==torch.argmax(out,dim=1))
