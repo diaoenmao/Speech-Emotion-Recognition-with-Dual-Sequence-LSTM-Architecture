@@ -1,7 +1,7 @@
 import torch
 from torch import optim
 from ConvLSTM_spectrogram import ConvLSTM
-from process_spectrogram_model import IEMOCAP, my_collate
+from process_joint import IEMOCAP,my_collate
 from torch.utils.data import DataLoader
 from torch.optim.lr_scheduler import ReduceLROnPlateau, CosineAnnealingLR
 import pdb
@@ -13,11 +13,11 @@ path="/scratch/speech/models/classification/ConvLSTM_data_debug.pickle"
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 input_channels=3
-hidden_channels=[32,16,8]
+hidden_channels=[64,32,16]
 kernel_size=[(3,3),(3,3),(3,3)]
-kernel_size_pool=[(4,4),(4,4),(4,4)]
-kernel_stride_pool=[(4,2),(4,1),(3,1)]
-step=40
+kernel_size_pool=[(2,2),(2,2),(2,2)]
+kernel_stride_pool=[(4,4),(4,4),(3,4)]
+step=10
 batch_size=100
 
 model = ConvLSTM(input_channels,hidden_channels,kernel_size,kernel_size_pool,kernel_stride_pool,step,device)
@@ -54,7 +54,7 @@ for epoch in range(50):  # again, normally you would NOT do 300 epochs, it is to
     losses = 0
     correct=0
     model.train()
-    for j, (input, target) in enumerate(train_loader):
+    for j, (_,input, target) in enumerate(train_loader):
         if (j+1)%10==0: print("=================================Train Batch"+ str(j+1)+ "===================================================")
 
         model.zero_grad()
@@ -73,7 +73,7 @@ for epoch in range(50):  # again, normally you would NOT do 300 epochs, it is to
     torch.save(model.module.state_dict(), "/scratch/speech/models/classification/ConvLSTM_Spectrogram_checkpoint_epoch_{}.pt".format(epoch+1))
     model.eval()
     with torch.no_grad():
-        for j,(input, target) in enumerate(test_loader):
+        for j,(_,input, target) in enumerate(test_loader):
             if (j+1)%10==0: print("=================================Test Batch"+ str(j+1)+ "===================================================")
             losses_batch,correct_batch = model(input, target)
             loss = torch.mean(losses_batch,dim=0)

@@ -98,8 +98,8 @@ class ConvLSTM(nn.Module):
 
 
 
-        #self.linear_dim=int(self.hidden_channels[-1]*(480/strideF)*(640/(self.step*strideT)))
-        self.linear_dim=480
+        self.linear_dim=int(self.hidden_channels[-1]*(480/strideF)*(640/(self.step*strideT)))
+        #self.linear_dim=480
         self.classification = nn.Linear(self.linear_dim, self.num_labels)
 
         self.attention=nn.Parameter(torch.zeros(self.linear_dim))
@@ -107,17 +107,15 @@ class ConvLSTM(nn.Module):
 
 
 
-    def forward(self, input, input_lstm,target):
+    def forward(self, input, target):
         # input should be a list of inputs, like a time stamp, maybe 1280 for 100 times.
         ##data process here
-        input=input.float().to(self.device)
-        input_lstm=input.float().to(self.device)
         target=target.to(self.device)
-        input=torch.split(input,int(640/self.step),dim=3)
+        input=torch.to(self.device)
         internal_state = []
         outputs = []
         for step in range(self.step):
-            x=input[step]
+            x=input[:,:,:,:,step]
             for i in range(self.num_layers):
                 name = 'cell{}'.format(i)
                 if step == 0:
