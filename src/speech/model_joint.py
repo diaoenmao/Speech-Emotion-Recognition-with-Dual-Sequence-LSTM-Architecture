@@ -131,6 +131,9 @@ class ConvLSTM(nn.Module):
         ##data process here
         batch_size=len(input_lstm)
         input_lstm=input_lstm[int(seq_length.device.index*batch_size/self.num_devices):int((seq_length.device.index+1)*batch_size/self.num_devices)]
+        seq_length=seq_length[int(seq_length.device.index*batch_size/self.num_devices):int((seq_length.device.index+1)*batch_size/self.num_devices)]
+        print(seq_length.shape)
+        print(len(input_lstm))
         input_lstm = pad_sequence(sequences=input_lstm, batch_first=True)
         input_lstm=pack_padded_sequence(input_lstm, lengths=seq_length, batch_first=True, enforce_sorted=False)
         internal_state = []
@@ -153,10 +156,7 @@ class ConvLSTM(nn.Module):
             outputs.append(x)
         out=[torch.unsqueeze(o, dim=4) for o in outputs]
         out=torch.flatten(torch.cat(out,dim=4),start_dim=1,end_dim=3)
-        try:
-            out_lstm=getattr(self,"lstm")(input_lstm)
-        except:
-            pdb.set_trace()
+        out_lstm=getattr(self,"lstm")(input_lstm)
         # out.shape batch*kf1f2*T
 
         if self.attention_flag:
