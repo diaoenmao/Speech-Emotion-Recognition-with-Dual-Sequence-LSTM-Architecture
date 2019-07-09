@@ -117,7 +117,7 @@ class ConvLSTM(nn.Module):
 
 
 
-        self.linear_dim=int(self.hidden_channels[-1]*(480/strideF)*(640/(self.step*strideT)))
+        self.linear_dim=int(self.hidden_channels[-1]*(480/strideF)*(640/(self.step*strideT))+self.hidden_dim_lstm)
         self.classification = nn.Linear(self.linear_dim, self.num_labels)
 
         self.attention=nn.Parameter(torch.zeros(self.linear_dim))
@@ -129,11 +129,12 @@ class ConvLSTM(nn.Module):
         # input should be a list of inputs, like a time stamp, maybe 1280 for 100 times.
         ##data process here
         input_lstm=input_lstm.to(self.device)
+        input=input.to(self.device)
         target=target.to(self.device)
         internal_state = []
         outputs = []
         for step in range(self.step):
-            x=input[step].to(self.device)
+            x=input[:,:,:,:,step]
             for i in range(self.num_layers):
                 name = 'cell{}'.format(i)
                 if step == 0:
@@ -152,12 +153,14 @@ class ConvLSTM(nn.Module):
         out=torch.flatten(torch.cat(out,dim=4),start_dim=1,end_dim=3)
         out_lstm=getattr(self,"lstm")(input_lstm)
         # out.shape batch*kf1f2*T
-        out=torch.cat([out,out_lstm],dim=1)
+
         if self.attention_flag:
             alpha=torch.unsqueeze(F.softmax(torch.matmul(self.attention,out),dim=1),dim=2)
             out=torch.squeeze(torch.bmm(out,alpha),dim=2)
         else:
             out=torch.mean(out,dim=2)
+            out_lstm=torch.mean(out_lstm,dim=2)
+        out=torch.cat([out,out_lstm],dim=1)
         out=self.classification(out)
         target_index = torch.argmax(target, dim=1).to(self.device)
         correct_batch=torch.sum(target_index==torch.argmax(out,dim=1))

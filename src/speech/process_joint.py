@@ -9,10 +9,10 @@ class IEMOCAP(Dataset):
     def __init__(self, train=True):
         if train:
             pickle_in_lstm = open('/scratch/speech/datasets/IEMOCAP_39_FOUR_EMO_train.pkl', 'rb')
-            pickle_in = open('/scratch/speech/raw_audio_dataset/spectrogram_train.pkl', 'rb')
+            pickle_in = open('/scratch/speech/raw_audio_dataset/spectrogram_segmented_train.pkl', 'rb')
         else:
             pickle_in_lstm = open('/scratch/speech/datasets/IEMOCAP_39_FOUR_EMO_test.pkl', 'rb')
-            pickle_in = open('/scratch/speech/raw_audio_dataset/spectrogram_test.pkl', 'rb')
+            pickle_in = open('/scratch/speech/raw_audio_dataset/spectrogram_segmented_test.pkl', 'rb')
         data_lstm = pickle.load(pickle_in_lstm)
         self.seq_length = data_lstm["seq_length"]
         self.input_lstm= data_lstm["input"]
@@ -26,17 +26,17 @@ class IEMOCAP(Dataset):
     def __getitem__(self, index):
         sample = {'input_lstm': torch.from_numpy(self.input[index]).float(),
                   'seq_length': torch.tensor(self.seq_length[index]),
-                  'input': [i.float().permute(0,3,1,2) for i in self.input[index]],
+                  'input': torch.cat([torch.unsqueeze(i,dim=4).permute(0,3,1,2,4) for i in self.input[index]],dim=4).float(),
                   'target': self.target[index]}
         return sample
 
 
 def my_collate(batch):
-    input_lstm = torch.from_numpy(np.array([i['input_lstm'] for i in batch])).float()
+    input_lstm = torch.from_numpy(np.array([i['input_lstm'] for i in batch]))
     seq_length = torch.from_numpy(np.array([i['seq_length'] for i in batch]))
     input_lstm = pad_sequence(sequences=input_lstm, batch_first=True)
     input_lstm = pack_padded_sequence(input_lstm, lengths=seq_length, batch_first=True, enforce_sorted=False)
-    input = [i['input'] for i in batch]
+    input = torch.from_numpy(np.array([i['input'] for i in batch]))
     target = torch.from_numpy(np.array([i['target'] for i in batch]))
     return input_lstm,input,target
 
