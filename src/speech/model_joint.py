@@ -128,10 +128,6 @@ class ConvLSTM(nn.Module):
     def forward(self, input_lstm,input,target,seq_length):
         # input should be a list of inputs, like a time stamp, maybe 1280 for 100 times.
         ##data process here
-        batch_size=len(input_lstm)
-        input_lstm=input_lstm[int(input.device.index*batch_size/self.num_devices):int((input.device.index+1)*batch_size/self.num_devices)]
-        seq_length=seq_length[int(input.device.index*batch_size/self.num_devices):int((input.device.index+1)*batch_size/self.num_devices)]
-        input_lstm = torch.tensor(pad_sequence(sequences=input_lstm, batch_first=True)).to(self.device)
         internal_state = []
         outputs = []
         for step in range(self.step):
@@ -152,6 +148,13 @@ class ConvLSTM(nn.Module):
             outputs.append(x)
         out=[torch.unsqueeze(o, dim=4) for o in outputs]
         out=torch.flatten(torch.cat(out,dim=4),start_dim=1,end_dim=3)
+
+        pdb.set_trace()
+        batch_size=len(input_lstm)
+        input_lstm=input_lstm[int(input.device.index*batch_size/self.num_devices):int((input.device.index+1)*batch_size/self.num_devices)]
+        seq_length=seq_length[int(input.device.index*batch_size/self.num_devices):int((input.device.index+1)*batch_size/self.num_devices)]
+        input_lstm = torch.tensor(pad_sequence(sequences=input_lstm)).to(self.device)
+        pdb.set_trace()
         out_lstm=getattr(self,"lstm")(input_lstm)
         pdb.set_trace()
 
