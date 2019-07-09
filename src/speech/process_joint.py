@@ -24,9 +24,11 @@ class IEMOCAP(Dataset):
         return len(self.input)
 
     def __getitem__(self, index):
+        temp=[torch.unsqueeze(torch.from_numpy(i),dim=4).permute(0,3,1,2,4) for i in self.input[index]]
+        pdb.set_trace()
         sample = {'input_lstm': torch.from_numpy(self.input_lstm[index]).float(),
                   'seq_length': torch.tensor(self.seq_length[index]),
-                  'input': torch.cat([torch.unsqueeze(torch.from_numpy(i),dim=4).permute(0,3,1,2,4) for i in self.input[index]],dim=4).float(),
+                  'input': torch.cat(temp,dim=4).float(),
                   'target': self.target[index]}
         return sample
 
