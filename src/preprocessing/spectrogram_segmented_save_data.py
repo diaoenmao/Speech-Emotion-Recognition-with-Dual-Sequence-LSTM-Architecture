@@ -15,7 +15,7 @@ df = pd.read_csv(in_file)
 
 encode = {"hap": [1, 0, 0, 0], "exc": [1, 0, 0, 0], "neu": [0, 1, 0, 0], "ang": [0, 0, 1, 0], "sad": [0, 0, 0, 1]}
 
-endpoint = '/scratch/speech/spectrograms_segmented_new/'
+endpoint = '/scratch/speech/spectrograms_segmented_small/'
 
 save_path = '/scratch/speech/raw_audio_dataset/'
 
@@ -75,11 +75,11 @@ def split_data(data):
 
 def save(dataset):
     train, test = split_data(dataset)
-    with open(save_path + 'spectrogram_segmented' + '_full.pkl', 'wb') as f:
+    with open(save_path + 'spectrogram_segmented_small' + '_full.pkl', 'wb') as f:
         pickle.dump(dataset, f)
-    with open(save_path + 'spectrogram_segmented' + '_train.pkl', 'wb') as f:
+    with open(save_path + 'spectrogram_segmented_small' + '_train.pkl', 'wb') as f:
         pickle.dump(train, f)
-    with open(save_path + 'spectrogram_segmented' + '_test.pkl', 'wb') as f:
+    with open(save_path + 'spectrogram_segmented_small' + '_test.pkl', 'wb') as f:
         pickle.dump(test, f)
 
 if __name__ == '__main__':
