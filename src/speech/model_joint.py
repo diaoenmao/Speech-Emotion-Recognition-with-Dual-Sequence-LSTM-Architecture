@@ -152,9 +152,11 @@ class ConvLSTM(nn.Module):
         batch_size=len(input_lstm)
         input_lstm=input_lstm[int(input.device.index*batch_size/self.num_devices):int((input.device.index+1)*batch_size/self.num_devices)]
         seq_length=seq_length[int(input.device.index*batch_size/self.num_devices):int((input.device.index+1)*batch_size/self.num_devices)]
-        input_lstm = torch.tensor(pad_sequence(sequences=input_lstm)).to(self.device)
+        input_lstm = pad_sequence(sequences=input_lstm).to(self.device)
+        assert input_lstm.shape[0]==max(seq_length) "size mismatch pad"
         out_lstm=getattr(self,"lstm")(input_lstm)
         out_lstm=out_lstm.permute(1,2,0)
+        assert out_lstm.shape[2]==max(seq_length) "size mismatch out"
         # out.shape batch*kf1f2*T
 
         if self.attention_flag:
@@ -162,8 +164,9 @@ class ConvLSTM(nn.Module):
             out=torch.squeeze(torch.bmm(out,alpha),dim=2)
         else:
             out=torch.mean(out,dim=2)
-            temp=[torch.mean(out_lstm[:s],dim=2) for s in seq_length]
-            pdb.set_trace()
+            temp=[torch.mean(out_lstm[k,:,:s],dim=2) for k,s in enumerate(seq_length)]
+            print(temp[0].shape)
+            out_lstm=torch.tensor(temp)
         out=torch.cat([out,out_lstm],dim=1)
         print(out.shape)
         out=self.classification(out)
