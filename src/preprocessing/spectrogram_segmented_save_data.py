@@ -15,7 +15,7 @@ df = pd.read_csv(in_file)
 
 encode = {"hap": [1, 0, 0, 0], "exc": [1, 0, 0, 0], "neu": [0, 1, 0, 0], "ang": [0, 0, 1, 0], "sad": [0, 0, 0, 1]}
 
-endpoint = '/scratch/speech/spectrograms_segmented/'
+endpoint = '/scratch/speech/spectrograms_segmented_new/'
 
 input = []
 target = []
