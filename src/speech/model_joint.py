@@ -153,7 +153,7 @@ class ConvLSTM(nn.Module):
                 except:
                     pdb.set_trace()
                 internal_state[i] = (new_h, new_c)
-                print("step:",step,"i:",i)
+                print("machine:",seq_length.device.index,"step:",step,"i:",i)
 
             outputs.append(x)
         out=[torch.unsqueeze(o, dim=4) for o in outputs]
