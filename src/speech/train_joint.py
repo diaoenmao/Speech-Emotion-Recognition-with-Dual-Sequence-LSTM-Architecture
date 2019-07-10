@@ -29,7 +29,7 @@ model=DataParallel(model,device_ids=device_ids)
 model.train()
 
 # Use Adam as the optimizer with learning rate 0.01 to make it fast for testing purposes
-optimizer = optim.Adam(model.parameters(),{"params": model.module.state_dict()["weight"],"lr":0.01}, lr=0.001)
+optimizer = optim.Adam(model.parameters(),lr=0.001)
 optimizer2=optim.SGD(model.parameters(), lr=0.1)
 scheduler = ReduceLROnPlateau(optimizer=optimizer,factor=0.5, patience=2, threshold=1e-3)
 #scheduler2=ReduceLROnPlateau(optimizer=optimizer2, factor=0.5, patience=2, threshold=1e-3)
@@ -63,7 +63,7 @@ for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is t
         losses += loss.item() * batch_size
         loss.backward()
         weight=model.module.state_dict()["weight"]
-        print(torch.exp(weight)/(1+torch.exp(weight)).item())
+        print(torch.exp(10*weight)/(1+torch.exp(10*weight)).item())
         optimizer.step()
         correct += correct_batch.item()
     accuracy=correct*1.0/((j+1)*batch_size)

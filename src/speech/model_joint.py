@@ -164,7 +164,7 @@ class ConvLSTM(nn.Module):
             out=torch.mean(out,dim=2)
             temp=[torch.unsqueeze(torch.mean(out_lstm[k,:,:s],dim=1),dim=0) for k,s in enumerate(seq_length)]
             out_lstm=torch.cat(temp,dim=0)
-        p=torch.exp(self.weight)/(1+torch.exp(self.weight))
+        p=torch.exp(10*self.weight)/(1+torch.exp(10*self.weight))
         out=torch.cat([p*out,(1-p)*out_lstm],dim=1)
         out=self.classification(out)
         target_index = torch.argmax(target, dim=1).to(self.device)
