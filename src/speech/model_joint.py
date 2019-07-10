@@ -123,6 +123,8 @@ class ConvLSTM(nn.Module):
         self.attention=nn.Parameter(torch.zeros(self.linear_dim))
         self.attention_flag=attention_flag
 
+        self.add_module('weight', nn.Parameter(torch.zeors(1)))
+
 
 
     def forward(self, input_lstm,input,target,seq_length):
@@ -162,7 +164,8 @@ class ConvLSTM(nn.Module):
             out=torch.mean(out,dim=2)
             temp=[torch.unsqueeze(torch.mean(out_lstm[k,:,:s],dim=1),dim=0) for k,s in enumerate(seq_length)]
             out_lstm=torch.cat(temp,dim=0)
-        out=torch.cat([out,out_lstm],dim=1)
+        p=torch.exp(self.weight)/(1+torch.exp(self.weight))
+        out=torch.cat([p*out,(1-p)*out_lstm],dim=1)
         out=self.classification(out)
         target_index = torch.argmax(target, dim=1).to(self.device)
         correct_batch=torch.sum(target_index==torch.argmax(out,dim=1))
