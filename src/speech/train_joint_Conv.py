@@ -10,6 +10,7 @@ import pickle
 import numpy as np
 from torch.nn.utils.rnn import pad_sequence, pack_padded_sequence
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+device_ids=[0,1,2,3]
 batch_size=80
 model = SpectrogramModel(3, 64, 3, 1, 1, 4, 4, 200, 2, 0.2, 4, batch_size, 200,2,device,True)
 print("============================ Number of parameters ====================================")
