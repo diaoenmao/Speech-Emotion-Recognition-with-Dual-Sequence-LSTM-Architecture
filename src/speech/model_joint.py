@@ -119,8 +119,9 @@ class ConvLSTM(nn.Module):
 
 
 
-        self.linear_dim=int(self.hidden_channels[-1]*(48/strideF)*(64/strideT)+self.hidden_dim_lstm*2)
-        self.classification = nn.Linear(self.linear_dim, self.num_labels)
+        self.linear_dim=int(self.hidden_channels[-1]*(48/strideF)*(64/strideT))
+        self.classification_convlstm = nn.Linear(self.linear_dim, self.num_labels)
+        self.classification_lstm=nn.Linear(self.hidden_dim_lstm*2,self.num_labels)
 
         self.attention=nn.Parameter(torch.zeros(self.linear_dim))
         self.attention_flag=attention_flag
@@ -167,12 +168,14 @@ class ConvLSTM(nn.Module):
             temp=[torch.unsqueeze(torch.mean(out_lstm[k,:,:s],dim=1),dim=0) for k,s in enumerate(seq_length)]
             out_lstm=torch.cat(temp,dim=0)
         p=torch.exp(10*self.weight)/(1+torch.exp(10*self.weight))
-        out=torch.cat([p*out,(1-p)*out_lstm],dim=1)
-        out=self.classification(out)
+        #out=torch.cat([p*out,(1-p)*out_lstm],dim=1)
+        out=self.classification_convlstm(out)
+        out_lstm=self.classification_lstm(out_lstm)
+        out_final=p*out_lstm+(1-p)*lstm
         target_index = torch.argmax(target, dim=1).to(self.device)
-        pred_index = torch.argmax(out, dim=1)
+        pred_index = torch.argmax(out_final, dim=1)
         correct_batch=torch.sum(target_index==pred_index)
-        losses_batch=F.cross_entropy(out,torch.max(target,1)[1])
+        losses_batch=F.cross_entropy(out_final,torch.max(target,1)[1])
 
         correct_batch=torch.unsqueeze(correct_batch,dim=0)
         losses_batch=torch.unsqueeze(losses_batch, dim=0)

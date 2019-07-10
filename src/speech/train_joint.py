@@ -13,7 +13,7 @@ from sklearn.metrics import confusion_matrix
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 input_channels=3
-hidden_channels=[64,32,16]
+hidden_channels=[128,64,32]
 kernel_size=[(3,3),(3,3),(3,3)]
 kernel_size_pool=[(3,3),(3,3),(3,2)]
 kernel_stride_pool=[(2,2),(2,2),(3,2)]
@@ -132,8 +132,9 @@ for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is t
     print("Epoch: {}----Training Loss: {}----Testing Loss: {}----Training Acc: {}----Testing Acc: {}----Weighted Acc: {}".format(epoch+1,losses,losses_test, accuracy, accuracy_test, weighted_accuracy_test)+"\n")
     with open("/scratch/speech/models/classification/joint_stats.txt","a+") as f:
         if epoch==0: f.write("\n"+"============================== New Model ==================================="+"\n")
-        f.write("Epoch: {}----Training Loss: {}----Testing Loss: {}----Training Acc: {}----Testing Acc: {}----Weighted Acc: {}".format(epoch+1,losses,losses_test, accuracy, accuracy_test, weighted_accuracy_test)+"\n")
-
+        f.write("\n"+"Epoch: {}----Training Loss: {}----Testing Loss: {}----Training Acc: {}----Testing Acc: {}----Weighted Acc: {}".format(epoch+1,losses,losses_test, accuracy, accuracy_test, weighted_accuracy_test)+"\n")
+        f.write("confusion_matrix:"+"\n")
+        np.savetxt(f,cm_normalized,delimiter=' ')
 
 
 pickle_out=open("/scratch/speech/models/classification/joint_checkpoint_stats.pkl","wb")
