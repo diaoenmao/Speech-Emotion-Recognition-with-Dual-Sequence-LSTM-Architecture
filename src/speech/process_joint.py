@@ -5,6 +5,40 @@ import numpy as np
 from torch.utils.data import Dataset
 import pdb
 
+with open('/scratch/speech/datasets/IEMOCAP_39_FOUR_EMO_full.pkl', 'rb') as out1:
+    dict1=pickle.load(out1)
+with open('/scratch/speech/raw_audio_dataset/spectrogram_segmented_dpi10_step40_full.pkl', 'rb') as out2:
+    dict2=pickle.load(out2)
+flag=True
+for i in range(len(dict1["target"])):
+    if dict1["target"][i]==dict2["target"][i]:
+        continue()
+    else:
+        flag=False
+        break
+if flag: 
+    print("Datasets consistent")
+else:
+    raise ValueError("Datasets inconsistent")
+
+dict3={"input_lstm":dict1["input"],"input":dict2["input"],"seq_length": dict1["seq_length"],"target": dict2["target"]}
+train1,test1=split_data(dict3)
+with open('/scratch/speech/hand_raw_dataset/IEMOCAP_39_FOUR_EMO_spectrogram_segmented_dpi10_step40_full.pkl', 'wb') as full:
+    pickle.dump(full,dict3)
+with open('/scratch/speech/hand_raw_dataset/IEMOCAP_39_FOUR_EMO_spectrogram_segmented_dpi10_step40_train.pkl', 'wb') as train:
+    pickle.dump(train,train1)
+with open('/scratch/speech/hand_raw_dataset/IEMOCAP_39_FOUR_EMO_spectrogram_segmented_dpi10_step40_test.pkl', 'wb') as test:
+    pickle.dump(test,test1)
+
+print('/scratch/speech/hand_raw_dataset/IEMOCAP_39_FOUR_EMO_spectrogram_segmented_dpi10_step40_train.pkl')
+
+def split_data(data):
+    input_train, input_test, target_train, target_test, input_lstm_train, input_lstm_test, seq_length_train, seq_length_test= train_test_split(
+        data['input'], data['target'], data["input_lstm"],data["seq_length"], test_size=0.2, random_state=42)
+    train = {'input': input_train, 'target': target_train,"input_lstm": input_lstm_train,"seq_length": seq_length_train}
+    test = {'input': input_test, 'target': target_test,"input_lstm": input_lstm_test,"seq_length": seq_length_test}
+    return train, test
+
 class IEMOCAP(Dataset):
     def __init__(self, train=True):
         if train:
