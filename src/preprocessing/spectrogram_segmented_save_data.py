@@ -26,7 +26,7 @@ def create_data(df_value):
     previous=[]
     segments_new=[]
     for s in segments:
-        previous+=s
+        previous+=list(s)
         segments_new.append(previous)
     assert len(previous)==len(sample) , "size mismatch"
     utterance = []
