@@ -15,7 +15,7 @@ def split_data(data):
 def combine():
     with open('/scratch/speech/datasets/IEMOCAP_39_FOUR_EMO_full.pkl', 'rb') as out1:
         dict1=pickle.load(out1)
-    with open('/scratch/speech/raw_audio_dataset/spectrogram_segmented_dpi10_step40_full.pkl', 'rb') as out2:
+    with open('/scratch/speech/raw_audio_dataset/spectrogram_segmented_dpi10_step40_overlap_full.pkl','rb') as out2:
         dict2=pickle.load(out2)
     flag=True
     for i in range(len(dict1["target"])):
@@ -31,14 +31,14 @@ def combine():
 
     dict3={"input_lstm":dict1["input"],"input":dict2["input"],"seq_length": dict1["seq_length"],"target": dict2["target"]}
     train1,test1=split_data(dict3)
-    with open('/scratch/speech/hand_raw_dataset/IEMOCAP_39_FOUR_EMO_spectrogram_segmented_dpi10_step40_full.pkl', 'wb') as full:
+    with open('/scratch/speech/hand_raw_dataset/IEMOCAP_39_FOUR_EMO_spectrogram_segmented_dpi10_step40_overlap_full.pkl', 'wb') as full:
         pickle.dump(dict3,full)
-    with open('/scratch/speech/hand_raw_dataset/IEMOCAP_39_FOUR_EMO_spectrogram_segmented_dpi10_step40_train.pkl', 'wb') as train:
+    with open('/scratch/speech/hand_raw_dataset/IEMOCAP_39_FOUR_EMO_spectrogram_segmented_dpi10_step40_overlap_train.pkl', 'wb') as train:
         pickle.dump(train1,train)
-    with open('/scratch/speech/hand_raw_dataset/IEMOCAP_39_FOUR_EMO_spectrogram_segmented_dpi10_step40_test.pkl', 'wb') as test:
+    with open('/scratch/speech/hand_raw_dataset/IEMOCAP_39_FOUR_EMO_spectrogram_segmented_dpi10_step40_overlap_test.pkl', 'wb') as test:
         pickle.dump(test1,test)
 
-    print('/scratch/speech/hand_raw_dataset/IEMOCAP_39_FOUR_EMO_spectrogram_segmented_dpi10_step40_train.pkl')
+    print('/scratch/speech/hand_raw_dataset/IEMOCAP_39_FOUR_EMO_spectrogram_segmented_dpi10_step40_overlap_train.pkl')
 
 
 class IEMOCAP(Dataset):
@@ -71,4 +71,6 @@ def my_collate(batch):
     input = torch.cat([torch.unsqueeze(i['input'],dim=0) for i in batch],dim=0)
     target = torch.from_numpy(np.array([i['target'] for i in batch]))
     return input_lstm,input,target,seq_length
+if __name__="__main__":
+    combine()
 
