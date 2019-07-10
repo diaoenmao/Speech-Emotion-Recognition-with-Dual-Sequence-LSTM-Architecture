@@ -21,10 +21,11 @@ save_path = '/scratch/speech/raw_audio_dataset/'
 
 def create_data(df_value):
     file, emotion = df_value
-    sample_rate, sample = wavfile.read(file)
-    segments = np.array_split(sample, 40)
+    #sample_rate, sample = wavfile.read(file)
+    #segments = np.array_split(sample, 40)
     utterance = []
-    for j, segment in enumerate(segments):
+    for j in range(40):
+        '''
         plt.clf()
         spectrum, freqs, t, im = plt.specgram(segment, Fs=sample_rate)
         plt.gca().set_axis_off()
@@ -36,6 +37,9 @@ def create_data(df_value):
         index = file.rfind('/')
         basename = file[(index + 1):-4]
         plt.savefig(endpoint + '{}_spec_{}.png'.format(basename, j), dpi=10, bbox_inches='tight', pad_inches=0)
+        '''
+        index = file.rfind('/')
+        basename = file[(index + 1):-4]
         im = cv2.imread(endpoint + '{}_spec_{}.png'.format(basename, j))
         utterance.append(im)
     label = encode[emotion]
