@@ -11,7 +11,7 @@ with open('/scratch/speech/raw_audio_dataset/spectrogram_segmented_dpi10_step40_
     dict2=pickle.load(out2)
 flag=True
 for i in range(len(dict1["target"])):
-    if dict1["target"][i]==dict2["target"][i]:
+    if np.argmax(dict1["target"][i])==np.argmax(dict2["target"][i]):
         continue
     else:
         flag=False
