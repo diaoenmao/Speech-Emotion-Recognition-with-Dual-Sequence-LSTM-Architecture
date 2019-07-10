@@ -5,6 +5,8 @@ import pdb
 import numpy as np
 from torch.nn.utils.rnn import pad_packed_sequence, pad_sequence, pack_padded_sequence
 
+output = []
+
 class LSTM_Audio(nn.Module):
     def __init__(self, hidden_dim, num_layers, device,dropout_rate=0 ,bidirectional=False):
         super(LSTM_Audio, self).__init__()
@@ -127,7 +129,7 @@ class ConvLSTM(nn.Module):
 
 
 
-    def forward(self, input_lstm,input,target,seq_length):
+    def forward(self, input_lstm,input,target,seq_length, train=True):
         # input should be a list of inputs, like a time stamp, maybe 1280 for 100 times.
         ##data process here
         internal_state = []
@@ -168,12 +170,13 @@ class ConvLSTM(nn.Module):
         out=torch.cat([p*out,(1-p)*out_lstm],dim=1)
         out=self.classification(out)
         target_index = torch.argmax(target, dim=1).to(self.device)
-        correct_batch=torch.sum(target_index==torch.argmax(out,dim=1))
+        pred_index = torch.argmax(out, dim=1)
+        correct_batch=torch.sum(target_index==pred_index)
         losses_batch=F.cross_entropy(out,torch.max(target,1)[1])
-
 
         correct_batch=torch.unsqueeze(correct_batch,dim=0)
         losses_batch=torch.unsqueeze(losses_batch, dim=0)
 
-
-        return  losses_batch,correct_batch
+        if train:
+            return  losses_batch,correct_batch
+        return losses_batch, correct_batch, (target_index, pred_index)
