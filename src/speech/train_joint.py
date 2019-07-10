@@ -62,7 +62,8 @@ for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is t
         correct_batch=torch.sum(correct_batch,dim=0)
         losses += loss.item() * batch_size
         loss.backward()
-        pdb.set_trace()
+        weight=model.module.state_dict()["weight"]
+        print(torch.exp(weight)/(1+torch.exp(weight)).item())
         optimizer.step()
         correct += correct_batch.item()
     accuracy=correct*1.0/((j+1)*batch_size)
