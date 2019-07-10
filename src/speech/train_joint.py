@@ -11,9 +11,9 @@ import numpy as np
 from torch.nn.utils.rnn import pad_sequence, pack_padded_sequence
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 input_channels=3
-hidden_channels=[64,64,32]
-kernel_size=[(3,3),(3,3),(3,3)]
-kernel_size_pool=[(4,4),(4,4),(4,4)]
+hidden_channels=[64,32,16]
+kernel_size=[(7,7),(5,5),(3,3)]
+kernel_size_pool=[(8,8),(6,6),(4,4)]
 kernel_stride_pool=[(4,4),(4,4),(3,4)]
 step=10
 batch_size=100
@@ -30,7 +30,7 @@ model.train()
 
 # Use Adam as the optimizer with learning rate 0.01 to make it fast for testing purposes
 optimizer = optim.Adam(model.parameters(), lr=0.001)
-#optimizer2=optim.SGD(model.parameters(), lr=0.1)
+optimizer2=optim.SGD(model.parameters(), lr=0.1)
 scheduler = ReduceLROnPlateau(optimizer=optimizer,factor=0.5, patience=2, threshold=1e-3)
 #scheduler2=ReduceLROnPlateau(optimizer=optimizer2, factor=0.5, patience=2, threshold=1e-3)
 #scheduler2 =CosineAnnealingLR(optimizer2, T_max=300, eta_min=0.0001)
@@ -62,7 +62,7 @@ for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is t
         correct_batch=torch.sum(correct_batch,dim=0)
         losses += loss.item() * batch_size
         loss.backward()
-        optimizer.step()
+        optimizer2.step()
         correct += correct_batch.item()
     accuracy=correct*1.0/((j+1)*batch_size)
     losses=losses / ((j+1)*batch_size)
