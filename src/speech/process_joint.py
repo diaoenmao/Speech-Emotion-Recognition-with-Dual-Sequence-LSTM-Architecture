@@ -11,33 +11,33 @@ def split_data(data):
     train = {'input': input_train, 'target': target_train,"input_lstm": input_lstm_train,"seq_length": seq_length_train}
     test = {'input': input_test, 'target': target_test,"input_lstm": input_lstm_test,"seq_length": seq_length_test}
     return train, test
-
-with open('/scratch/speech/datasets/IEMOCAP_39_FOUR_EMO_full.pkl', 'rb') as out1:
-    dict1=pickle.load(out1)
-with open('/scratch/speech/raw_audio_dataset/spectrogram_segmented_dpi10_step40_full.pkl', 'rb') as out2:
-    dict2=pickle.load(out2)
-flag=True
-for i in range(len(dict1["target"])):
-    if np.argmax(dict1["target"][i])==np.argmax(dict2["target"][i]):
-        continue
+def combine():
+    with open('/scratch/speech/datasets/IEMOCAP_39_FOUR_EMO_full.pkl', 'rb') as out1:
+        dict1=pickle.load(out1)
+    with open('/scratch/speech/raw_audio_dataset/spectrogram_segmented_dpi10_step40_full.pkl', 'rb') as out2:
+        dict2=pickle.load(out2)
+    flag=True
+    for i in range(len(dict1["target"])):
+        if np.argmax(dict1["target"][i])==np.argmax(dict2["target"][i]):
+            continue
+        else:
+            flag=False
+            break
+    if flag: 
+        print("Datasets consistent")
     else:
-        flag=False
-        break
-if flag: 
-    print("Datasets consistent")
-else:
-    raise ValueError("Datasets inconsistent")
+        raise ValueError("Datasets inconsistent")
 
-dict3={"input_lstm":dict1["input"],"input":dict2["input"],"seq_length": dict1["seq_length"],"target": dict2["target"]}
-train1,test1=split_data(dict3)
-with open('/scratch/speech/hand_raw_dataset/IEMOCAP_39_FOUR_EMO_spectrogram_segmented_dpi10_step40_full.pkl', 'wb') as full:
-    pickle.dump(full,dict3)
-with open('/scratch/speech/hand_raw_dataset/IEMOCAP_39_FOUR_EMO_spectrogram_segmented_dpi10_step40_train.pkl', 'wb') as train:
-    pickle.dump(train,train1)
-with open('/scratch/speech/hand_raw_dataset/IEMOCAP_39_FOUR_EMO_spectrogram_segmented_dpi10_step40_test.pkl', 'wb') as test:
-    pickle.dump(test,test1)
+    dict3={"input_lstm":dict1["input"],"input":dict2["input"],"seq_length": dict1["seq_length"],"target": dict2["target"]}
+    train1,test1=split_data(dict3)
+    with open('/scratch/speech/hand_raw_dataset/IEMOCAP_39_FOUR_EMO_spectrogram_segmented_dpi10_step40_full.pkl', 'wb') as full:
+        pickle.dump(full,dict3)
+    with open('/scratch/speech/hand_raw_dataset/IEMOCAP_39_FOUR_EMO_spectrogram_segmented_dpi10_step40_train.pkl', 'wb') as train:
+        pickle.dump(train,train1)
+    with open('/scratch/speech/hand_raw_dataset/IEMOCAP_39_FOUR_EMO_spectrogram_segmented_dpi10_step40_test.pkl', 'wb') as test:
+        pickle.dump(test,test1)
 
-print('/scratch/speech/hand_raw_dataset/IEMOCAP_39_FOUR_EMO_spectrogram_segmented_dpi10_step40_train.pkl')
+    print('/scratch/speech/hand_raw_dataset/IEMOCAP_39_FOUR_EMO_spectrogram_segmented_dpi10_step40_train.pkl')
 
 
 class IEMOCAP(Dataset):
@@ -73,4 +73,7 @@ def my_collate(batch):
     input = torch.cat([torch.unsqueeze(i['input'],dim=0) for i in batch],dim=0)
     target = torch.from_numpy(np.array([i['target'] for i in batch]))
     return input_lstm,input,target,seq_length
+if __name__=='__main__':
+    combine()
+
 
