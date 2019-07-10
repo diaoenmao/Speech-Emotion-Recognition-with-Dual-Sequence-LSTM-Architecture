@@ -12,9 +12,9 @@ from torch.nn.utils.rnn import pad_sequence, pack_padded_sequence
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 input_channels=3
 hidden_channels=[64,32,16]
-kernel_size=[(7,7),(5,5),(3,3)]
+kernel_size=[(3,3),(3,3),(3,3)]
 kernel_size_pool=[(8,8),(6,6),(4,4)]
-kernel_stride_pool=[(4,4),(4,4),(3,4)]
+kernel_stride_pool=[(4,4),(4,4),(3,2)]
 step=10
 batch_size=100
 hidden_dim_lstm=200
