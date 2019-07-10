@@ -102,15 +102,15 @@ class SpectrogramModel(nn.Module):
         #print(out.shape)
         out = self.max_pool4(out)
         #print(out.shape)
-        #out = torch.flatten(out, start_dim=2, end_dim=3)
         out = out.view(list(out.size())[0], list(out.size())[1], -1)
         #pdb.set_trace()
         out, hn = self.lstm(out)
 
         out=out.permute(0,2,1)
+        print("out:",out.shape)
 
         out_lstm=self.LSTM_Audio(input_lstm)
-#        print(out.shape)
+        print("out_lstm:",out_lstm.shape)
         out=torch.mean(out,dim=2)
         temp=[torch.unsqueeze(torch.mean(out_lstm[k,:,:s],dim=1),dim=0) for k,s in enumerate(seq_length)]
         out_lstm=torch.cat(temp,dim=0)
