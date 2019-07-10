@@ -44,7 +44,7 @@ train_loader = DataLoader(dataset=training_data, batch_size=batch_size, shuffle=
 testing_data = IEMOCAP(train=False)
 test_loader = DataLoader(dataset=testing_data, batch_size=batch_size, shuffle=True, collate_fn=my_collate, num_workers=0,drop_last=True)
 
-out = open('/scratch/speech/hand_raw_dataset/IEMOCAP_39_FOUR_EMO_spectrogram_segmented_dpi10_step40_test.pkl', 'rb')
+out = open('/scratch/speech/hand_raw_dataset/IEMOCAP_39_FOUR_EMO_spectrogram_segmented_dpi10_step40_overlap_test.pkl', 'rb')
 data = pickle.load(out)
 labels = data['target']
 hap_count = 0

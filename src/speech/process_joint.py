@@ -44,9 +44,9 @@ def combine():
 class IEMOCAP(Dataset):
     def __init__(self, train=True):
         if train:
-            pickle_in = open('/scratch/speech/hand_raw_dataset/IEMOCAP_39_FOUR_EMO_spectrogram_segmented_dpi10_step40_train.pkl', 'rb')
+            pickle_in = open('/scratch/speech/hand_raw_dataset/IEMOCAP_39_FOUR_EMO_spectrogram_segmented_dpi10_step40_overlap_train.pkl', 'rb')
         else:
-            pickle_in=open('/scratch/speech/hand_raw_dataset/IEMOCAP_39_FOUR_EMO_spectrogram_segmented_dpi10_step40_test.pkl', 'rb')
+            pickle_in=open('/scratch/speech/hand_raw_dataset/IEMOCAP_39_FOUR_EMO_spectrogram_segmented_dpi10_step40_overlap_test.pkl', 'rb')
         data = pickle.load(pickle_in)
         self.seq_length = data["seq_length"]
         self.input_lstm= data["input_lstm"]
@@ -71,6 +71,4 @@ def my_collate(batch):
     input = torch.cat([torch.unsqueeze(i['input'],dim=0) for i in batch],dim=0)
     target = torch.from_numpy(np.array([i['target'] for i in batch]))
     return input_lstm,input,target,seq_length
-if __name__=="__main__":
-    combine()
 
