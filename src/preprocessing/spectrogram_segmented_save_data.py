@@ -30,9 +30,9 @@ def create_data(df_value):
         segments_new.append(previous)
     assert len(previous)==len(sample) , "size mismatch"
     utterance = []
-    for j in range(40):
+    for j,s in enumerate(segments_new):
         plt.clf()
-        spectrum, freqs, t, im = plt.specgram(segments_new, Fs=sample_rate)
+        spectrum, freqs, t, im = plt.specgram(s, Fs=sample_rate)
         plt.gca().set_axis_off()
         plt.subplots_adjust(top = 1, bottom = 0, right = 1, left = 0, hspace = 0, wspace = 0)
         plt.margins(0,0)
