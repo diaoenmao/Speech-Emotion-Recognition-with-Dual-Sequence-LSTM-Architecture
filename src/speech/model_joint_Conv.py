@@ -107,13 +107,14 @@ class SpectrogramModel(nn.Module):
         out, hn = self.lstm(out)
 
         out=out.permute(0,2,1)
-        print("out:",out.shape)
+        print("out:",out.shape,out.device.index)
 
         out_lstm=self.LSTM_Audio(input_lstm)
-        print("out_lstm:",out_lstm.shape)
+        print("out_lstm:",out_lstm.shape,out.device.index)
         out=torch.mean(out,dim=2)
         temp=[torch.unsqueeze(torch.mean(out_lstm[k,:,:s],dim=1),dim=0) for k,s in enumerate(seq_length)]
         out_lstm=torch.cat(temp,dim=0)
+        print("out_lstm:",out_lstm.shape,out.device.index)
         p=torch.exp(10*self.weight)/(1+torch.exp(10*self.weight))
         out=torch.cat([p*out,(1-p)*out_lstm],dim=1)
         out=self.classification(out)
