@@ -116,7 +116,8 @@ for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is t
         cm_normalized = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
     print("how many correct:", correct_test)
     print("confusion matrix: ")
-    print(cm_normalized)
+    with np.printoptions(precision=4, suppress=True):
+        print(cm_normalized)
     accuracy_test = correct_test * 1.0 / ((j+1)*batch_size)
     weighted_accuracy_test = 0
     for i in range(4):
@@ -134,7 +135,7 @@ for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is t
         if epoch==0: f.write("\n"+"============================== New Model ==================================="+"\n")
         f.write("\n"+"Epoch: {:05.4f}----Training Loss: {:05.4f}----Testing Loss: {:05.4f}----Training Acc: {:05.4f}----Testing Acc: {:05.4f}----Weighted Acc: {:05.4f}".format(epoch+1,losses,losses_test, accuracy, accuracy_test, weighted_accuracy_test)+"\n")
         f.write("confusion_matrix:"+"\n")
-        np.savetxt(f,cm_normalized,delimiter=' ',fmt=":05.4f")
+        np.savetxt(f,cm_normalized,delimiter=' ',fmt="%5.4f")
 
 
 pickle_out=open("/scratch/speech/models/classification/joint_checkpoint_stats.pkl","wb")
