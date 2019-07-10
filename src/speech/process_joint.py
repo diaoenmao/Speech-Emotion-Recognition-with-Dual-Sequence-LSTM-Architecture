@@ -72,6 +72,6 @@ def my_collate(batch):
     target = torch.from_numpy(np.array([i['target'] for i in batch]))
     return input_lstm,input,target,seq_length
 if __name__=='__main__':
-    combine()
+    #combine()
 
 
