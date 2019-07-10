@@ -93,14 +93,6 @@ if __name__ == '__main__':
         for i, (utterance, label) in zip(range(df.shape[0]), executor.map(create_data, df.values)):
             print('Succcessfully generated spectrograms for file #' + str(i))
             data.append((utterance, label))
-            if (i+1)%500==0:
-                for j in data:
-                    input.append(j[0])
-                    target.append(j[1])
-                dataset = {'input': input, 'target': target}
-                save_check(dataset,i+1)
-                input=[]
-                target=[]
 
     for i in data:
         input.append(i[0])
