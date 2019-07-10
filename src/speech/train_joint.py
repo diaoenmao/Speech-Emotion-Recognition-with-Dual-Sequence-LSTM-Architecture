@@ -13,12 +13,12 @@ from sklearn.metrics import confusion_matrix
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 input_channels=3
-hidden_channels=[64,32,16]
-kernel_size=[(3,3),(3,3),(3,3)]
+hidden_channels=[64,128,32]
+kernel_size=[(3,3),(3,3),(2,2)]
 kernel_size_pool=[(3,3),(3,3),(3,2)]
-kernel_stride_pool=[(2,2),(2,2),(3,2)]
+kernel_stride_pool=[(2,2),(2,2),(1,1)]
 step=40
-batch_size=100
+batch_size=60
 hidden_dim_lstm=200
 num_layers_lstm=2
 device_ids=[0,1,2,3]
