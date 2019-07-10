@@ -94,9 +94,9 @@ if __name__ == '__main__':
             print('Succcessfully generated spectrograms for file #' + str(i))
             data.append((utterance, label))
             if (i+1)%500==0:
-                for i in data:
-                    input.append(i[0])
-                    target.append(i[1])
+                for j in data:
+                    input.append(j[0])
+                    target.append(j[1])
                 dataset = {'input': input, 'target': target}
                 save_check(dataset,i+1)
                 input=[]
