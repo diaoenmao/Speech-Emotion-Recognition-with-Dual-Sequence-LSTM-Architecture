@@ -123,7 +123,7 @@ class ConvLSTM(nn.Module):
         self.attention=nn.Parameter(torch.zeros(self.linear_dim))
         self.attention_flag=attention_flag
 
-        self.add_module('weight', nn.Parameter(torch.zeros(1)))
+        self.weight= nn.Parameter(torch.zeros(1))
 
 
 
