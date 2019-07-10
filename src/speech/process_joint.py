@@ -44,15 +44,12 @@ def combine():
 class IEMOCAP(Dataset):
     def __init__(self, train=True):
         if train:
-            pickle_in_lstm = open('/scratch/speech/datasets/IEMOCAP_39_FOUR_EMO_train.pkl', 'rb')
-            pickle_in = open('/scratch/speech/raw_audio_dataset/spectrogram_segmented_dpi10_step40_train.pkl', 'rb')
+            pickle_in = open('/scratch/speech/hand_raw_dataset/IEMOCAP_39_FOUR_EMO_spectrogram_segmented_dpi10_step40_train.pkl', 'rb')
         else:
-            pickle_in_lstm = open('/scratch/speech/datasets/IEMOCAP_39_FOUR_EMO_test.pkl', 'rb')
-            pickle_in = open('/scratch/speech/raw_audio_dataset/spectrogram_segmented_dpi10_step40_test.pkl', 'rb')
-        data_lstm = pickle.load(pickle_in_lstm)
-        self.seq_length = data_lstm["seq_length"]
-        self.input_lstm= data_lstm["input"]
+            pickle_in=open('/scratch/speech/hand_raw_dataset/IEMOCAP_39_FOUR_EMO_spectrogram_segmented_dpi10_step40_test.pkl', 'rb')
         data = pickle.load(pickle_in)
+        self.seq_length = data["seq_length"]
+        self.input_lstm= data["input_lstm"]
         self.input = data["input"]
         self.target = data["target"]
 
