@@ -4,6 +4,7 @@ import pickle
 import numpy as np
 from torch.utils.data import Dataset
 import pdb
+from sklearn.model_selection import train_test_split
 
 def split_data(data):
     input_train, input_test, target_train, target_test, input_lstm_train, input_lstm_test, seq_length_train, seq_length_test= train_test_split(
