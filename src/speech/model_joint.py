@@ -117,7 +117,7 @@ class ConvLSTM(nn.Module):
 
 
 
-        self.linear_dim=int(self.hidden_channels[-1]*(96/strideF)*(128/strideT)+self.hidden_dim_lstm*2)
+        self.linear_dim=int(self.hidden_channels[-1]*(48/strideF)*(64/strideT)+self.hidden_dim_lstm*2)
         self.classification = nn.Linear(self.linear_dim, self.num_labels)
 
         self.attention=nn.Parameter(torch.zeros(self.linear_dim))
