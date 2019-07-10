@@ -5,6 +5,13 @@ import numpy as np
 from torch.utils.data import Dataset
 import pdb
 
+def split_data(data):
+    input_train, input_test, target_train, target_test, input_lstm_train, input_lstm_test, seq_length_train, seq_length_test= train_test_split(
+        data['input'], data['target'], data["input_lstm"],data["seq_length"], test_size=0.2, random_state=42)
+    train = {'input': input_train, 'target': target_train,"input_lstm": input_lstm_train,"seq_length": seq_length_train}
+    test = {'input': input_test, 'target': target_test,"input_lstm": input_lstm_test,"seq_length": seq_length_test}
+    return train, test
+
 with open('/scratch/speech/datasets/IEMOCAP_39_FOUR_EMO_full.pkl', 'rb') as out1:
     dict1=pickle.load(out1)
 with open('/scratch/speech/raw_audio_dataset/spectrogram_segmented_dpi10_step40_full.pkl', 'rb') as out2:
@@ -32,12 +39,6 @@ with open('/scratch/speech/hand_raw_dataset/IEMOCAP_39_FOUR_EMO_spectrogram_segm
 
 print('/scratch/speech/hand_raw_dataset/IEMOCAP_39_FOUR_EMO_spectrogram_segmented_dpi10_step40_train.pkl')
 
-def split_data(data):
-    input_train, input_test, target_train, target_test, input_lstm_train, input_lstm_test, seq_length_train, seq_length_test= train_test_split(
-        data['input'], data['target'], data["input_lstm"],data["seq_length"], test_size=0.2, random_state=42)
-    train = {'input': input_train, 'target': target_train,"input_lstm": input_lstm_train,"seq_length": seq_length_train}
-    test = {'input': input_test, 'target': target_test,"input_lstm": input_lstm_test,"seq_length": seq_length_test}
-    return train, test
 
 class IEMOCAP(Dataset):
     def __init__(self, train=True):
