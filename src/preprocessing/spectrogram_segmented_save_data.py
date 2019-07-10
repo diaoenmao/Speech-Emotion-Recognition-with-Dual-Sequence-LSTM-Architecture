@@ -15,7 +15,7 @@ df = pd.read_csv(in_file)
 
 encode = {"hap": [1, 0, 0, 0], "exc": [1, 0, 0, 0], "neu": [0, 1, 0, 0], "ang": [0, 0, 1, 0], "sad": [0, 0, 0, 1]}
 
-endpoint = '/scratch/speech/spectrograms_segmented_dpi15_step40/'
+endpoint = '/scratch/speech/spectrograms_segmented_dpi10_step40/'
 
 save_path = '/scratch/speech/raw_audio_dataset/'
 
@@ -35,7 +35,7 @@ def create_data(df_value):
         #plt.show()
         index = file.rfind('/')
         basename = file[(index + 1):-4]
-        plt.savefig(endpoint + '{}_spec_{}.png'.format(basename, j), dpi=15, bbox_inches='tight', pad_inches=0)
+        plt.savefig(endpoint + '{}_spec_{}.png'.format(basename, j), dpi=10, bbox_inches='tight', pad_inches=0)
         im = cv2.imread(endpoint + '{}_spec_{}.png'.format(basename, j))
         utterance.append(im)
     label = encode[emotion]
@@ -74,12 +74,16 @@ def split_data(data):
 
 def save(dataset):
     train, test = split_data(dataset)
-    with open(save_path + 'spectrogram_segmented_dpi15_step40' + '_full.pkl', 'wb') as f:
+    with open(save_path + 'spectrogram_segmented_dpi10_step40' + '_full.pkl', 'wb') as f:
         pickle.dump(dataset, f)
-    with open(save_path + 'spectrogram_segmented_dpi15_step40' + '_train.pkl', 'wb') as f:
+    with open(save_path + 'spectrogram_segmented_dpi10_step40' + '_train.pkl', 'wb') as f:
         pickle.dump(train, f)
-    with open(save_path + 'spectrogram_segmented_dpi15_step40' + '_test.pkl', 'wb') as f:
+    with open(save_path + 'spectrogram_segmented_dpi10_step40' + '_test.pkl', 'wb') as f:
         pickle.dump(test, f)
+def save_check(dataset,i):
+    with open(save_path + 'spectrogram_segmented_dpi10_step40' + '_checkpoint_'+str(i)+'.pkl', 'wb') as f:
+        pickle.dump(dataset, f)
+
 
 if __name__ == '__main__':
     data = []
@@ -89,6 +93,15 @@ if __name__ == '__main__':
         for i, (utterance, label) in zip(range(df.shape[0]), executor.map(create_data, df.values)):
             print('Succcessfully generated spectrograms for file #' + str(i))
             data.append((utterance, label))
+            if (i+1)%500==0:
+                for i in data:
+                    input.append(i[0])
+                    target.append(i[1])
+                dataset = {'input': input, 'target': target}
+                save_check(dataset,i+1)
+                input=[]
+                target=[]
+
     for i in data:
         input.append(i[0])
         target.append(i[1])
