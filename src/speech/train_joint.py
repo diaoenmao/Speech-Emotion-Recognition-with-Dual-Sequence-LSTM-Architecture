@@ -9,6 +9,8 @@ from torch.nn import DataParallel
 import pickle
 import numpy as np
 from torch.nn.utils.rnn import pad_sequence, pack_padded_sequence
+from sklearn.metrics import confusion_matrix
+
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 input_channels=3
 hidden_channels=[64,32,16]
@@ -73,18 +75,27 @@ for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is t
     correct_test = 0
     torch.save(model.module.state_dict(), "/scratch/speech/models/classification/joint_checkpoint_epoch_{}.pt".format(epoch+1))
     model.eval()
+    output = []
+    y_true = []
+    y_pred = []
     with torch.no_grad():
         for j,(input_lstm,input, target,seq_length) in enumerate(test_loader):
             if (j+1)%10==0: print("=================================Test Batch"+ str(j+1)+ "===================================================")
             input_lstm = pad_sequence(sequences=input_lstm,batch_first=True)
-            losses_batch,correct_batch= model(input_lstm,input, target,seq_length)
-            losses_batch,correct_batch = model(input_lstm,input, target,seq_length)
+            losses_batch,correct_batch, (target_index, pred_index)= model(input_lstm,input, target,seq_length, train=False)
+            output.append((target_index, pred_index))
             loss = torch.mean(losses_batch,dim=0)
             correct_batch=torch.sum(correct_batch,dim=0)
             losses_test += loss.item() * batch_size
             correct_test += correct_batch.item()
 
+    for target_index, pred_index in output:
+        y_true = y_true + target_index.tolist()
+        y_pred = y_pred + pred_index.tolist()
+        cm = confusion_matrix(y_true, y_pred)
+        cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
     print("how many correct:", correct_test)
+    print("confusion matrix: ", cm)
     accuracy_test = correct_test * 1.0 / ((j+1)*batch_size)
     losses_test = losses_test / ((j+1)*batch_size)
 
