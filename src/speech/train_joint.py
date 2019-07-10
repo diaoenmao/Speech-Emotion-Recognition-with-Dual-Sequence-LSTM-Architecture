@@ -43,11 +43,31 @@ training_data = IEMOCAP(train=True)
 train_loader = DataLoader(dataset=training_data, batch_size=batch_size, shuffle=True, collate_fn=my_collate, num_workers=0, drop_last=True)
 testing_data = IEMOCAP(train=False)
 test_loader = DataLoader(dataset=testing_data, batch_size=batch_size, shuffle=True, collate_fn=my_collate, num_workers=0,drop_last=True)
+
+out = open('/scratch/speech/datasets/IEMOCAP_39_FOUR_EMO_test.pkl')
+data = pickle.load(out)
+labels = data['target']
+hap_count = 0
+neu_count = 0
+ang_count = 0
+sad_count = 0
+for label in labels:
+    if label == [1,0,0,0]:
+        hap_count += 1
+    elif label == [0,1,0,0]:
+        neu_count += 1
+    elif label == [0,0,1,0]:
+        ang_count += 1
+    else:
+        sad_count += 1
+weights = [hap_count/len(labels), neu_count/len(labels), ang_count/len(labels), sad_count/len(labels)]
+
 print("=================")
 print(len(training_data))
 print("===================")
 test_acc=[]
 train_acc=[]
+weighted_acc = []
 test_loss=[]
 train_loss=[]
 for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is toy data
@@ -93,24 +113,28 @@ for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is t
         y_true = y_true + target_index.tolist()
         y_pred = y_pred + pred_index.tolist()
         cm = confusion_matrix(y_true, y_pred)
-        cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
+        cm_normalized = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
     print("how many correct:", correct_test)
     print("confusion matrix: ", cm)
     accuracy_test = correct_test * 1.0 / ((j+1)*batch_size)
+    weighted_accuracy_test = 0
+    for i in range(4):
+        weighted_accuracy_test += cm_normalized[i,i] * weights[i]
     losses_test = losses_test / ((j+1)*batch_size)
 
     # data gathering
     test_acc.append(accuracy_test)
+    weighted_acc.append(weighted_accuracy_test)
     train_acc.append(accuracy)
     test_loss.append(losses_test)
     train_loss.append(losses)
-    print("Epoch: {}-----------Training Loss: {} -------- Testing Loss: {} -------- Training Acc: {} -------- Testing Acc: {}".format(epoch+1,losses,losses_test, accuracy, accuracy_test)+"\n")
+    print("Epoch: {}----Training Loss: {}----Testing Loss: {}----Training Acc: {}----Testing Acc: {}----Weighted Acc: {}".format(epoch+1,losses,losses_test, accuracy, accuracy_test, weighted_accuracy_test)+"\n")
     with open("/scratch/speech/models/classification/joint_stats.txt","a+") as f:
         if epoch==0: f.write("\n"+"============================== New Model ==================================="+"\n")
-        f.write("Epoch: {}-----------Training Loss: {} -------- Testing Loss: {} -------- Training Acc: {} -------- Testing Acc: {}".format(epoch+1,losses,losses_test, accuracy, accuracy_test)+"\n")
+        f.write("Epoch: {}----Training Loss: {}----Testing Loss: {}----Training Acc: {}----Testing Acc: {}----Weighted Acc: {}".format(epoch+1,losses,losses_test, accuracy, accuracy_test, weighted_accuracy_test)+"\n")
 
 
 
 pickle_out=open("/scratch/speech/models/classification/joint_checkpoint_stats.pkl","wb")
-pickle.dump({"test_acc":test_acc, "train_acc": train_acc, "train_loss": train_loss,"test_loss":test_loss},pickle_out)
+pickle.dump({"test_acc":test_acc, "weighted_acc": weighted_acc, "train_acc": train_acc, "train_loss": train_loss,"test_loss":test_loss},pickle_out)
 pickle_out.close()
