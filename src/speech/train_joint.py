@@ -129,12 +129,12 @@ for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is t
     train_acc.append(accuracy)
     test_loss.append(losses_test)
     train_loss.append(losses)
-    print("Epoch: {}----Training Loss: {}----Testing Loss: {}----Training Acc: {}----Testing Acc: {}----Weighted Acc: {}".format(epoch+1,losses,losses_test, accuracy, accuracy_test, weighted_accuracy_test)+"\n")
+    print("Epoch: {:05.4f}----Training Loss: {:05.4f}----Testing Loss: {:05.4f}----Training Acc: {:05.4f}----Testing Acc: {:05.4f}----Weighted Acc: {:05.4f}".format(epoch+1,losses,losses_test, accuracy, accuracy_test, weighted_accuracy_test)+"\n")
     with open("/scratch/speech/models/classification/joint_stats.txt","a+") as f:
         if epoch==0: f.write("\n"+"============================== New Model ==================================="+"\n")
-        f.write("\n"+"Epoch: {}----Training Loss: {}----Testing Loss: {}----Training Acc: {}----Testing Acc: {}----Weighted Acc: {}".format(epoch+1,losses,losses_test, accuracy, accuracy_test, weighted_accuracy_test)+"\n")
+        f.write("\n"+"Epoch: {:05.4f}----Training Loss: {:05.4f}----Testing Loss: {:05.4f}----Training Acc: {:05.4f}----Testing Acc: {:05.4f}----Weighted Acc: {:05.4f}".format(epoch+1,losses,losses_test, accuracy, accuracy_test, weighted_accuracy_test)+"\n")
         f.write("confusion_matrix:"+"\n")
-        np.savetxt(f,cm_normalized,delimiter=' ')
+        np.savetxt(f,cm_normalized,delimiter=' ',fmt=":05.4f")
 
 
 pickle_out=open("/scratch/speech/models/classification/joint_checkpoint_stats.pkl","wb")
