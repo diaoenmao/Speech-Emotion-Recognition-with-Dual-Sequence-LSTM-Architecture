@@ -48,6 +48,7 @@ class SpectrogramModel(nn.Module):
         self.bidirectional = bidirectional
         self.num_directions = 1 + self.bidirectional
 
+
         self.cnn1 = nn.Conv2d(self.in_channels, self.out_channels, self.kernel_size_cnn, stride=self.stride_cnn, padding=self.padding_cnn).to(self.device)
         self.batch1 = nn.BatchNorm2d(self.out_channels)
         self.cnn2 = nn.Conv2d(self.out_channels, self.out_channels, self.kernel_size_cnn, stride=self.stride_cnn, padding=self.padding_cnn).to(self.device)
@@ -62,7 +63,7 @@ class SpectrogramModel(nn.Module):
         self.max_pool4 = nn.MaxPool2d(int(self.kernel_size_pool*5/4), stride=int(self.stride_pool*5/4))
         self.lstm = nn.LSTM(int(640/160) * int(480/160), self.hidden_dim, self.num_layers, batch_first=True,
                            dropout=self.dropout_rate, bidirectional=self.bidirectional).to(self.device)
-        self.classification = nn.Linear(1918, self.num_labels).to(self.device)
+        self.classification = nn.Linear(self.hidden_dim*self.num_directions+self.hidden_dim_lstm*2, self.num_labels).to(self.device)
 
         self.LSTM_Audio=LSTM_Audio(hidden_dim,num_layers,self.device,bidirectional=True)
         self.weight= nn.Parameter(torch.zeros(1))
@@ -107,14 +108,11 @@ class SpectrogramModel(nn.Module):
         out, hn = self.lstm(out)
 
         out=out.permute(0,2,1)
-        print("out:",out.shape,out.device.index)
 
-        out_lstm=self.LSTM_Audio(input_lstm)
-        print("out_lstm:",out_lstm.shape,out.device.index)
+        out_lstm=self.LSTM_Audio(input_lstm).permute(0,2,1)
         out=torch.mean(out,dim=2)
         temp=[torch.unsqueeze(torch.mean(out_lstm[k,:,:s],dim=1),dim=0) for k,s in enumerate(seq_length)]
         out_lstm=torch.cat(temp,dim=0)
-        print("out_lstm:",out_lstm.shape,out.device.index)
         p=torch.exp(10*self.weight)/(1+torch.exp(10*self.weight))
         out=torch.cat([p*out,(1-p)*out_lstm],dim=1)
         out=self.classification(out)
