@@ -44,7 +44,7 @@ train_loader = DataLoader(dataset=training_data, batch_size=batch_size, shuffle=
 testing_data = IEMOCAP(train=False)
 test_loader = DataLoader(dataset=testing_data, batch_size=batch_size, shuffle=True, collate_fn=my_collate, num_workers=0,drop_last=True)
 
-out = open('/scratch/speech/datasets/IEMOCAP_39_FOUR_EMO_test.pkl')
+out = open('/scratch/speech/hand_raw_dataset/IEMOCAP_39_FOUR_EMO_spectrogram_segmented_dpi10_step40_test.pkl', 'rb')
 data = pickle.load(out)
 labels = data['target']
 hap_count = 0
@@ -113,14 +113,13 @@ for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is t
         y_true = y_true + target_index.tolist()
         y_pred = y_pred + pred_index.tolist()
         cm = confusion_matrix(y_true, y_pred)
-        cm_normalized = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
     print("how many correct:", correct_test)
     print("confusion matrix: ")
     print(cm)
     accuracy_test = correct_test * 1.0 / ((j+1)*batch_size)
     weighted_accuracy_test = 0
     for i in range(4):
-        weighted_accuracy_test += cm_normalized[i,i] * weights[i]
+        weighted_accuracy_test += cm[i,i] * weights[i]
     losses_test = losses_test / ((j+1)*batch_size)
 
     # data gathering
