@@ -15,31 +15,32 @@ df = pd.read_csv(in_file)
 
 encode = {"hap": [1, 0, 0, 0], "exc": [1, 0, 0, 0], "neu": [0, 1, 0, 0], "ang": [0, 0, 1, 0], "sad": [0, 0, 0, 1]}
 
-endpoint = '/scratch/speech/spectrograms_segmented_dpi10_step40/'
+endpoint = '/scratch/speech/spectrograms_segmented_dpi10_step40_overlap/'
 
 save_path = '/scratch/speech/raw_audio_dataset/'
 
 def create_data(df_value):
     file, emotion = df_value
-    #sample_rate, sample = wavfile.read(file)
-    #segments = np.array_split(sample, 40)
+    sample_rate, sample = wavfile.read(file)
+    segments = np.array_split(sample, 40)
+    previous=[]
+    segments_new=[]
+    for s in segments:
+        previous+=s
+        segments_new.append(previous)
+    assert len(previous)==len(sample) , "size mismatch"
     utterance = []
     for j in range(40):
-        '''
         plt.clf()
-        spectrum, freqs, t, im = plt.specgram(segment, Fs=sample_rate)
+        spectrum, freqs, t, im = plt.specgram(segments_new, Fs=sample_rate)
         plt.gca().set_axis_off()
         plt.subplots_adjust(top = 1, bottom = 0, right = 1, left = 0, hspace = 0, wspace = 0)
         plt.margins(0,0)
         plt.gca().xaxis.set_major_locator(ticker.NullLocator())
         plt.gca().yaxis.set_major_locator(ticker.NullLocator())
-        #plt.show()
         index = file.rfind('/')
         basename = file[(index + 1):-4]
         plt.savefig(endpoint + '{}_spec_{}.png'.format(basename, j), dpi=10, bbox_inches='tight', pad_inches=0)
-        '''
-        index = file.rfind('/')
-        basename = file[(index + 1):-4]
         im = cv2.imread(endpoint + '{}_spec_{}.png'.format(basename, j))
         utterance.append(im)
     label = encode[emotion]
@@ -78,15 +79,13 @@ def split_data(data):
 
 def save(dataset):
     train, test = split_data(dataset)
-    with open(save_path + 'spectrogram_segmented_dpi10_step40' + '_full.pkl', 'wb') as f:
+    with open(save_path + 'spectrogram_segmented_dpi10_step40_overlap' + '_full.pkl', 'wb') as f:
         pickle.dump(dataset, f)
-    with open(save_path + 'spectrogram_segmented_dpi10_step40' + '_train.pkl', 'wb') as f:
+    with open(save_path + 'spectrogram_segmented_dpi10_step40_overlap' + '_train.pkl', 'wb') as f:
         pickle.dump(train, f)
-    with open(save_path + 'spectrogram_segmented_dpi10_step40' + '_test.pkl', 'wb') as f:
+    with open(save_path + 'spectrogram_segmented_dpi10_step40_overlap' + '_test.pkl', 'wb') as f:
         pickle.dump(test, f)
-def save_check(dataset,i):
-    with open(save_path + 'spectrogram_segmented_dpi10_step40' + '_checkpoint_'+str(i)+'.pkl', 'wb') as f:
-        pickle.dump(dataset, f)
+
 
 
 if __name__ == '__main__':
