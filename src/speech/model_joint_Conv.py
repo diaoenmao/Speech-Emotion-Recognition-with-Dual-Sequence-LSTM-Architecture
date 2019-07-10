@@ -48,6 +48,8 @@ class SpectrogramModel(nn.Module):
         self.bidirectional = bidirectional
         self.num_directions = 1 + self.bidirectional
 
+        self.hidden_dim_lstm=hidden_dim_lstm
+
 
         self.cnn1 = nn.Conv2d(self.in_channels, self.out_channels, self.kernel_size_cnn, stride=self.stride_cnn, padding=self.padding_cnn).to(self.device)
         self.batch1 = nn.BatchNorm2d(self.out_channels)
