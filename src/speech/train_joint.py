@@ -115,7 +115,8 @@ for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is t
         cm = confusion_matrix(y_true, y_pred)
         cm_normalized = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
     print("how many correct:", correct_test)
-    print("confusion matrix: ", cm)
+    print("confusion matrix: ")
+    print(cm)
     accuracy_test = correct_test * 1.0 / ((j+1)*batch_size)
     weighted_accuracy_test = 0
     for i in range(4):
