@@ -32,11 +32,11 @@ def combine():
     dict3={"input_lstm":dict1["input"],"input":dict2["input"],"seq_length": dict1["seq_length"],"target": dict2["target"]}
     train1,test1=split_data(dict3)
     with open('/scratch/speech/hand_raw_dataset/IEMOCAP_39_FOUR_EMO_spectrogram_segmented_dpi10_step40_full.pkl', 'wb') as full:
-        pickle.dump(full,dict3)
+        pickle.dump(dict3,full)
     with open('/scratch/speech/hand_raw_dataset/IEMOCAP_39_FOUR_EMO_spectrogram_segmented_dpi10_step40_train.pkl', 'wb') as train:
-        pickle.dump(train,train1)
+        pickle.dump(train1,train)
     with open('/scratch/speech/hand_raw_dataset/IEMOCAP_39_FOUR_EMO_spectrogram_segmented_dpi10_step40_test.pkl', 'wb') as test:
-        pickle.dump(test,test1)
+        pickle.dump(test1,test)
 
     print('/scratch/speech/hand_raw_dataset/IEMOCAP_39_FOUR_EMO_spectrogram_segmented_dpi10_step40_train.pkl')
 
