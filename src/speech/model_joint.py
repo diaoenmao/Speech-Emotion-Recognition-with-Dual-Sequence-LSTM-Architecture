@@ -171,7 +171,7 @@ class ConvLSTM(nn.Module):
         #out=torch.cat([p*out,(1-p)*out_lstm],dim=1)
         out=self.classification_convlstm(out)
         out_lstm=self.classification_lstm(out_lstm)
-        out_final=p*out_lstm+(1-p)*lstm
+        out_final=p*out_lstm+(1-p)*out
         target_index = torch.argmax(target, dim=1).to(self.device)
         pred_index = torch.argmax(out_final, dim=1)
         correct_batch=torch.sum(target_index==pred_index)
