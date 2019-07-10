@@ -62,7 +62,7 @@ class SpectrogramModel(nn.Module):
         self.max_pool4 = nn.MaxPool2d(int(self.kernel_size_pool*5/4), stride=int(self.stride_pool*5/4))
         self.lstm = nn.LSTM(int(640/160) * int(480/160), self.hidden_dim, self.num_layers, batch_first=True,
                            dropout=self.dropout_rate, bidirectional=self.bidirectional).to(self.device)
-        self.classification = nn.Linear(self.hidden_dim * self.num_directions, self.num_labels).to(self.device)
+        self.classification = nn.Linear(1918, self.num_labels).to(self.device)
 
         self.LSTM_Audio=LSTM_Audio(hidden_dim,num_layers,self.device,bidirectional=True)
         self.weight= nn.Parameter(torch.zeros(1))
