@@ -72,12 +72,12 @@ class ConvLSTMCell(nn.Module):
     def init_hidden(self, batch_size, hidden, shape):
 
         if self.Wci is None:
-            self.Wci = nn.Parameter(torch.zeros(1, hidden, shape[0],shape[1])).to(self.device)
-            self.Wcf = nn.Parameter(torch.zeros(1, hidden, shape[0],shape[1])).to(self.device)
-            self.Wco = nn.Parameter(torch.zeros(1, hidden, shape[0],shape[1])).to(self.device)
+            self.Wci = nn.Parameter(torch.zeros(1, hidden, shape)).to(self.device)
+            self.Wcf = nn.Parameter(torch.zeros(1, hidden, shape)).to(self.device)
+            self.Wco = nn.Parameter(torch.zeros(1, hidden, shape)).to(self.device)
 
-        return (nn.Parameter(torch.zeros(batch_size, hidden, shape[0],shape[1])).to(self.device),
-                nn.Parameter(torch.zeros(batch_size, hidden, shape[0],shape[1])).to(self.device))
+        return (nn.Parameter(torch.zeros(batch_size, hidden, shape)).to(self.device),
+                nn.Parameter(torch.zeros(batch_size, hidden, shape)).to(self.device))
 
 
 class ConvLSTM(nn.Module):
@@ -139,9 +139,8 @@ class ConvLSTM(nn.Module):
                 name = 'cell{}'.format(i)
                 if s == 0:
                     bsize, shapeF,shapeT = x.size()
-                    shape=(shapeF,shapeT)
                     (h, c) = getattr(self, name).init_hidden(batch_size=bsize, hidden=self.hidden_channels[i],
-                                                             shape=shape)
+                                                             shape=shapeT)
                     internal_state.append((h, c))
 
                 # do forward
