@@ -138,7 +138,7 @@ class ConvLSTM(nn.Module):
             for i in range(self.num_layers):
                 name = 'cell{}'.format(i)
                 if s == 0:
-                    bsize, _, shapeF,shapeT = x.size()
+                    bsize, shapeF,shapeT = x.size()
                     shape=(shapeF,shapeT)
                     (h, c) = getattr(self, name).init_hidden(batch_size=bsize, hidden=self.hidden_channels[i],
                                                              shape=shape)
