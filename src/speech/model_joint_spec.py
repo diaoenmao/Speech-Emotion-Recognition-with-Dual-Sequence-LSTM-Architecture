@@ -36,16 +36,16 @@ class ConvLSTMCell(nn.Module):
         self.padding_pool=int((kernel_size_pool-1)/2)
 
 
-        self.Wxi = nn.Conv1d(self.input_channels, self.hidden_channels, self.kernel_size, self.stride,self.padding,  bias=True)
+        self.Wxi = nn.Conv1d(self.input_channels, self.hidden_channels, self.kernel_size, self.stride,self.padding,  bias=False)
         self.Whi = nn.Conv1d(self.hidden_channels, self.hidden_channels, self.kernel_size, self.stride, self.padding, bias=False)
 
-        self.Wxf = nn.Conv1d(self.input_channels, self.hidden_channels, self.kernel_size, self.stride,self.padding,  bias=True)
+        self.Wxf = nn.Conv1d(self.input_channels, self.hidden_channels, self.kernel_size, self.stride,self.padding,  bias=False)
         self.Whf = nn.Conv1d(self.hidden_channels, self.hidden_channels, self.kernel_size, self.stride,self.padding, bias=False)
 
-        self.Wxc = nn.Conv1d(self.input_channels, self.hidden_channels, self.kernel_size, self.stride, self.padding, bias=True)
+        self.Wxc = nn.Conv1d(self.input_channels, self.hidden_channels, self.kernel_size, self.stride, self.padding, bias=False)
         self.Whc = nn.Conv1d(self.hidden_channels, self.hidden_channels, self.kernel_size, self.stride, self.padding, bias=False)
 
-        self.Wxo = nn.Conv1d(self.input_channels, self.hidden_channels, self.kernel_size, self.stride,self.padding,  bias=True)
+        self.Wxo = nn.Conv1d(self.input_channels, self.hidden_channels, self.kernel_size, self.stride,self.padding,  bias=False)
         self.Who = nn.Conv1d(self.hidden_channels, self.hidden_channels, self.kernel_size, self.stride, self.padding, bias=False)
 
         self.max_pool = nn.MaxPool1d(self.kernel_size_pool, stride=self.kernel_stride_pool, padding=self.padding_pool)
@@ -106,7 +106,6 @@ class ConvLSTM(nn.Module):
                 cell = ConvLSTMCell(self.input_channels[i], self.hidden_channels[i], self.kernel_size[i],self.kernel_size_pool[i],self.kernel_stride_pool[i],self.device)
                 setattr(self, name, cell)
                 self._all_layers.append(cell)
-                strideF*=self.kernel_stride_pool[i]
                 strideT*=self.kernel_stride_pool[i]
             else:
                 name="lstm"
@@ -116,7 +115,7 @@ class ConvLSTM(nn.Module):
 
 
 
-        self.linear_dim=int(self.hidden_channels[-1]*(48/strideF)*(64/strideT))
+        self.linear_dim=int(self.hidden_channels[-1]*)
         self.classification_convlstm = nn.Linear(self.linear_dim, self.num_labels)
         self.classification_lstm=nn.Linear(self.hidden_dim_lstm*2,self.num_labels)
 

@@ -55,20 +55,34 @@ class IEMOCAP(Dataset):
         data = pickle.load(pickle_in)
         self.seq_length = data["seq_length"]
         self.input_lstm= data["input_lstm"]
-        self.input = data["input"]
         self.target = data["target"]
         self.segment_labels=data["segment_labels"]
         self.seq_length_time=data["seq_length_time"]
+        temp = data["input"]
+        temp1=[]
+        for j in temp:
+            temp1+=[torch.from_numpy(i).permute(1,0).float() for i in j]
+        temp=pad_sequence(temp1,batch_first=True)
+        temp1=[]
+        low=0
+        high=0
+        for i in self.segment_labels:
+            high+=len(i)
+            temp1.append(temp[low:high,:,:])
+            low=high
+        temp1=pad_sequence(temp1,batch_first=True)
+        self.input = temp1.permute(0,1,3,2).float()
+
 
     def __len__(self):
         return len(self.input)
 
     def __getitem__(self, index):
         #temp=[torch.unsqueeze(torch.from_numpy(i),dim=3).permute(2,0,1,3) for i in self.input[index]]
-        temp=[torch.from_numpy(i).permute(1,0).float() for i in self.input[index]]
+        #temp=[torch.from_numpy(i).permute(1,0).float() for i in self.input[index]]
         sample = {'input_lstm': torch.from_numpy(self.input_lstm[index]).float(),
                   'seq_length': self.seq_length[index],
-                  'input': temp,
+                  'input': self.input[index,:,:,:],
                   'target': self.target[index],
                   'segment_labels': self.segment_labels[index],
                   "seq_length_time": self.seq_length_time[index]}
@@ -81,33 +95,19 @@ def my_collate(batch):
     segment_labels=[]
     seq_length_time=[]
     target=[]
+    input=[]
     for i in batch:
         input_lstm.append(i['input_lstm'])
         seq_length.append(i['seq_length'])
         segment_labels.append(i['segment_labels'])
         seq_length_time.append(i['seq_length_time'])
         target.append(i['target'])
+        input.append(i['input'])
     seq_length=torch.Tensor(seq_length)
     target=torch.from_numpy(np.array(target))
     input_lstm = pad_sequence(sequences=input_lstm,batch_first=True)
-#    input_lstm = [i['input_lstm'] for i in batch]
-#    seq_length = torch.tensor([i['seq_length'] for i in batch])
-#    segment_labels=[i['segment_labels'] for i in batch]
-#    seq_length_time=[i['seq_length_time'] for i in batch]
-#   target = torch.from_numpy(np.array([i['target'] for i in batch]))
-    temp=[]
-    for i in batch:
-        temp+=i['input']
-    temp=pad_sequence(temp,batch_first=True)
-    temp1=[]
-    low=0
-    high=0
-    for i in segment_labels:
-        high+=len(i)
-        temp1.append(temp[low:high,:,:])
-        low=high
-    temp1=pad_sequence(temp1,batch_first=True)
-    input = temp1.permute(0,1,3,2).float()
+    input=torch.Tensor(input).float()
+    
     #input shape B*max(len(segment))*Freq*max(T)
     return input_lstm,input,target,seq_length, segment_labels
 '''
