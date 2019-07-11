@@ -109,8 +109,9 @@ def my_collate(batch):
     temp1=pad_sequence(temp1,batch_first=True)
     input = temp1.permute(0,1,3,2).float()
     #input shape B*max(len(segment))*Freq*max(T)
-    return input_lstm,input,target,seq_length, segment_labels, seq_length_time
-
+    return input_lstm,input,target,seq_length, segment_labels
+'''
 if __name__=="__main__":
     combine("linear")
     combine("mel")
+'''
