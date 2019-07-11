@@ -25,6 +25,7 @@ def create_data(data):
         utterances_new_mel.append(segments_new_mel)
         segments_new = []
         segments_new_mel = []
+        print(i)
     return utterances_new, utterances_new_mel, data['target'], data['segment_labels']
 
 def save(linear_dataset, mel_dataset):
