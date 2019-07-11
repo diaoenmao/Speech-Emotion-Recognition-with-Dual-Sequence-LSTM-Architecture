@@ -132,7 +132,7 @@ class ConvLSTM(nn.Module):
         ##data process here
         internal_state = []
         outputs = []
-        step=input.shape[1].item()
+        step=input.shape[1]
         for s in range(step):
             x=input[:,:,:,:,s]
             for i in range(self.num_layers):
