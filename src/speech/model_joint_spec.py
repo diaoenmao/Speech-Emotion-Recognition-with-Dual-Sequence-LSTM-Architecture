@@ -151,9 +151,7 @@ class ConvLSTM(nn.Module):
                 internal_state[i] = (new_h, new_c)
             outputs.append(x)
         out=[torch.unsqueeze(o, dim=3) for o in outputs]
-        pdb.set_trace()
         out=torch.flatten(torch.cat(out,dim=3),start_dim=1,end_dim=2)
-        pdb.set_trace()
         input_lstm=input_lstm.to(self.device)
         seq_length=seq_length.to(self.device)
         out_lstm=getattr(self,"lstm")(input_lstm)
@@ -165,16 +163,17 @@ class ConvLSTM(nn.Module):
             out=torch.squeeze(torch.bmm(out,alpha),dim=2)
         else:
             temp=[torch.unsqueeze(torch.mean(out[k,:,:len(s)],dim=1),dim=0)for k,s in enumerate(segment_labels)]
-            pdb.set_trace()
             out=torch.cat(temp,dim=0)
-            pdb.set_trace()
             temp=[torch.unsqueeze(torch.mean(out_lstm[k,:,:int(s)],dim=1),dim=0) for k,s in enumerate(seq_length)]
             out_lstm=torch.cat(temp,dim=0)
         p=torch.exp(10*self.weight)/(1+torch.exp(10*self.weight))
         #out=torch.cat([p*out,(1-p)*out_lstm],dim=1)
         out=self.classification_convlstm(out)
         out_lstm=self.classification_lstm(out_lstm)
-        out_final=p*out_lstm+(1-p)*out
+        try:
+            out_final=p*out_lstm+(1-p)*out
+        except:
+            pdb.set_trace()
         target_index = torch.argmax(target, dim=1).to(self.device)
         pred_index = torch.argmax(out_final, dim=1)
         correct_batch=torch.sum(target_index==pred_index)
