@@ -23,10 +23,10 @@ class SegmentCountSampler(Sampler):
                 large.append(i)
             else:
                 extra.append(i)
-        small=random.shuffle(small)
-        medium=random.shuffle(medium)
-        large=random.shuffle(large)
-        extra=random.shuffle(extra)
+        random.shuffle(small)
+        random.shuffle(medium)
+        random.shuffle(large)
+        random.shuffle(extra)
         print("shuffle")
 
         return small + medium + large + extra
