@@ -1,7 +1,7 @@
 import torch
 from torch import optim
-from model_joint import ConvLSTM
-from process_joint import IEMOCAP,my_collate
+from model_joint_spec import ConvLSTM
+from process_joint_spec import IEMOCAP,my_collate
 from torch.utils.data import DataLoader
 from torch.optim.lr_scheduler import ReduceLROnPlateau, CosineAnnealingLR
 import pdb
