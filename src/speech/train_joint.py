@@ -66,7 +66,7 @@ weights = [hap_count/len(labels), neu_count/len(labels), ang_count/len(labels), 
 print("=================")
 print("training data size: ", len(training_data))
 with np.printoptions(precision=4, suppress=True):
-    print("weights: ", np.sum(labels,dim=1)/len(labels))
+    print("weights: ", np.sum(labels,axis=1)/len(labels))
 print("===================")
 test_acc=[]
 train_acc=[]
