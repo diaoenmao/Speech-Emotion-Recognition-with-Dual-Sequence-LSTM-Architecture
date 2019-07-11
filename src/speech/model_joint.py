@@ -175,7 +175,7 @@ class ConvLSTM(nn.Module):
         target_index = torch.argmax(target, dim=1).to(self.device)
         pred_index = torch.argmax(out_final, dim=1)
         correct_batch=torch.sum(target_index==pred_index)
-        hinge= nn.MultiLabelMarginLoss()
+        hinge= nn.MultilMarginLoss()
         losses_batch=hinge(out_final,torch.max(target,1)[1])
         losses_batch_ce=F.cross_entropy(out_final,torch.max(target,1)[1])
 
