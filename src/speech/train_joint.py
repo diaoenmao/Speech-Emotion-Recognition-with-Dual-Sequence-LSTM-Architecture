@@ -18,7 +18,7 @@ kernel_size=[(3,3),(3,3),(3,3)]
 kernel_size_pool=[(3,3),(3,3),(3,2)]
 kernel_stride_pool=[(2,2),(2,2),(3,2)]
 step=40
-batch_size=60
+batch_size=80
 hidden_dim_lstm=200
 num_layers_lstm=2
 device_ids=[0,1,2,3]
@@ -64,6 +64,7 @@ weights = [hap_count/len(labels), neu_count/len(labels), ang_count/len(labels), 
 
 print("=================")
 print(len(training_data))
+print(weights)
 print("===================")
 test_acc=[]
 train_acc=[]
@@ -130,10 +131,10 @@ for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is t
     train_acc.append(accuracy)
     test_loss.append(losses_test)
     train_loss.append(losses)
-    print("Epoch: {:05.4f}----Training Loss: {:05.4f}----Testing Loss: {:05.4f}----Training Acc: {:05.4f}----Testing Acc: {:05.4f}----Weighted Acc: {:05.4f}".format(epoch+1,losses,losses_test, accuracy, accuracy_test, weighted_accuracy_test)+"\n")
+    print("Epoch: {}----Training Loss: {:05.4f}----Testing Loss: {:05.4f}----Training Acc: {:05.4f}----Testing Acc: {:05.4f}----Weighted Acc: {:05.4f}".format(epoch+1,losses,losses_test, accuracy, accuracy_test, weighted_accuracy_test)+"\n")
     with open("/scratch/speech/models/classification/joint_stats.txt","a+") as f:
         if epoch==0: f.write("\n"+"============================== New Model ==================================="+"\n")
-        f.write("\n"+"Epoch: {:05.4f}----Training Loss: {:05.4f}----Testing Loss: {:05.4f}----Training Acc: {:05.4f}----Testing Acc: {:05.4f}----Weighted Acc: {:05.4f}".format(epoch+1,losses,losses_test, accuracy, accuracy_test, weighted_accuracy_test)+"\n")
+        f.write("\n"+"Epoch: {}----Training Loss: {:05.4f}----Testing Loss: {:05.4f}----Training Acc: {:05.4f}----Testing Acc: {:05.4f}----Weighted Acc: {:05.4f}".format(epoch+1,losses,losses_test, accuracy, accuracy_test, weighted_accuracy_test)+"\n")
         f.write("confusion_matrix:"+"\n")
         np.savetxt(f,cm_normalized,delimiter=' ',fmt="%5.4f")
 
