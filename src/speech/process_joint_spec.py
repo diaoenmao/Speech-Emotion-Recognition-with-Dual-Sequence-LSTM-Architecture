@@ -50,15 +50,18 @@ class IEMOCAP(Dataset):
     def __init__(self, name,train=True):
         if train:
             pickle_in = open('/scratch/speech/hand_raw_dataset/EMO39_'+name+'_spectrogram_train.pkl', 'rb')
+            pickle_temp=open('/scratch/speech/hand_raw_dataset/EMO39_'+name+'_spectrogram_test.pkl','rb')
         else:
             pickle_in=open('/scratch/speech/hand_raw_dataset/EMO39_'+name+'_spectrogram_test.pkl', 'rb')
+            pickle_temp=open('/scratch/speech/hand_raw_dataset/EMO39_'+name+'_spectrogram_train.pkl','rb')
         data = pickle.load(pickle_in)
+        data_temp=pickle.load(pickle_temp)
         self.seq_length = data["seq_length"]
         self.input_lstm= data["input_lstm"]
         self.target = data["target"]
         self.segment_labels=data["segment_labels"]
         self.seq_length_time=data["seq_length_time"]
-        temp = data["input"]
+        temp = data["input"]+data_temp['input']
         temp1=[]
         for j in temp:
             temp1+=[torch.from_numpy(i).permute(1,0).float() for i in j]
