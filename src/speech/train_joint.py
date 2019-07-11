@@ -63,10 +63,11 @@ for label in labels:
         sad_count += 1
 weights = [hap_count/len(labels), neu_count/len(labels), ang_count/len(labels), sad_count/len(labels)]
 '''
+weights=np.sum(labels,axis=0)/len(labels)
 print("=================")
 print("training data size: ", len(training_data))
 with np.printoptions(precision=4, suppress=True):
-    print("weights: ", np.sum(labels,axis=0)/len(labels))
+    print("weights: ", weights)
 print("===================")
 test_acc=[]
 train_acc=[]
