@@ -30,7 +30,7 @@ def combine(name):
     else:
         raise ValueError("Datasets inconsistent")
     seq_length_time=[]
-    for i in dcit2[input]:
+    for i in dict2[input]:
         seq_length_time.append([j.shape[1] for j in i])
 
 
