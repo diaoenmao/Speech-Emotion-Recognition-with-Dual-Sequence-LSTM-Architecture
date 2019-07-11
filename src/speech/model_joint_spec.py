@@ -148,8 +148,8 @@ class ConvLSTM(nn.Module):
                 x, new_h, new_c = getattr(self, name)(x, h, c)
                 internal_state[i] = (new_h, new_c)
             outputs.append(x)
-        out=[torch.unsqueeze(o, dim=4) for o in outputs]
-        out=torch.flatten(torch.cat(out,dim=4),start_dim=1,end_dim=3)
+        out=[torch.unsqueeze(o, dim=3) for o in outputs]
+        out=torch.flatten(torch.cat(out,dim=3),start_dim=1,end_dim=2)
 
         input_lstm=input_lstm.to(self.device)
         seq_length=seq_length.to(self.device)

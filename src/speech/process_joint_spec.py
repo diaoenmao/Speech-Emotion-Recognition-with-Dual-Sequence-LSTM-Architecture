@@ -7,10 +7,10 @@ import pdb
 from sklearn.model_selection import train_test_split
 
 def split_data(data):
-    input_train, input_test, target_train, target_test, input_lstm_train, input_lstm_test, seq_length_train, seq_length_test, segement_labels_train, segement_labels_test= train_test_split(
-        data['input'], data['target'], data["input_lstm"],data["seq_length"],data["segment_labels"], test_size=0.2, random_state=42)
-    train = {'input': input_train, 'target': target_train,"input_lstm": input_lstm_train,"seq_length": seq_length_train,"segment_labels": segement_labels_train}
-    test = {'input': input_test, 'target': target_test,"input_lstm": input_lstm_test,"seq_length": seq_length_test, "segment_labels": segement_labels_test}
+    input_train, input_test, target_train, target_test, input_lstm_train, input_lstm_test, seq_length_train, seq_length_test, segement_labels_train, segement_labels_test, seq_length_time_train, seq_length_time_test= train_test_split(
+        data['input'], data['target'], data["input_lstm"],data["seq_length"],data["segment_labels"], data["seq_length_time"],test_size=0.2, random_state=42)
+    train = {'input': input_train, 'target': target_train,"input_lstm": input_lstm_train,"seq_length": seq_length_train,"segment_labels": segement_labels_train, "seq_length_time": seq_length_time_train}
+    test = {'input': input_test, 'target': target_test,"input_lstm": input_lstm_test,"seq_length": seq_length_test, "segment_labels": segement_labels_test, "seq_length_time": seq_length_time_test}
     return train, test
 def combine(name):
     with open('/scratch/speech/datasets/IEMOCAP_39_FOUR_EMO_full.pkl', 'rb') as out1:
@@ -29,8 +29,12 @@ def combine(name):
         print("Datasets consistent")
     else:
         raise ValueError("Datasets inconsistent")
+    seq_length_time=[]
+    for i in dcit2[input]:
+        seq_length_time.append([j.shape[1] for j in i])
 
-    dict3={"input_lstm":dict1["input"],"input":dict2["input"],"seq_length": dict1["seq_length"],"target": dict2["target"], "segment_labels": dict2["segment_labels"]}
+
+    dict3={"input_lstm":dict1["input"],"input":dict2["input"],"seq_length": dict1["seq_length"],"target": dict2["target"], "segment_labels": dict2["segment_labels"], "seq_length_time":seq_length_time}
     train1,test1=split_data(dict3)
     with open('/scratch/speech/hand_raw_dataset/EMO39_'+name+'_spectrogram_full.pkl', 'wb') as full:
         pickle.dump(dict3,full)
@@ -54,6 +58,7 @@ class IEMOCAP(Dataset):
         self.input = data["input"]
         self.target = data["target"]
         self.segment_labels=data["segment_labels"]
+        self.seq_length_time=data["seq_length_time"]
 
     def __len__(self):
         return len(self.input)
@@ -65,14 +70,31 @@ class IEMOCAP(Dataset):
                   'seq_length': self.seq_length[index],
                   'input': temp,
                   'target': self.target[index],
-                  'segment_labels': self.segment_labels[index]}
+                  'segment_labels': self.segment_labels[index],
+                  "seq_length_time": self.seq_length_time[index]}
         return sample
 
 
 def my_collate(batch):
-    input_lstm = [i['input_lstm'] for i in batch]
-    seq_length = torch.tensor([i['seq_length'] for i in batch])
-    segment_labels=[i['segment_labels'] for i in batch]
+    input_lstm=[]
+    seq_length=[]
+    segment_labels=[]
+    seq_length_time=[]
+    target=[]
+    for i in batch:
+        input_lstm.append(i['input_lstm'])
+        seq_length.append(i['seq_length'])
+        segment_labels.append(i['segment_labels'])
+        seq_length_time.append(i['seq_length_time'])
+        target.append(i['target'])
+    seq_length=torch.Tensor(seq_length)
+    target=torch.from_numpy(np.array(target))
+    input_lstm = pad_sequence(sequences=input_lstm,batch_first=True)
+#    input_lstm = [i['input_lstm'] for i in batch]
+#    seq_length = torch.tensor([i['seq_length'] for i in batch])
+#    segment_labels=[i['segment_labels'] for i in batch]
+#    seq_length_time=[i['seq_length_time'] for i in batch]
+#   target = torch.from_numpy(np.array([i['target'] for i in batch]))
     temp=[]
     for i in batch:
         temp+=i['input']
@@ -87,10 +109,8 @@ def my_collate(batch):
     temp1=pad_sequence(temp1,batch_first=True)
     input = temp1.permute(0,1,3,2).float()
     #input shape B*max(len(segment))*Freq*max(T)
-    target = torch.from_numpy(np.array([i['target'] for i in batch]))
-    return input_lstm,input,target,seq_length, segment_labels
-'''
+    return input_lstm,input,target,seq_length, segment_labels, seq_length_time
+
 if __name__=="__main__":
     combine("linear")
     combine("mel")
-'''
