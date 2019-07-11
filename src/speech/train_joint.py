@@ -63,8 +63,9 @@ for label in labels:
 weights = [hap_count/len(labels), neu_count/len(labels), ang_count/len(labels), sad_count/len(labels)]
 
 print("=================")
-print(len(training_data))
-print(weights)
+print("training data size: ", len(training_data))
+with np.printoptions(precision=4, suppress=True):
+    print("weights: ", weights)
 print("===================")
 test_acc=[]
 train_acc=[]
