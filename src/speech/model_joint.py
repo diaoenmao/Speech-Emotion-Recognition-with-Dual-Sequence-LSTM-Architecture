@@ -126,7 +126,7 @@ class ConvLSTM(nn.Module):
         self.attention=nn.Parameter(torch.zeros(self.linear_dim))
         self.attention_flag=attention_flag
 
-        self.weight= nn.Parameter(torch.zeros(1))
+        self.weight= nn.Parameter(1)
 
 
 
@@ -175,11 +175,14 @@ class ConvLSTM(nn.Module):
         target_index = torch.argmax(target, dim=1).to(self.device)
         pred_index = torch.argmax(out_final, dim=1)
         correct_batch=torch.sum(target_index==pred_index)
-        losses_batch=F.cross_entropy(out_final,torch.max(target,1)[1])
+        hinge= nn.MultiLabelMarginLoss()
+        losses_batch=hinge(out_final,torch.max(target,1)[1])
+        losses_batch_ce=F.cross_entropy(out_final,torch.max(target,1)[1])
 
         correct_batch=torch.unsqueeze(correct_batch,dim=0)
         losses_batch=torch.unsqueeze(losses_batch, dim=0)
+        losses_batch_ce=torch.unsqueeze(losses_batch_ce, dim=0)
 
         if train:
             return  losses_batch,correct_batch
-        return losses_batch, correct_batch, (target_index, pred_index)
+        return losses_batch, losses_batch_ce,correct_batch, (target_index, pred_index)

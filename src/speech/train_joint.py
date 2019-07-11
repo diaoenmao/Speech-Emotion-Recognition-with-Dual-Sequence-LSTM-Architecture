@@ -94,6 +94,7 @@ for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is t
 
     losses_test = 0
     correct_test = 0
+    losses_test_ce=0
     torch.save(model.module.state_dict(), "/scratch/speech/models/classification/joint_checkpoint_epoch_{}.pt".format(epoch+1))
     model.eval()
     output = []
@@ -103,11 +104,12 @@ for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is t
         for j,(input_lstm,input, target,seq_length) in enumerate(test_loader):
             if (j+1)%10==0: print("=================================Test Batch"+ str(j+1)+ "===================================================")
             input_lstm = pad_sequence(sequences=input_lstm,batch_first=True)
-            losses_batch,correct_batch, (target_index, pred_index)= model(input_lstm,input, target,seq_length, train=False)
+            losses_batch,losses_batch_ce,correct_batch, (target_index, pred_index)= model(input_lstm,input, target,seq_length, train=False)
             output.append((target_index, pred_index))
             loss = torch.mean(losses_batch,dim=0)
             correct_batch=torch.sum(correct_batch,dim=0)
             losses_test += loss.item() * batch_size
+            losses_test_ce+=torch.mean(losses_batch_ce,dim=0).item()*batch_size
             correct_test += correct_batch.item()
 
     for target_index, pred_index in output:
@@ -131,10 +133,10 @@ for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is t
     train_acc.append(accuracy)
     test_loss.append(losses_test)
     train_loss.append(losses)
-    print("Epoch: {}----Training Loss: {:05.4f}----Testing Loss: {:05.4f}----Training Acc: {:05.4f}----Testing Acc: {:05.4f}----Weighted Acc: {:05.4f}".format(epoch+1,losses,losses_test, accuracy, accuracy_test, weighted_accuracy_test)+"\n")
+    print("Epoch: {}----Training Loss: {:05.4f}----Testing Loss: {:05.4f}----Training Acc: {:05.4f}----Testing Acc: {:05.4f}----Weighted Acc: {:05.4f}-------CE Loss: {:05.4f}".format(epoch+1,losses,losses_test, accuracy, accuracy_test, weighted_accuracy_test, losses_test_ce)+"\n")
     with open("/scratch/speech/models/classification/joint_stats.txt","a+") as f:
         if epoch==0: f.write("\n"+"============================== New Model ==================================="+"\n")
-        f.write("\n"+"Epoch: {}----Training Loss: {:05.4f}----Testing Loss: {:05.4f}----Training Acc: {:05.4f}----Testing Acc: {:05.4f}----Weighted Acc: {:05.4f}".format(epoch+1,losses,losses_test, accuracy, accuracy_test, weighted_accuracy_test)+"\n")
+        f.write("\n"+"Epoch: {}----Training Loss: {:05.4f}----Testing Loss: {:05.4f}----Training Acc: {:05.4f}----Testing Acc: {:05.4f}----Weighted Acc: {:05.4f}-------CE Loss: {:05.4f}".format(epoch+1,losses,losses_test, accuracy, accuracy_test, weighted_accuracy_test,losses_test_ce)+"\n")
         f.write("confusion_matrix:"+"\n")
         np.savetxt(f,cm_normalized,delimiter=' ',fmt="%5.4f")
 
