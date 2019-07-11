@@ -123,13 +123,16 @@ class ConvLSTM(nn.Module):
         self.attention=nn.Parameter(torch.zeros(self.linear_dim))
         self.attention_flag=attention_flag
 
-        self.weight= nn.Parameter(torch.tensor(-0.1).float(),requires_grad=True)
+        self.weight= nn.Parameter(torch.tensor(0).float(),requires_grad=True)
 
 
 
-    def forward(self, input_lstm,input,target,seq_length, train=True):
+    def forward(self, input_lstm,input,target,seq_length, segment_labels,train=True):
         # input should be a list of inputs, like a time stamp, maybe 1280 for 100 times.
         ##data process here
+        
+        batch_size=input.shape[0]
+        segment_labels=segment_labels[int(input.device.index*batch_size/self.num_devices):int((input.device.index+1)*batch_size/self.num_devices)]
         internal_state = []
         outputs = []
         step=input.shape[1]
@@ -161,7 +164,8 @@ class ConvLSTM(nn.Module):
             alpha=torch.unsqueeze(F.softmax(torch.matmul(self.attention,out),dim=1),dim=2)
             out=torch.squeeze(torch.bmm(out,alpha),dim=2)
         else:
-            out=torch.mean(out,dim=2)
+            temp=[torch.unsqueeze(torch.mean(out[k,:,:len(s)],dim=1),dim=0)for k,s in enumerate(segment_labels)]
+            out=torch.cat(temp,dim=0)
             temp=[torch.unsqueeze(torch.mean(out_lstm[k,:,:s],dim=1),dim=0) for k,s in enumerate(seq_length)]
             out_lstm=torch.cat(temp,dim=0)
         p=torch.exp(10*self.weight)/(1+torch.exp(10*self.weight))
