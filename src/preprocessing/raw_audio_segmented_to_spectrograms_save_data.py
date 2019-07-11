@@ -31,9 +31,9 @@ def create_data(data):
 
 def save(linear_dataset, mel_dataset):
     with open(save_path + 'linear_spectrogram_segmented' + '_full.pkl', 'wb') as f:
-        pickle.dump(dataset, f)
+        pickle.dump(linear_dataset, f)
     with open(save_path + 'mel_spectrogram_segmented' + '_full.pkl', 'wb') as f:
-        pickle.dump(dataset, f)
+        pickle.dump(mel_dataset, f)
 
 if __name__ == '__main__':
     utterances_new, utterances_new_mel, target, segment_labels = create_data(data)
