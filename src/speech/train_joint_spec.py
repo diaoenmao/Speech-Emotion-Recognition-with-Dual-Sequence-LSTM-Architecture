@@ -10,6 +10,7 @@ import pickle
 import numpy as np
 from torch.nn.utils.rnn import pad_sequence, pack_padded_sequence
 from sklearn.metrics import confusion_matrix
+from sampler import SegmentCountSampler
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 input_channels=129
@@ -40,11 +41,13 @@ scheduler2 =CosineAnnealingLR(optimizer2, T_max=100, eta_min=0.0001)
 
 # Load the training data
 training_data = IEMOCAP(name=name,train=True)
-train_loader = DataLoader(dataset=training_data, batch_size=batch_size, shuffle=True, collate_fn=my_collate, num_workers=0, drop_last=True)
 testing_data = IEMOCAP(name=name,train=False)
-test_loader = DataLoader(dataset=testing_data, batch_size=batch_size, shuffle=True, collate_fn=my_collate, num_workers=0,drop_last=True)
+sampler_train=SegmentCountSampler(training_data)
+sampler_test=SegmentCountSampler(testing_data)
+train_loader = DataLoader(dataset=training_data, batch_size=batch_size, shuffle=True, collate_fn=my_collate, num_workers=0, drop_last=True, sampler=sampler_train)
+test_loader = DataLoader(dataset=testing_data, batch_size=batch_size, shuffle=True, collate_fn=my_collate, num_workers=0,drop_last=True, sampler=sampler_test)
 
-out = open('/scratch/speech/hand_raw_dataset/IEMOCAP_39_FOUR_EMO_spectrogram_segmented_dpi10_step40_overlap_test.pkl', 'rb')
+out = open('/scratch/speech/hand_raw_dataset/EMO39_'+name+'_spectrogram_full.pkl', 'rb')
 data = pickle.load(out)
 labels = np.array(data['target'])
 weights=np.sum(labels,axis=0)/len(labels)
