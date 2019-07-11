@@ -66,7 +66,6 @@ for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is t
     for j, (input_lstm,input, target,seq_length,segment_labels) in enumerate(train_loader):
         if (j+1)%20==0: print("=================================Train Batch"+ str(j+1)+ str(weight)+"===================================================")
         model.zero_grad()
-        input_lstm = pad_sequence(sequences=input_lstm,batch_first=True)
         print(input.shape)
         losses_batch,correct_batch= model(input_lstm,input, target,seq_length)
         loss = torch.mean(losses_batch,dim=0)
@@ -91,7 +90,6 @@ for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is t
     with torch.no_grad():
         for j,(input_lstm,input, target,seq_length,segment_labels) in enumerate(test_loader):
             if (j+1)%10==0: print("=================================Test Batch"+ str(j+1)+ "===================================================")
-            input_lstm = pad_sequence(sequences=input_lstm,batch_first=True)
             losses_batch,correct_batch, (target_index, pred_index)= model(input_lstm,input, target,seq_length, train=False)
             output.append((target_index, pred_index))
             loss = torch.mean(losses_batch,dim=0)
