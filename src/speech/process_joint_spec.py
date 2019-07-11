@@ -64,7 +64,7 @@ class IEMOCAP(Dataset):
         sample = {'input_lstm': torch.from_numpy(self.input_lstm[index]).float(),
                   'seq_length': self.seq_length[index],
                   'input': temp,
-                  'target': self.target[index]
+                  'target': self.target[index],
                   'segment_labels': self.segment_labels[index]}
         return sample
 
