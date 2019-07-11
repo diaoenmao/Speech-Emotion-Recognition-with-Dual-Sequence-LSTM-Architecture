@@ -25,7 +25,7 @@ kernel_stride_pool=[2,2]
 batch_size=100
 hidden_dim_lstm=200
 num_layers_lstm=2
-device_ids=[0,1,2,3]
+device_ids=[0]
 num_devices=len(device_ids)
 model = ConvLSTM(input_channels,hidden_channels,kernel_size,kernel_size_pool,kernel_stride_pool,device,num_devices,hidden_dim_lstm,num_layers_lstm)
 print("============================ Number of parameters ====================================")
@@ -94,7 +94,7 @@ for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is t
     y_true = []
     y_pred = []
     with torch.no_grad():
-        for j,(input_lstm,input, target,seq_length,segment_labels,segment_labels) in enumerate(test_loader):
+        for j,(input_lstm,input, target,seq_length,segment_labels) in enumerate(test_loader):
             if (j+1)%10==0: print("=================================Test Batch"+ str(j+1)+ "===================================================")
             losses_batch,correct_batch, (target_index, pred_index)= model(input_lstm,input, target,seq_length,segment_labels, train=False)
             output.append((target_index, pred_index))
