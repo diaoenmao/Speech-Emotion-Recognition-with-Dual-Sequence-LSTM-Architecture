@@ -29,7 +29,7 @@ class SegmentCountSampler(Sampler):
         random.shuffle(extra)
         print("shuffle")
 
-        return small + medium + large + extra
+        return iter(small + medium + large + extra)
 
     def __len__(self):
         return len(self.data_source)
