@@ -31,6 +31,7 @@ class SegmentCountSampler(Sampler):
     def __len__(self):
         return len(self.data_source)
 if __name__=="__main__":
+    name="mel"
     training_data = IEMOCAP(name=name,train=True)
     sampler_train=SegmentCountSampler(training_data)
     train_loader = DataLoader(dataset=training_data, batch_size=60, shuffle=True, collate_fn=my_collate, num_workers=0, drop_last=True, sampler=sampler_train)
