@@ -35,7 +35,7 @@ optimizer = optim.Adam(model.parameters(),lr=0.0001)
 optimizer2=optim.SGD(model.parameters(), lr=0.1)
 scheduler = ReduceLROnPlateau(optimizer=optimizer,factor=0.5, patience=2, threshold=1e-3)
 #scheduler2=ReduceLROnPlateau(optimizer=optimizer2, factor=0.5, patience=2, threshold=1e-3)
-#scheduler2 =CosineAnnealingLR(optimizer2, T_max=300, eta_min=0.0001)
+scheduler2 =CosineAnnealingLR(optimizer2, T_max=100, eta_min=0.0001)
 
 
 # Load the training data
@@ -47,22 +47,6 @@ test_loader = DataLoader(dataset=testing_data, batch_size=batch_size, shuffle=Tr
 out = open('/scratch/speech/hand_raw_dataset/IEMOCAP_39_FOUR_EMO_spectrogram_segmented_dpi10_step40_overlap_test.pkl', 'rb')
 data = pickle.load(out)
 labels = np.array(data['target'])
-'''
-hap_count = 0
-neu_count = 0
-ang_count = 0
-sad_count = 0
-for label in labels:
-    if label == [1,0,0,0]:
-        hap_count += 1
-    elif label == [0,1,0,0]:
-        neu_count += 1
-    elif label == [0,0,1,0]:
-        ang_count += 1
-    else:
-        sad_count += 1
-weights = [hap_count/len(labels), neu_count/len(labels), ang_count/len(labels), sad_count/len(labels)]
-'''
 weights=np.sum(labels,axis=0)/len(labels)
 print("=================")
 print("training data size: ", len(training_data))
@@ -103,6 +87,7 @@ for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is t
     output = []
     y_true = []
     y_pred = []
+    scheduler2.step()
     with torch.no_grad():
         for j,(input_lstm,input, target,seq_length) in enumerate(test_loader):
             if (j+1)%10==0: print("=================================Test Batch"+ str(j+1)+ "===================================================")

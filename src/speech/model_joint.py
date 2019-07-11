@@ -126,7 +126,7 @@ class ConvLSTM(nn.Module):
         self.attention=nn.Parameter(torch.zeros(self.linear_dim))
         self.attention_flag=attention_flag
 
-        self.weight= nn.Parameter(torch.tensor(-0.01).float())
+        self.weight= nn.Parameter(torch.tensor(-0.1).float(),requies_grad=False)
 
 
 
@@ -167,7 +167,7 @@ class ConvLSTM(nn.Module):
             out=torch.mean(out,dim=2)
             temp=[torch.unsqueeze(torch.mean(out_lstm[k,:,:s],dim=1),dim=0) for k,s in enumerate(seq_length)]
             out_lstm=torch.cat(temp,dim=0)
-        p=torch.exp(100*self.weight)/(1+torch.exp(100*self.weight))
+        p=torch.exp(10*self.weight)/(1+torch.exp(10*self.weight))
         #out=torch.cat([p*out,(1-p)*out_lstm],dim=1)
         out=self.classification_convlstm(out)
         out_lstm=self.classification_lstm(out_lstm)
