@@ -13,7 +13,7 @@ from sklearn.metrics import confusion_matrix
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 input_channels=3
-hidden_channels=[64,128,32]
+hidden_channels=[128,64,32]
 kernel_size=[(3,3),(3,3),(3,3)]
 kernel_size_pool=[(3,3),(3,3),(3,2)]
 kernel_stride_pool=[(2,2),(2,2),(3,2)]
@@ -31,7 +31,7 @@ model=DataParallel(model,device_ids=device_ids)
 model.train()
 
 # Use Adam as the optimizer with learning rate 0.01 to make it fast for testing purposes
-optimizer = optim.Adam(model.parameters(),lr=0.0001)
+optimizer = optim.Adam(model.parameters(),lr=0.001)
 optimizer2=optim.SGD(model.parameters(), lr=0.1)
 scheduler = ReduceLROnPlateau(optimizer=optimizer,factor=0.5, patience=2, threshold=1e-3)
 #scheduler2=ReduceLROnPlateau(optimizer=optimizer2, factor=0.5, patience=2, threshold=1e-3)
@@ -74,7 +74,7 @@ for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is t
         loss.backward()
         weight=model.module.state_dict()["weight"]
         weight=torch.exp(10*weight)/(1+torch.exp(10*weight)).item()
-        optimizer2.step()
+        optimizer.step()
         correct += correct_batch.item()
     accuracy=correct*1.0/((j+1)*batch_size)
     losses=losses / ((j+1)*batch_size)
@@ -87,17 +87,15 @@ for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is t
     output = []
     y_true = []
     y_pred = []
-    scheduler2.step()
     with torch.no_grad():
         for j,(input_lstm,input, target,seq_length) in enumerate(test_loader):
             if (j+1)%10==0: print("=================================Test Batch"+ str(j+1)+ "===================================================")
             input_lstm = pad_sequence(sequences=input_lstm,batch_first=True)
-            losses_batch,losses_batch_ce,correct_batch, (target_index, pred_index)= model(input_lstm,input, target,seq_length, train=False)
+            losses_batch,correct_batch, (target_index, pred_index)= model(input_lstm,input, target,seq_length, train=False)
             output.append((target_index, pred_index))
             loss = torch.mean(losses_batch,dim=0)
             correct_batch=torch.sum(correct_batch,dim=0)
             losses_test += loss.item() * batch_size
-            losses_test_ce+=torch.mean(losses_batch_ce,dim=0).item()*batch_size
             correct_test += correct_batch.item()
 
     for target_index, pred_index in output:
@@ -114,7 +112,6 @@ for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is t
     for i in range(4):
         weighted_accuracy_test += cm_normalized[i,i] * weights[i]
     losses_test = losses_test / ((j+1)*batch_size)
-    losses_test_ce=losses_test_ce/((j+1)*batch_size)
 
     # data gathering
     test_acc.append(accuracy_test)
@@ -122,10 +119,10 @@ for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is t
     train_acc.append(accuracy)
     test_loss.append(losses_test)
     train_loss.append(losses)
-    print("Epoch: {}----Training Loss: {:05.4f}----Testing Loss: {:05.4f}----Training Acc: {:05.4f}----Testing Acc: {:05.4f}----Weighted Acc: {:05.4f}-------CE Loss: {:05.4f}".format(epoch+1,losses,losses_test, accuracy, accuracy_test, weighted_accuracy_test, losses_test_ce)+"\n")
+    print("Epoch: {}----Training Loss: {:05.4f}----Testing Loss: {:05.4f}----Training Acc: {:05.4f}----Testing Acc: {:05.4f}----Weighted Acc: {:05.4f}".format(epoch+1,losses,losses_test, accuracy, accuracy_test, weighted_accuracy_test)+"\n")
     with open("/scratch/speech/models/classification/joint_stats.txt","a+") as f:
         if epoch==0: f.write("\n"+"============================== New Model ==================================="+"\n")
-        f.write("\n"+"Epoch: {}----Training Loss: {:05.4f}----Testing Loss: {:05.4f}----Training Acc: {:05.4f}----Testing Acc: {:05.4f}----Weighted Acc: {:05.4f}-------CE Loss: {:05.4f}".format(epoch+1,losses,losses_test, accuracy, accuracy_test, weighted_accuracy_test,losses_test_ce)+"\n")
+        f.write("\n"+"Epoch: {}----Training Loss: {:05.4f}----Testing Loss: {:05.4f}----Training Acc: {:05.4f}----Testing Acc: {:05.4f}----Weighted Acc: {:05.4f}".format(epoch+1,losses,losses_test, accuracy, accuracy_test, weighted_accuracy_test)+"\n")
         f.write("confusion_matrix:"+"\n")
         np.savetxt(f,cm_normalized,delimiter=' ',fmt="%5.4f")
 
