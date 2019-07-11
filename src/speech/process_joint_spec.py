@@ -85,7 +85,7 @@ def my_collate(batch):
         temp1.append(temp[low:high,:,:])
         low=high
     temp1=pad_sequence(temp1,batch_first=True)
-    input = torch.Tensor([i.permute(0,1,3,2) for i in temp1]).float()
+    input = temp1.permute(0,1,3,2).float()
     #input shape B*max(len(segment))*Freq*max(T)
     target = torch.from_numpy(np.array([i['target'] for i in batch]))
     return input_lstm,input,target,seq_length. segment_labels
