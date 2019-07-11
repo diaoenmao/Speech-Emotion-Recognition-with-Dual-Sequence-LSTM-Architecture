@@ -8,7 +8,7 @@ from sklearn.model_selection import train_test_split
 
 def split_data(data):
     input_train, input_test, target_train, target_test, input_lstm_train, input_lstm_test, seq_length_train, seq_length_test, segement_labels_train, segement_labels_test= train_test_split(
-        data['input'], data['target'], data["input_lstm"],data["seq_length"],data["segment_labels"] test_size=0.2, random_state=42)
+        data['input'], data['target'], data["input_lstm"],data["seq_length"],data["segment_labels"], test_size=0.2, random_state=42)
     train = {'input': input_train, 'target': target_train,"input_lstm": input_lstm_train,"seq_length": seq_length_train,"segment_labels": segement_labels_train}
     test = {'input': input_test, 'target': target_test,"input_lstm": input_lstm_test,"seq_length": seq_length_test, "segment_labels": segement_labels_test}
     return train, test
@@ -89,3 +89,6 @@ def my_collate(batch):
     #input shape B*max(len(segment))*Freq*max(T)
     target = torch.from_numpy(np.array([i['target'] for i in batch]))
     return input_lstm,input,target,seq_length. segment_labels
+if __name__="__main__":
+    combine("linear")
+    combine("mel")
