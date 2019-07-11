@@ -40,9 +40,9 @@ scheduler2 =CosineAnnealingLR(optimizer2, T_max=100, eta_min=0.0001)
 
 
 # Load the training data
-training_data = IEMOCAP(name,train=True)
+training_data = IEMOCAP(name=name,train=True)
 train_loader = DataLoader(dataset=training_data, batch_size=batch_size, shuffle=True, collate_fn=my_collate, num_workers=0, drop_last=True)
-testing_data = IEMOCAP(name,train=False)
+testing_data = IEMOCAP(name=name,train=False)
 test_loader = DataLoader(dataset=testing_data, batch_size=batch_size, shuffle=True, collate_fn=my_collate, num_workers=0,drop_last=True)
 
 out = open('/scratch/speech/hand_raw_dataset/IEMOCAP_39_FOUR_EMO_spectrogram_segmented_dpi10_step40_overlap_test.pkl', 'rb')
