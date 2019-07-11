@@ -131,7 +131,7 @@ class ConvLSTM(nn.Module):
         ##data process here
         
         batch_size=input.shape[0]
-        segment_labels=segment_labels[int(input.device.index*batch_size/self.num_devices):int((input.device.index+1)*batch_size/self.num_devices)]
+        #segment_labels=segment_labels[int(input.device.index*batch_size/self.num_devices):int((input.device.index+1)*batch_size/self.num_devices)]
         internal_state = []
         outputs = []
         step=input.shape[1]
