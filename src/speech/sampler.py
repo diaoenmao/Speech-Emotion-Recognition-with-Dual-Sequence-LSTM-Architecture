@@ -37,8 +37,9 @@ if __name__=="__main__":
     training_data = IEMOCAP(name=name,train=True)
     sampler_train=SegmentCountSampler(training_data)
     train_loader = DataLoader(dataset=training_data, batch_size=60, collate_fn=my_collate, num_workers=0, drop_last=True, sampler=sampler_train)
-    for _ in range(10):
+    for _ in range(1):
         for i,(input_lstm,input, target,seq_length,segment_labels) in enumerate(train_loader):
-            print(input.shape)
+            if i>0: break
+            pdb.set_trace()
             
 

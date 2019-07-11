@@ -22,7 +22,7 @@ batch_size=40
 hidden_dim_lstm=200
 num_layers_lstm=2
 device_ids=[0,1,2,3]
-name="linear"
+name="mel"
 num_devices=len(device_ids)
 model = ConvLSTM(input_channels,hidden_channels,kernel_size,kernel_size_pool,kernel_stride_pool,device,num_devices,hidden_dim_lstm,num_layers_lstm)
 print("============================ Number of parameters ====================================")
