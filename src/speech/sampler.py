@@ -10,7 +10,10 @@ class SegmentCountSampler(Sampler):
     def __iter__(self):
         y = [(i, len(x)) for i, x in enumerate(self.data_source.seq_length_time)]
         #y = y.sort(key = lambda x: x[1])
-        small = [], medium = [], large = [], extra = []
+        small = []
+        medium = []
+        large = []
+        extra = []
         for i, l in y:
             if l in range(1,3):
                 small.append(i)
