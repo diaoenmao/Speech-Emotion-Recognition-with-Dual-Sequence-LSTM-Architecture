@@ -12,13 +12,12 @@ from torch.nn.utils.rnn import pad_sequence, pack_padded_sequence
 from sklearn.metrics import confusion_matrix
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-input_channels=3
-hidden_channels=[128,64,32]
-kernel_size=[(3,3),(3,3),(3,3)]
-kernel_size_pool=[(3,3),(3,3),(3,2)]
-kernel_stride_pool=[(2,2),(2,2),(3,2)]
-step=40
-batch_size=48
+input_channels=129
+hidden_channels=[32,16]
+kernel_size=[7,7]
+kernel_size_pool=[3,3]
+kernel_stride_pool=[2,2]
+batch_size=4
 hidden_dim_lstm=200
 num_layers_lstm=2
 device_ids=[0,1,2,3]
@@ -68,7 +67,7 @@ for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is t
         if (j+1)%20==0: print("=================================Train Batch"+ str(j+1)+ str(weight)+"===================================================")
         model.zero_grad()
         input_lstm = pad_sequence(sequences=input_lstm,batch_first=True)
-        pdb.set_trace()
+        print(input.shape)
         losses_batch,correct_batch= model(input_lstm,input, target,seq_length)
         loss = torch.mean(losses_batch,dim=0)
         correct_batch=torch.sum(correct_batch,dim=0)
