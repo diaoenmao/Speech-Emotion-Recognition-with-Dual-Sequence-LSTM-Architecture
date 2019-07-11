@@ -47,6 +47,7 @@ test_loader = DataLoader(dataset=testing_data, batch_size=batch_size, shuffle=Tr
 out = open('/scratch/speech/hand_raw_dataset/IEMOCAP_39_FOUR_EMO_spectrogram_segmented_dpi10_step40_overlap_test.pkl', 'rb')
 data = pickle.load(out)
 labels = data['target']
+'''
 hap_count = 0
 neu_count = 0
 ang_count = 0
@@ -61,11 +62,11 @@ for label in labels:
     else:
         sad_count += 1
 weights = [hap_count/len(labels), neu_count/len(labels), ang_count/len(labels), sad_count/len(labels)]
-
+'''
 print("=================")
 print("training data size: ", len(training_data))
 with np.printoptions(precision=4, suppress=True):
-    print("weights: ", weights)
+    print("weights: ", torch.sum(labels,dim=1).numpy()/len(labels))
 print("===================")
 test_acc=[]
 train_acc=[]
@@ -127,6 +128,7 @@ for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is t
     for i in range(4):
         weighted_accuracy_test += cm_normalized[i,i] * weights[i]
     losses_test = losses_test / ((j+1)*batch_size)
+    losses_test_ce=losses_test_ce/((j+1)*batch_size)
 
     # data gathering
     test_acc.append(accuracy_test)
