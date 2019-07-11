@@ -70,8 +70,9 @@ class IEMOCAP(Dataset):
             high+=len(i)
             temp1.append(temp[low:high,:,:])
             low=high
-        temp1=pad_sequence(temp1,batch_first=True)
-        self.input = temp1.permute(0,1,3,2).float()
+        self.input=temp1
+        #temp1=pad_sequence(temp1,batch_first=True)
+        #self.input = temp1.permute(0,1,3,2).float()
 
 
     def __len__(self):
@@ -82,7 +83,7 @@ class IEMOCAP(Dataset):
         #temp=[torch.from_numpy(i).permute(1,0).float() for i in self.input[index]]
         sample = {'input_lstm': torch.from_numpy(self.input_lstm[index]).float(),
                   'seq_length': self.seq_length[index],
-                  'input': self.input[index,:,:,:],
+                  'input': self.input[index],
                   'target': self.target[index],
                   'segment_labels': self.segment_labels[index],
                   "seq_length_time": self.seq_length_time[index]}
@@ -106,7 +107,8 @@ def my_collate(batch):
     seq_length=torch.Tensor(seq_length)
     target=torch.from_numpy(np.array(target))
     input_lstm = pad_sequence(sequences=input_lstm,batch_first=True)
-    input=torch.Tensor(input).float()
+    input=pad_sequence(input,batch_first=True)
+    input = input.permute(0,1,3,2).float()
     
     #input shape B*max(len(segment))*Freq*max(T)
     return input_lstm,input,target,seq_length, segment_labels
