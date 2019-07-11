@@ -23,7 +23,7 @@ num_layers_lstm=2
 device_ids=[0,1,2,3]
 name="linear"
 num_devices=len(device_ids)
-model = ConvLSTM(input_channels,hidden_channels,kernel_size,kernel_size_pool,kernel_stride_pool,step,device,num_devices,hidden_dim_lstm,num_layers_lstm)
+model = ConvLSTM(input_channels,hidden_channels,kernel_size,kernel_size_pool,kernel_stride_pool,device,num_devices,hidden_dim_lstm,num_layers_lstm)
 print("============================ Number of parameters ====================================")
 print(str(sum(p.numel() for p in model.parameters() if p.requires_grad)))
 model.cuda()
