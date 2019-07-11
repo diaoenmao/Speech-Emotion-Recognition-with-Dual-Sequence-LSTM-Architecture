@@ -46,7 +46,7 @@ test_loader = DataLoader(dataset=testing_data, batch_size=batch_size, shuffle=Tr
 
 out = open('/scratch/speech/hand_raw_dataset/IEMOCAP_39_FOUR_EMO_spectrogram_segmented_dpi10_step40_overlap_test.pkl', 'rb')
 data = pickle.load(out)
-labels = data['target']
+labels = np.array(data['target'])
 '''
 hap_count = 0
 neu_count = 0
@@ -66,7 +66,7 @@ weights = [hap_count/len(labels), neu_count/len(labels), ang_count/len(labels), 
 print("=================")
 print("training data size: ", len(training_data))
 with np.printoptions(precision=4, suppress=True):
-    print("weights: ", torch.sum(labels,dim=1).numpy()/len(labels))
+    print("weights: ", np.sum(labels,dim=1)/len(labels))
 print("===================")
 test_acc=[]
 train_acc=[]
