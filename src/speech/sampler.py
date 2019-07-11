@@ -27,7 +27,6 @@ class SegmentCountSampler(Sampler):
         random.shuffle(medium)
         random.shuffle(large)
         random.shuffle(extra)
-        print("shuffle")
 
         return iter(small + medium + large + extra)
 

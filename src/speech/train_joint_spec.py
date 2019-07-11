@@ -18,7 +18,7 @@ hidden_channels=[32,16]
 kernel_size=[7,7]
 kernel_size_pool=[3,3]
 kernel_stride_pool=[2,2]
-batch_size=4
+batch_size=40
 hidden_dim_lstm=200
 num_layers_lstm=2
 device_ids=[0,1,2,3]
@@ -44,8 +44,8 @@ training_data = IEMOCAP(name=name,train=True)
 testing_data = IEMOCAP(name=name,train=False)
 sampler_train=SegmentCountSampler(training_data)
 sampler_test=SegmentCountSampler(testing_data)
-train_loader = DataLoader(dataset=training_data, batch_size=batch_size, shuffle=True, collate_fn=my_collate, num_workers=0, drop_last=True, sampler=sampler_train)
-test_loader = DataLoader(dataset=testing_data, batch_size=batch_size, shuffle=True, collate_fn=my_collate, num_workers=0,drop_last=True, sampler=sampler_test)
+train_loader = DataLoader(dataset=training_data, batch_size=batch_size, collate_fn=my_collate, num_workers=0, drop_last=True, sampler=sampler_train)
+test_loader = DataLoader(dataset=testing_data, batch_size=batch_size, collate_fn=my_collate, num_workers=0,drop_last=True, sampler=sampler_test)
 
 out = open('/scratch/speech/hand_raw_dataset/EMO39_'+name+'_spectrogram_full.pkl', 'rb')
 data = pickle.load(out)
