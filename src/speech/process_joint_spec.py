@@ -88,7 +88,7 @@ def my_collate(batch):
     input = temp1.permute(0,1,3,2).float()
     #input shape B*max(len(segment))*Freq*max(T)
     target = torch.from_numpy(np.array([i['target'] for i in batch]))
-    return input_lstm,input,target,seq_length. segment_labels
+    return input_lstm,input,target,seq_length, segment_labels
 '''
 if __name__=="__main__":
     combine("linear")
