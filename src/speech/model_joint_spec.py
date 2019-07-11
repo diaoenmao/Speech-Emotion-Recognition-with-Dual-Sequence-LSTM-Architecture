@@ -30,23 +30,23 @@ class ConvLSTMCell(nn.Module):
         self.hidden_channels = hidden_channels
         self.kernel_size = kernel_size
         self.stride=1
-        self.padding = (int((kernel_size[0]-1) / 2),int((kernel_size[1]-1) / 2))
+        self.padding = int((kernel_size-1) / 2)
         self.kernel_size_pool=kernel_size_pool
         self.kernel_stride_pool=kernel_stride_pool
-        self.padding_pool=(int((kernel_size_pool[0]-1)/2),int((kernel_size_pool[1]-1)/2))
+        self.padding_pool=int((kernel_size_pool-1)/2)
 
 
-        self.Wxi = nn.Conv2d(self.input_channels, self.hidden_channels, self.kernel_size, self.stride,self.padding,  bias=True)
-        self.Whi = nn.Conv2d(self.hidden_channels, self.hidden_channels, self.kernel_size, self.stride, self.padding, bias=False)
+        self.Wxi = nn.Conv1d(self.input_channels, self.hidden_channels, self.kernel_size, self.stride,self.padding,  bias=True)
+        self.Whi = nn.Conv1d(self.hidden_channels, self.hidden_channels, self.kernel_size, self.stride, self.padding, bias=False)
 
-        self.Wxf = nn.Conv2d(self.input_channels, self.hidden_channels, self.kernel_size, self.stride,self.padding,  bias=True)
-        self.Whf = nn.Conv2d(self.hidden_channels, self.hidden_channels, self.kernel_size, self.stride,self.padding, bias=False)
+        self.Wxf = nn.Conv1d(self.input_channels, self.hidden_channels, self.kernel_size, self.stride,self.padding,  bias=True)
+        self.Whf = nn.Conv1d(self.hidden_channels, self.hidden_channels, self.kernel_size, self.stride,self.padding, bias=False)
 
-        self.Wxc = nn.Conv2d(self.input_channels, self.hidden_channels, self.kernel_size, self.stride, self.padding, bias=True)
-        self.Whc = nn.Conv2d(self.hidden_channels, self.hidden_channels, self.kernel_size, self.stride, self.padding, bias=False)
+        self.Wxc = nn.Conv1d(self.input_channels, self.hidden_channels, self.kernel_size, self.stride, self.padding, bias=True)
+        self.Whc = nn.Conv1d(self.hidden_channels, self.hidden_channels, self.kernel_size, self.stride, self.padding, bias=False)
 
-        self.Wxo = nn.Conv2d(self.input_channels, self.hidden_channels, self.kernel_size, self.stride,self.padding,  bias=True)
-        self.Who = nn.Conv2d(self.hidden_channels, self.hidden_channels, self.kernel_size, self.stride, self.padding, bias=False)
+        self.Wxo = nn.Conv1d(self.input_channels, self.hidden_channels, self.kernel_size, self.stride,self.padding,  bias=True)
+        self.Who = nn.Conv1d(self.hidden_channels, self.hidden_channels, self.kernel_size, self.stride, self.padding, bias=False)
 
         self.max_pool = nn.MaxPool2d(self.kernel_size_pool, stride=self.kernel_stride_pool, padding=self.padding_pool)
         self.batch = nn.BatchNorm2d(self.hidden_channels)
@@ -84,7 +84,7 @@ class ConvLSTM(nn.Module):
     # input_channels corresponds to the first input feature map
     # hidden state is a list of succeeding lstm layers.
     # kernel size is also a list, same length as hidden_channels
-    def __init__(self, input_channels, hidden_channels, kernel_size, kernel_size_pool,kernel_stride_pool,step,device,num_devices,hidden_dim_lstm,num_layers_lstm,attention_flag=False):
+    def __init__(self, input_channels, hidden_channels, kernel_size, kernel_size_pool,kernel_stride_pool,device,num_devices,hidden_dim_lstm,num_layers_lstm,attention_flag=False):
         super(ConvLSTM, self).__init__()
         self.device= device
         self.num_devices=num_devices
@@ -92,7 +92,6 @@ class ConvLSTM(nn.Module):
         self.hidden_channels = hidden_channels
         self.kernel_size = kernel_size
         self.num_layers = len(hidden_channels)
-        self.step = step
         self._all_layers = []
         self.num_labels=4
         self.hidden_dim_lstm = hidden_dim_lstm
@@ -107,8 +106,8 @@ class ConvLSTM(nn.Module):
                 cell = ConvLSTMCell(self.input_channels[i], self.hidden_channels[i], self.kernel_size[i],self.kernel_size_pool[i],self.kernel_stride_pool[i],self.device)
                 setattr(self, name, cell)
                 self._all_layers.append(cell)
-                strideF*=self.kernel_stride_pool[i][0]
-                strideT*=self.kernel_stride_pool[i][1]
+                strideF*=self.kernel_stride_pool[i]
+                strideT*=self.kernel_stride_pool[i]
             else:
                 name="lstm"
                 cell=LSTM_Audio(self.hidden_dim_lstm,self.num_layers_lstm,device=self.device,bidirectional=True)
@@ -133,11 +132,12 @@ class ConvLSTM(nn.Module):
         ##data process here
         internal_state = []
         outputs = []
-        for step in range(self.step):
-            x=input[:,:,:,:,step]
+        step=input.shape[1].item()
+        for s in range(step):
+            x=input[:,:,:,:,s]
             for i in range(self.num_layers):
                 name = 'cell{}'.format(i)
-                if step == 0:
+                if s == 0:
                     bsize, _, shapeF,shapeT = x.size()
                     shape=(shapeF,shapeT)
                     (h, c) = getattr(self, name).init_hidden(batch_size=bsize, hidden=self.hidden_channels[i],
