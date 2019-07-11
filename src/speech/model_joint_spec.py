@@ -134,7 +134,7 @@ class ConvLSTM(nn.Module):
         outputs = []
         step=input.shape[1]
         for s in range(step):
-            x=input[:,:,:,:,s]
+            x=input[:,s,:,:]
             for i in range(self.num_layers):
                 name = 'cell{}'.format(i)
                 if s == 0:
