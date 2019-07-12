@@ -17,7 +17,7 @@ model = SpectrogramModel(1, 64, 3, 1, 1, 4, 4, 200, 2, 0.2, 4, batch_size, 200,2
 print("============================ Number of parameters ====================================")
 print(str(sum(p.numel() for p in model.parameters() if p.requires_grad)))
 model.cuda()
-#model=DataParallel(model,device_ids=device_ids)
+model=DataParallel(model,device_ids=device_ids)
 model.train()
 
 # Use Adam as the optimizer with learning rate 0.01 to make it fast for testing purposes
