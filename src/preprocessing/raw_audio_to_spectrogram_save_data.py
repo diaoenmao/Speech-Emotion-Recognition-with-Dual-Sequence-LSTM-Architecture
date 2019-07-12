@@ -17,7 +17,7 @@ def create_data(data):
     for i, utterance in enumerate(data['input']):
         plt.clf()
         lin_spectrogram, freqs, t, im = plt.specgram(utterance, Fs=sample_rate, NFFT=nfft)
-        mel_spectrogram = librosa.feature.melspectrogram(segment.astype('float'), sr=sample_rate, n_fft=nfft)
+        mel_spectrogram = librosa.feature.melspectrogram(utterance.astype('float'), sr=sample_rate, n_fft=nfft)
         utterances_new.append(lin_spectrogram)
         utterances_new_mel.append(mel_spectrogram)
         print(i)
