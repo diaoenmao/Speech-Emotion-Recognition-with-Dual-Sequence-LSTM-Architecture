@@ -108,8 +108,9 @@ class SpectrogramModel(nn.Module):
         print(out.shape)
         out = out.view(list(out.size())[0], list(out.size())[1], -1)
         #pdb.set_trace()
+        print(out.shape)
         out, hn = self.lstm(out)
-
+        print(out.shape)
         out=out.permute(0,2,1)
         print(out.shape)
         out_lstm=self.LSTM_Audio(input_lstm).permute(0,2,1)
