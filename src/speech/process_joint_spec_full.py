@@ -95,7 +95,7 @@ def my_collate(batch):
         seq_length.append(i['seq_length'])
         target.append(i['target'])
         input.append(i['input'])
-    #seq_length=torch.Tensor(seq_length)
+    seq_length=torch.Tensor(seq_length)
     target=torch.from_numpy(np.array(target))
     input_lstm = pad_sequence(sequences=input_lstm,batch_first=True)
     #input=pad_sequence(input,batch_first=True)
