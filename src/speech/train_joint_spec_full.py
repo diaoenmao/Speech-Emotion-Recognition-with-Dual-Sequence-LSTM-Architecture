@@ -46,7 +46,7 @@ for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is t
     correct=0
     model.train()
     for j, (input_lstm,input, target,seq_length) in enumerate(train_loader):
-        if (j+1)%20==0: print("=================================Train Batch"+ str(j+1)"===================================================")
+        if (j+1)%20==0: print("=================================Train Batch"+ str(j+1)+"===================================================")
         model.zero_grad()
         #input_lstm = pad_sequence(sequences=input_lstm,batch_first=True)
         losses_batch,correct_batch= model(input_lstm,input, target,seq_length)
