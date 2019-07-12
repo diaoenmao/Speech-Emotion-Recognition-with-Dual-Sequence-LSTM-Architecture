@@ -9,7 +9,7 @@ infile = open('/scratch/speech/raw_audio_dataset/raw_audio_full.pkl', 'rb')
 data = pickle.load(infile)
 
 sample_rate = 16000
-nfft = pow(2, 10)
+nfft = pow(2, 11)
 
 def create_data(data):
     utterances_new = []
