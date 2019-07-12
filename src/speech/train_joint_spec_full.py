@@ -63,7 +63,7 @@ for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is t
 
     losses_test = 0
     correct_test = 0
-    torch.save(model.module.state_dict(), "/scratch/speech/models/classification/2_joint_checkpoint_epoch_{}.pt".format(epoch+1))
+    torch.save(model.module.state_dict(), "/scratch/speech/models/classification/spec_full_joint_checkpoint_epoch_{}.pt".format(epoch+1))
     model.eval()
     with torch.no_grad():
         for j,(input_lstm,input, target,seq_length) in enumerate(test_loader):
