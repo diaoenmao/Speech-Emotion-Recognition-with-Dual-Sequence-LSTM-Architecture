@@ -4,7 +4,7 @@ import pickle
 import librosa
 import pdb
 
-save_path = t
+save_path = '/scratch/speech/raw_audio_dataset/'
 infile = open('/scratch/speech/raw_audio_dataset/raw_audio_full.pkl', 'rb')
 data = pickle.load(infile)
 
