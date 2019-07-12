@@ -130,7 +130,7 @@ class ConvLSTM(nn.Module):
     def forward(self, input_lstm,input,target,seq_length, segment_labels,train=True):
         # input should be a list of inputs, like a time stamp, maybe 1280 for 100 times.
         ##data process here
-        
+        pdb.set_trace()
         batch_size=input.shape[0]
         #segment_labels=segment_labels[int(input.device.index*batch_size/self.num_devices):int((input.device.index+1)*batch_size/self.num_devices)]
         internal_state = []
