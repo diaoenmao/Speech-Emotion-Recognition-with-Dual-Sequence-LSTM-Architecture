@@ -4,12 +4,12 @@ import pickle
 import librosa
 import pdb
 
-save_path = '/scratch/speech/raw_audio_dataset/'
+save_path = t
 infile = open('/scratch/speech/raw_audio_dataset/raw_audio_full.pkl', 'rb')
 data = pickle.load(infile)
 
 sample_rate = 16000
-nfft = pow(2, 9)
+nfft = pow(2, 10)
 
 def create_data(data):
     utterances_new = []
