@@ -79,7 +79,7 @@ class IEMOCAP(Dataset):
         #temp=[torch.unsqueeze(torch.from_numpy(i),dim=3).permute(2,0,1,3) for i in self.input[index]]
         #temp=[torch.from_numpy(i).permute(1,0).float() for i in self.input[index]]
         sample = {'input_lstm': torch.from_numpy(self.input_lstm[index]).float(),
-                  'seq_length': self.seq_length[index],
+                  'seq_length': int(self.seq_length[index]),
                   'input': self.input[index],
                   'target': self.target[index]}
         return sample
