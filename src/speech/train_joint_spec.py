@@ -18,10 +18,10 @@ if name=="mel":
     input_channels=128
 else:
     input_channels=129
-hidden_channels=[32,16]
-kernel_size=[7,7]
-kernel_size_pool=[3,3]
-kernel_stride_pool=[2,2]
+hidden_channels=[64,32,16]
+kernel_size=[7,5,3]
+kernel_size_pool=[5,3,3]
+kernel_stride_pool=[2,2,2]
 batch_size=100
 hidden_dim_lstm=200
 num_layers_lstm=2
@@ -72,7 +72,6 @@ for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is t
     for j, (input_lstm,input, target,seq_length,segment_labels) in enumerate(train_loader):
         if (j+1)%20==0: print("=================================Train Batch"+ str(j+1)+ str(weight)+"===================================================")
         model.zero_grad()
-        print(segment_labels)
         losses_batch,correct_batch= model(input_lstm,input, target,seq_length,segment_labels)
         loss = torch.mean(losses_batch,dim=0)
         correct_batch=torch.sum(correct_batch,dim=0)
