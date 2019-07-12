@@ -13,7 +13,8 @@ from sklearn.metrics import confusion_matrix
 from sampler import SegmentCountSampler
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-name="mel"
+iteration=100
+name="linear"
 if name=="mel":
     input_channels=128
 else:
@@ -64,7 +65,7 @@ train_acc=[]
 weighted_acc = []
 test_loss=[]
 train_loss=[]
-for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is toy data
+for epoch in range(iteration):  # again, normally you would NOT do 300 epochs, it is toy data
     print("===================================" + str(epoch+1) + "==============================================")
     losses = 0
     correct=0
@@ -127,6 +128,7 @@ for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is t
     print("Epoch: {}----Training Loss: {:05.4f}----Testing Loss: {:05.4f}----Training Acc: {:05.4f}----Testing Acc: {:05.4f}----Weighted Acc: {:05.4f}".format(epoch+1,losses,losses_test, accuracy, accuracy_test, weighted_accuracy_test)+"\n")
     with open("/scratch/speech/models/classification/joint_spec_mel_stats.txt","a+") as f:
         if epoch==0: f.write("\n"+"============================== New Model ==================================="+"\n")
+        if epoch+1==iteration: f.write("\n"+"========================= Finish Model =========================== Best accuracy : {}".format(max(test_acc))+"\n")
         f.write("\n"+"Epoch: {}----Training Loss: {:05.4f}----Testing Loss: {:05.4f}----Training Acc: {:05.4f}----Testing Acc: {:05.4f}----Weighted Acc: {:05.4f}".format(epoch+1,losses,losses_test, accuracy, accuracy_test, weighted_accuracy_test)+"\n")
         f.write("confusion_matrix:"+"\n")
         np.savetxt(f,cm_normalized,delimiter=' ',fmt="%5.4f")
