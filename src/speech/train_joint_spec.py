@@ -14,7 +14,7 @@ from sampler import SegmentCountSampler
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 iteration=100
-name="linear"
+name="mel"
 if name=="mel":
     input_channels=128
 else:
