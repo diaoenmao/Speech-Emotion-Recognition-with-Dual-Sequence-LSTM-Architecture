@@ -19,7 +19,7 @@ if name=="mel":
     input_channels=128
 else:
     input_channels=129
-hidden_channels=[128,64,32]
+hidden_channels=[64,16,4]
 kernel_size=[13,9,5]
 kernel_size_pool=[3,3,3]
 kernel_stride_pool=[4,3,2]
