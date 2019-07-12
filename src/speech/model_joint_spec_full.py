@@ -116,6 +116,13 @@ class SpectrogramModel(nn.Module):
         out_lstm=self.LSTM_Audio(input_lstm).permute(0,2,1)
         #print(out_lstm.shape)
         out=torch.mean(out,dim=2)
+
+        try:
+            temp=[torch.unsqueeze(torch.mean(out_lstm[k,:,:s],dim=1),dim=0) for k,s in enumerate(seq_length)]
+        except:
+            print(seq_length)
+            pdb.set_trace()
+        out_lstm=torch.cat(temp,dim=0)
         #print(out.shape)
         #print(out_lstm[0])
         #essentially pack_padded_sequence in order to work on dataparallel
