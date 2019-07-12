@@ -18,7 +18,7 @@ if name=="mel":
     input_channels=128
 else:
     input_channels=129
-hidden_channels=[512,128,16]
+hidden_channels=[128,512,16]
 kernel_size=[7,5,3]
 kernel_size_pool=[3,3,3]
 kernel_stride_pool=[4,3,2]
@@ -35,7 +35,7 @@ model=DataParallel(model,device_ids=device_ids)
 model.train()
 
 # Use Adam as the optimizer with learning rate 0.01 to make it fast for testing purposes
-optimizer = optim.Adam(model.parameters(),lr=0.001)
+optimizer = optim.Adam(model.parameters(),lr=0.0001)
 optimizer2=optim.SGD(model.parameters(), lr=0.1)
 scheduler = ReduceLROnPlateau(optimizer=optimizer,factor=0.5, patience=2, threshold=1e-3)
 #scheduler2=ReduceLROnPlateau(optimizer=optimizer2, factor=0.5, patience=2, threshold=1e-3)
