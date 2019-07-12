@@ -166,7 +166,7 @@ class ConvLSTM(nn.Module):
             #out=torch.cat(temp,dim=0)
 
             # Just feed into the last state, instead all the hidden states
-            temp=[torch.unsqueeze(out[k,:,len(s)],dim=0)for k,s in enumerate(segment_labels)]
+            temp=[torch.unsqueeze(out[k,:,len(s)-1],dim=0)for k,s in enumerate(segment_labels)]
             out=torch.cat(temp,dim=0)
             temp=[torch.unsqueeze(torch.mean(out_lstm[k,:,:int(s)],dim=1),dim=0) for k,s in enumerate(seq_length)]
             out_lstm=torch.cat(temp,dim=0)
