@@ -21,7 +21,7 @@ else:
 hidden_channels=[64,32,16]
 kernel_size=[7,5,3]
 kernel_size_pool=[5,3,3]
-kernel_stride_pool=[2,2,2]
+kernel_stride_pool=[4,3,2]
 batch_size=100
 hidden_dim_lstm=200
 num_layers_lstm=2
