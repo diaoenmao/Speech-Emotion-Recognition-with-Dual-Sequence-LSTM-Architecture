@@ -3,7 +3,7 @@ from torch import optim
 from model_joint_spec import ConvLSTM
 from process_joint_spec import IEMOCAP,my_collate
 from torch.utils.data import DataLoader
-from torch.optim.lr_scheduler import ReduceLROnPlateau, CosineAnnealingLR
+from torch.optim.lr_scheduler import ReduceLROnPlateau, CosineAnnealingLR,MultiStepLR
 import pdb
 from torch.nn import DataParallel
 import pickle
@@ -18,7 +18,7 @@ if name=="mel":
     input_channels=128
 else:
     input_channels=129
-hidden_channels=[128,512,16]
+hidden_channels=[512,128,16]
 kernel_size=[7,5,3]
 kernel_size_pool=[3,3,3]
 kernel_stride_pool=[4,3,2]
@@ -40,7 +40,7 @@ optimizer2=optim.SGD(model.parameters(), lr=0.1)
 scheduler = ReduceLROnPlateau(optimizer=optimizer,factor=0.5, patience=2, threshold=1e-3)
 #scheduler2=ReduceLROnPlateau(optimizer=optimizer2, factor=0.5, patience=2, threshold=1e-3)
 scheduler2 =CosineAnnealingLR(optimizer2, T_max=100, eta_min=0.0001)
-
+scheduler3=MultiStepLR(optimizer, [5,8,10,12,15],gamma=0.3)
 
 # Load the training data
 training_data = IEMOCAP(name=name,train=True)
@@ -64,7 +64,7 @@ train_acc=[]
 weighted_acc = []
 test_loss=[]
 train_loss=[]
-for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is toy data
+for epoch in range(15):  # again, normally you would NOT do 300 epochs, it is toy data
     print("===================================" + str(epoch+1) + "==============================================")
     losses = 0
     correct=0
@@ -83,6 +83,7 @@ for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is t
         correct += correct_batch.item()
     accuracy=correct*1.0/((j+1)*batch_size)
     losses=losses / ((j+1)*batch_size)
+    scheduler3.step()
 
     losses_test = 0
     correct_test = 0
