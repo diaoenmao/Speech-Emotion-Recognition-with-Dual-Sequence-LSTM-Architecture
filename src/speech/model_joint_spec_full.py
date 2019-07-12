@@ -133,7 +133,7 @@ class SpectrogramModel(nn.Module):
         #    tensors.append(t)
         #tensors = [torch.unsqueeze(i, dim=0) for i in tensors]
         #out_lstm = torch.cat(tensors, dim=0)
-        out_lstm = torch.mean(out_lstm, dim=2)
+        #out_lstm = torch.mean(out_lstm, dim=2)
         #temp = torch.Tensor([out_lstm[k,:,:s] for k, s in enumerate(seq_length)])
         #temp=[torch.unsqueeze(torch.mean(temp,dim=1),dim=0) for k,s in enumerate(seq_length)]
         #print(temp)
