@@ -88,7 +88,7 @@ for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is t
     losses_test = 0
     correct_test = 0
     losses_test_ce=0
-    torch.save(model.module.state_dict(), "/scratch/speech/models/classification/joint_checkpoint_epoch_{}.pt".format(epoch+1))
+    torch.save(model.module.state_dict(), "/scratch/speech/models/classification/joint_spec_mel_checkpoint_epoch_{}.pt".format(epoch+1))
     model.eval()
     output = []
     y_true = []
@@ -125,13 +125,13 @@ for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is t
     test_loss.append(losses_test)
     train_loss.append(losses)
     print("Epoch: {}----Training Loss: {:05.4f}----Testing Loss: {:05.4f}----Training Acc: {:05.4f}----Testing Acc: {:05.4f}----Weighted Acc: {:05.4f}".format(epoch+1,losses,losses_test, accuracy, accuracy_test, weighted_accuracy_test)+"\n")
-    with open("/scratch/speech/models/classification/joint_stats.txt","a+") as f:
+    with open("/scratch/speech/models/classification/joint_spec_mel_stats.txt","a+") as f:
         if epoch==0: f.write("\n"+"============================== New Model ==================================="+"\n")
         f.write("\n"+"Epoch: {}----Training Loss: {:05.4f}----Testing Loss: {:05.4f}----Training Acc: {:05.4f}----Testing Acc: {:05.4f}----Weighted Acc: {:05.4f}".format(epoch+1,losses,losses_test, accuracy, accuracy_test, weighted_accuracy_test)+"\n")
         f.write("confusion_matrix:"+"\n")
         np.savetxt(f,cm_normalized,delimiter=' ',fmt="%5.4f")
 
 
-pickle_out=open("/scratch/speech/models/classification/joint_checkpoint_stats.pkl","wb")
+pickle_out=open("/scratch/speech/models/classification/joint_spec_mel_checkpoint_stats.pkl","wb")
 pickle.dump({"test_acc":test_acc, "weighted_acc": weighted_acc, "train_acc": train_acc, "train_loss": train_loss,"test_loss":test_loss},pickle_out)
 pickle_out.close()
