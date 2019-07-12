@@ -131,8 +131,7 @@ class ConvLSTM(nn.Module):
         # input should be a list of inputs, like a time stamp, maybe 1280 for 100 times.
         ##data process here
         batch_size=input.shape[0]
-        segment_labels=segment_labels[int(input.device.index*batch_size/self.num_devices):int((input.device.index+1)*batch_size/self.num_devices)]
-        print(input.device.index,segment_labels)
+        segment_labels=segment_labels[int(input.device.index*batch_size):int((input.device.index+1)*batch_size)]
         internal_state = []
         outputs = []
         step=input.shape[1]
@@ -171,10 +170,7 @@ class ConvLSTM(nn.Module):
         #out=torch.cat([p*out,(1-p)*out_lstm],dim=1)
         out=self.classification_convlstm(out)
         out_lstm=self.classification_lstm(out_lstm)
-        try:
-            out_final=p*out_lstm+(1-p)*out
-        except:
-            pdb.set_trace()
+        out_final=p*out_lstm+(1-p)*out
         target_index = torch.argmax(target, dim=1).to(self.device)
         pred_index = torch.argmax(out_final, dim=1)
         correct_batch=torch.sum(target_index==pred_index)
