@@ -116,7 +116,7 @@ class ConvLSTM(nn.Module):
 
 
         #self.linear_dim=int(self.hidden_channels[-1])*int(742/strideT)
-        self.linear_dim=246
+        self.linear_dim=256
         self.classification_convlstm = nn.Linear(self.linear_dim, self.num_labels)
         self.classification_lstm=nn.Linear(self.hidden_dim_lstm*2,self.num_labels)
 
