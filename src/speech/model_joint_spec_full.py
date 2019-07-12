@@ -118,8 +118,10 @@ class SpectrogramModel(nn.Module):
         out=torch.mean(out,dim=2)
         print(out.shape)
         #essentially pack_padded_sequence in order to work on dataparallel
-        #temp=[torch.unsqueeze(torch.mean(out_lstm[k,:,:s],dim=1),dim=0) for k,s in enumerate(seq_length)]
-        #out_lstm=torch.cat(temp,dim=0)
+        temp=[torch.unsqueeze(torch.mean(out_lstm[k,:,:s],dim=2),dim=0) for k,s in enumerate(seq_length)]
+        print(temp)
+        out_lstm=torch.cat(temp,dim=0)
+        print(out_lstm.shape)
         p=torch.exp(10*self.weight)/(1+torch.exp(10*self.weight))
         out=torch.cat([p*out,(1-p)*out_lstm],dim=1)
         out=self.classification(out)
