@@ -64,7 +64,7 @@ train_acc=[]
 weighted_acc = []
 test_loss=[]
 train_loss=[]
-for epoch in range(15):  # again, normally you would NOT do 300 epochs, it is toy data
+for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is toy data
     print("===================================" + str(epoch+1) + "==============================================")
     losses = 0
     correct=0
