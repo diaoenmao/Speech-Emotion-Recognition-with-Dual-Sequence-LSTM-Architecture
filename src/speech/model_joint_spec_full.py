@@ -118,7 +118,7 @@ class SpectrogramModel(nn.Module):
         out=torch.mean(out,dim=2)
 
         try:
-            temp=[torch.unsqueeze(torch.mean(out_lstm[k,:,:s],dim=1),dim=0) for k,s in enumerate(seq_length)]
+            temp=[torch.unsqueeze(torch.mean(out_lstm[k,:,:int(s.item())],dim=1),dim=0) for k,s in enumerate(seq_length)]
         except:
             print(seq_length)
             pdb.set_trace()
