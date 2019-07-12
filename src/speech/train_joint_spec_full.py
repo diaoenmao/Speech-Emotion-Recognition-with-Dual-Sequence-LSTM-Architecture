@@ -46,7 +46,7 @@ for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is t
     correct=0
     model.train()
     for j, (input_lstm,input, target,seq_length) in enumerate(train_loader):
-        if (j+1)%20==0: print("=================================Train Batch"+ str(j+1)+"===================================================")
+        if (j+1)%20==0: print("=================================Train Batch"+ str(j+1)+str(weight)+"===================================================")
         model.zero_grad()
         #input_lstm = pad_sequence(sequences=input_lstm,batch_first=True)
         losses_batch,correct_batch= model(input_lstm,input, target,seq_length)
@@ -54,8 +54,8 @@ for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is t
         correct_batch=torch.sum(correct_batch,dim=0)
         losses += loss.item() * batch_size
         loss.backward()
-        #weight=model.module.state_dict()["weight"]
-        #weight=torch.exp(10*weight)/(1+torch.exp(10*weight)).item()
+        weight=model.module.state_dict()["weight"]
+        weight=torch.exp(10*weight)/(1+torch.exp(10*weight)).item()
         optimizer.step()
         correct += correct_batch.item()
     accuracy=correct*1.0/((j+1)*batch_size)
@@ -63,7 +63,7 @@ for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is t
 
     losses_test = 0
     correct_test = 0
-    #torch.save(model.module.state_dict(), "/scratch/speech/models/classification/spec_full_joint_checkpoint_epoch_{}.pt".format(epoch+1))
+    torch.save(model.module.state_dict(), "/scratch/speech/models/classification/spec_full_joint_checkpoint_epoch_{}.pt".format(epoch+1))
     model.eval()
     with torch.no_grad():
         for j,(input_lstm,input, target,seq_length) in enumerate(test_loader):
