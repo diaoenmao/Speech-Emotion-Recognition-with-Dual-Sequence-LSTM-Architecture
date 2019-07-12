@@ -162,11 +162,11 @@ class ConvLSTM(nn.Module):
             alpha=torch.unsqueeze(F.softmax(torch.matmul(self.attention,out),dim=1),dim=2)
             out=torch.squeeze(torch.bmm(out,alpha),dim=2)
         else:
-            #temp=[torch.unsqueeze(torch.mean(out[k,:,:len(s)],dim=1),dim=0)for k,s in enumerate(segment_labels)]
+            temp=[torch.unsqueeze(torch.mean(out[k,:,:len(s)],dim=1),dim=0)for k,s in enumerate(segment_labels)]
             #out=torch.cat(temp,dim=0)
 
             # Just feed into the last state, instead all the hidden states
-            temp=[torch.unsqueeze(out[k,:,len(s)-1],dim=0)for k,s in enumerate(segment_labels)]
+            #temp=[torch.unsqueeze(out[k,:,len(s)-1],dim=0)for k,s in enumerate(segment_labels)]
             out=torch.cat(temp,dim=0)
             temp=[torch.unsqueeze(torch.mean(out_lstm[k,:,:int(s)],dim=1),dim=0) for k,s in enumerate(seq_length)]
             out_lstm=torch.cat(temp,dim=0)
