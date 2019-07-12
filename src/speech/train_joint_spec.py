@@ -18,11 +18,11 @@ if name=="mel":
     input_channels=128
 else:
     input_channels=129
-hidden_channels=[512,128,16]
-kernel_size=[7,5,3]
+hidden_channels=[128,64,32]
+kernel_size=[12,8,4]
 kernel_size_pool=[3,3,3]
 kernel_stride_pool=[4,3,2]
-batch_size=64
+batch_size=80
 hidden_dim_lstm=200
 num_layers_lstm=2
 device_ids=[0,1,2,3]
