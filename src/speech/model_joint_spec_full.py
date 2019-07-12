@@ -117,15 +117,16 @@ class SpectrogramModel(nn.Module):
         print(out_lstm.shape)
         out=torch.mean(out,dim=2)
         print(out.shape)
-        print(out_lstm[0])
+        #print(out_lstm[0])
         #essentially pack_padded_sequence in order to work on dataparallel
-        tensors = [torch.mean(torch.Tensor(out_lstm[k,:,:s]), dim=1) for k, s in enumerate(seq_length)]
+        #tensors = [torch.mean(out_lstm[k,:,:s], dim=1) for k, s in enumerate(seq_length)]
         #for k, s in enumerate(seq_length):
         #    t = torch.Tensor(out_lstm[k,:,:s])
         #    t = torch.mean(t, dim=1)
         #    tensors.append(t)
-        tensors = [torch.unsqueeze(i, dim=0) for i in tensors]
-        out_lstm = torch.cat(tensors, dim=0)
+        #tensors = [torch.unsqueeze(i, dim=0) for i in tensors]
+        #out_lstm = torch.cat(tensors, dim=0)
+        out_lstm = torch.mean(out_lstm, dim=2)
         #temp = torch.Tensor([out_lstm[k,:,:s] for k, s in enumerate(seq_length)])
         #temp=[torch.unsqueeze(torch.mean(temp,dim=1),dim=0) for k,s in enumerate(seq_length)]
         #print(temp)
