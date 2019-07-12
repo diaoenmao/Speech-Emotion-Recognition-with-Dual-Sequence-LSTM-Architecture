@@ -99,8 +99,9 @@ def my_collate(batch):
     target=torch.from_numpy(np.array(target))
     input_lstm = pad_sequence(sequences=input_lstm,batch_first=True)
     #input=pad_sequence(input,batch_first=True)
+    input = [torch.unsqueeze(i, dim=0) for i in input]
+    input = torch.cat(input, dim=0))
     pdb.set_trace()
-    input = torch.Tensor(input)
     input = torch.unsqueeze(input, dim=1)
     input = input.permute(0,1,3,2).float()
 
