@@ -29,9 +29,9 @@ scheduler = ReduceLROnPlateau(optimizer=optimizer,factor=0.5, patience=2, thresh
 
 
 # Load the training data
-training_data = IEMOCAP(name='linear', nfft=512, train=True)
+training_data = IEMOCAP(name='mel', nfft=512, train=True)
 train_loader = DataLoader(dataset=training_data, batch_size=batch_size, shuffle=True, collate_fn=my_collate, num_workers=0, drop_last=True)
-testing_data = IEMOCAP(name='linear', nfft=512, train=False)
+testing_data = IEMOCAP(name='mel', nfft=512, train=False)
 test_loader = DataLoader(dataset=testing_data, batch_size=batch_size, shuffle=True, collate_fn=my_collate, num_workers=0,drop_last=True)
 print("=================")
 print(len(training_data))
