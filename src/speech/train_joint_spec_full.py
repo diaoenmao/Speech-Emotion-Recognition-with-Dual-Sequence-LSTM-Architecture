@@ -12,12 +12,12 @@ from torch.nn.utils.rnn import pad_sequence, pack_padded_sequence
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 device_ids=[0,1,2,3]
-batch_size=80
+batch_size=40
 model = SpectrogramModel(1, 64, 3, 1, 1, 4, 4, 200, 2, 0.2, 4, batch_size, 200,2,device,True)
 print("============================ Number of parameters ====================================")
 print(str(sum(p.numel() for p in model.parameters() if p.requires_grad)))
 model.cuda()
-model=DataParallel(model,device_ids=device_ids)
+#model=DataParallel(model,device_ids=device_ids)
 model.train()
 
 # Use Adam as the optimizer with learning rate 0.01 to make it fast for testing purposes
