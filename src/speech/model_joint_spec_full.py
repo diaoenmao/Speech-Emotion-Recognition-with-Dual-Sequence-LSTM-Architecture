@@ -73,6 +73,7 @@ class SpectrogramModel(nn.Module):
     def forward(self, input_lstm,input, target,seq_length):
         input = input.to(self.device)
         target = target.to(self.device)
+        print(input_lstm.shape)
         #print(input.shape)
         out = self.cnn1(input)
         #print(out.shape)
@@ -114,7 +115,7 @@ class SpectrogramModel(nn.Module):
         out=out.permute(0,2,1)
         #print(out.shape)
         out_lstm=self.LSTM_Audio(input_lstm).permute(0,2,1)
-        #print(out_lstm.shape)
+        print(out_lstm.shape)
         out=torch.mean(out,dim=2)
 
         try:
