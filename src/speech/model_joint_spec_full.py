@@ -50,6 +50,8 @@ class SpectrogramModel(nn.Module):
 
         self.hidden_dim_lstm=hidden_dim_lstm
 
+        self.input_height = 128
+        self.input_width = 1067
 
         self.cnn1 = nn.Conv2d(self.in_channels, self.out_channels, self.kernel_size_cnn, stride=self.stride_cnn, padding=self.padding_cnn).to(self.device)
         self.batch1 = nn.BatchNorm2d(self.out_channels)
@@ -63,12 +65,12 @@ class SpectrogramModel(nn.Module):
         self.max_pool1 = nn.MaxPool2d(self.kernel_size_pool, stride=self.stride_pool)
         self.max_pool = nn.MaxPool2d(self.kernel_size_pool//2, stride=self.stride_pool//2)
         self.max_pool4 = nn.MaxPool2d(self.kernel_size_pool//2, stride=self.stride_pool//2)
-        self.lstm = nn.LSTM(132, self.hidden_dim, self.num_layers, batch_first=True,
+        self.lstm = nn.LSTM((self.input_height//32) * (self.input_width//32), self.hidden_dim, self.num_layers, batch_first=True,
                            dropout=self.dropout_rate, bidirectional=self.bidirectional).to(self.device)
         self.classification = nn.Linear(self.hidden_dim*self.num_directions+self.hidden_dim_lstm*2, self.num_labels).to(self.device)
 
         self.LSTM_Audio=LSTM_Audio(hidden_dim,num_layers,self.device,bidirectional=True)
-        self.weight= nn.Parameter(torch.zeros(1))
+        self.weight= nn.Parameter(torch.FloatTensor([-0.2]))
 
     def forward(self, input_lstm,input, target,seq_length):
         input = input.to(self.device)
