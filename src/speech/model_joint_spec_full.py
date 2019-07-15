@@ -50,8 +50,8 @@ class SpectrogramModel(nn.Module):
 
         self.hidden_dim_lstm=hidden_dim_lstm
 
-        self.input_height = 128
-        self.input_width = 1067
+        self.input_height = 257
+        self.input_width = 1422
 
         self.cnn1 = nn.Conv2d(self.in_channels, self.out_channels, self.kernel_size_cnn, stride=self.stride_cnn, padding=self.padding_cnn).to(self.device)
         self.batch1 = nn.BatchNorm2d(self.out_channels)
