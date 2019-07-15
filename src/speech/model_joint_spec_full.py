@@ -76,7 +76,7 @@ class SpectrogramModel(nn.Module):
         input = input.to(self.device)
         target = target.to(self.device)
         #print(input_lstm.shape)
-        #print(input.shape)
+        print(input.shape)
         out = self.cnn1(input)
         #print(out.shape)
         out = self.batch1(out)
