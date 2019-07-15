@@ -50,8 +50,8 @@ class SpectrogramModel(nn.Module):
 
         self.hidden_dim_lstm=hidden_dim_lstm
 
-        self.input_height = 257
-        self.input_width = 1422
+        self.input_height = 128
+        self.input_width = 1067
 
         self.cnn1 = nn.Conv2d(self.in_channels, self.out_channels, self.kernel_size_cnn, stride=self.stride_cnn, padding=self.padding_cnn).to(self.device)
         self.batch1 = nn.BatchNorm2d(self.out_channels)
@@ -70,7 +70,7 @@ class SpectrogramModel(nn.Module):
         self.classification = nn.Linear(self.hidden_dim*self.num_directions+self.hidden_dim_lstm*2, self.num_labels).to(self.device)
 
         self.LSTM_Audio=LSTM_Audio(hidden_dim,num_layers,self.device,bidirectional=True)
-        self.weight= nn.Parameter(torch.FloatTensor([-0.2]))
+        self.weight= nn.Parameter(torch.FloatTensor([10]))
 
     def forward(self, input_lstm,input, target,seq_length):
         input = input.to(self.device)
