@@ -100,7 +100,7 @@ class SpectrogramModel(nn.Module):
             self._all_layers.append(cell)
             strideF=self.cnn_shape(strideF,self.kernel_size_cnn[i],self.stride_pool[i])
         
-        self.lstm = nn.LSTM(self.out_channels[-1]*strideF, self.hidden_dim, self.num_layers, batch_first=True,
+        self.lstm = nn.LSTM(self.out_channels[-1]*7, self.hidden_dim, self.num_layers, batch_first=True,
                            dropout=self.dropout_rate, bidirectional=self.bidirectional).to(self.device)
         self.classification = nn.Linear(self.hidden_dim*self.num_directions+self.hidden_dim_lstm*2, self.num_labels).to(self.device)
 
@@ -116,7 +116,6 @@ class SpectrogramModel(nn.Module):
             seq_length_spec=self.valid_max(self.valid_cnn(seq_length_spec,self.kernel_size_cnn[i]),self.kernel_size_pool[i],self.stride_pool[i])
             x=getattr(self,name)(x)
         out = torch.flatten(x,start_dim=1,end_dim=2)
-        pdb.set_trace()
         out, hn = self.lstm(out)
         out=out.permute(0,2,1)
         out_lstm=self.LSTM_Audio(input_lstm).permute(0,2,1)
