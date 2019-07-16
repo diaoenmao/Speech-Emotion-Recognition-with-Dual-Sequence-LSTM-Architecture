@@ -104,7 +104,7 @@ class SpectrogramModel(nn.Module):
         self.classification = nn.Linear(self.hidden_dim*2+self.hidden_dim_lstm*self.num_directions, self.num_labels).to(self.device)
 
         self.LSTM_Audio=LSTM_Audio(hidden_dim,num_layers,self.device,bidirectional=True)
-        self.weight= nn.Parameter(torch.FloatTensor([0.1]),requires_grad=False)
+        self.weight= nn.Parameter(torch.FloatTensor([0]),requires_grad=False)
 
 
     def forward(self, input_lstm,input, target,seq_length,seq_length_spec):
@@ -125,7 +125,7 @@ class SpectrogramModel(nn.Module):
         out, hn = self.lstm(out)
         out=out.permute(0,2,1)
         out_lstm=self.LSTM_Audio(input_lstm).permute(0,2,1)
-
+        print(seq_length_spec)
         temp1=[torch.unsqueeze(torch.mean(out[k,:,:int(s.item())],dim=1),dim=0) for k,s in enumerate(seq_length_spec)]
         temp=[torch.unsqueeze(torch.mean(out_lstm[k,:,:int(s.item())],dim=1),dim=0) for k,s in enumerate(seq_length)]
         out_lstm=torch.cat(temp,dim=0)
