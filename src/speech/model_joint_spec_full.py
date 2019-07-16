@@ -27,7 +27,7 @@ class LSTM_Audio(nn.Module):
         return out
 class LFLB(nn.Module):
     def __init__(self, in_channels, out_channels, kernel_size_cnn, stride_cnn, padding_cnn, kernel_size_pool, stride_pool, device):
-        super(SpectrogramModel, self).__init__()
+        super(LFLB, self).__init__()
         self.device = device
         self.in_channels = in_channels
         self.out_channels = out_channels
