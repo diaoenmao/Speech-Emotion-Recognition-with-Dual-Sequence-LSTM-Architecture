@@ -88,9 +88,6 @@ class SpectrogramModel(nn.Module):
         self.hidden_dim_lstm=hidden_dim_lstm
 
 # data shape
-        self.input_height = 128
-        self.input_width = 1067
-
         strideF=128
 
 # for putting all cells together
