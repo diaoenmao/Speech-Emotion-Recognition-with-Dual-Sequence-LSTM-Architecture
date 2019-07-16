@@ -88,7 +88,7 @@ class SpectrogramModel(nn.Module):
         self.hidden_dim_lstm=hidden_dim_lstm
 
 # data shape
-        strideF=128
+        strideF=torch.tensor(128)
 
 # for putting all cells together
         self._all_layers = []
