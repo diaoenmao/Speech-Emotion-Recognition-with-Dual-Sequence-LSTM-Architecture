@@ -137,6 +137,7 @@ class SpectrogramModel(nn.Module):
 
         correct_batch=torch.unsqueeze(correct_batch,dim=0)
         losses_batch=torch.unsqueeze(losses_batch, dim=0)
+        print(losses_batch)
 
 
         return  losses_batch,correct_batch
