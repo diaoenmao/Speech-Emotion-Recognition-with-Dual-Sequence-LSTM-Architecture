@@ -101,7 +101,8 @@ class SpectrogramModel(nn.Module):
         
         self.lstm = nn.LSTM(self.out_channels[-1]*strideF, self.hidden_dim_lstm, self.num_layers, batch_first=True,
                            dropout=self.dropout_rate, bidirectional=self.bidirectional).to(self.device)
-        self.classification = nn.Linear(self.hidden_dim*2+self.hidden_dim_lstm*self.num_directions, self.num_labels).to(self.device)
+        self.classification = nn.Linear(self.hidden_dim*2, self.num_labels).to(self.device)
+        self.classification_lstm=nn.Linear(self.hidden_dim_lstm*self.num_directions, self.num_labels).to(self.device)
 
         self.LSTM_Audio=LSTM_Audio(hidden_dim,num_layers,self.device,bidirectional=True)
         self.weight= nn.Parameter(torch.FloatTensor([0]),requires_grad=False)
@@ -130,8 +131,10 @@ class SpectrogramModel(nn.Module):
         out_lstm=torch.cat(temp,dim=0)
         out=torch.cat(temp1,dim=0)
         p=torch.exp(10*self.weight)/(1+torch.exp(10*self.weight))
-        out=torch.cat([p*out,(1-p)*out_lstm],dim=1)
+        #out=torch.cat([p*out,(1-p)*out_lstm],dim=1)
         out=self.classification(out)
+        out_lstm=self.classification_lstm(out_lstm)
+        out=p*out+(1-p)*out_lstm
         target_index = torch.argmax(target, dim=1).to(self.device)
         correct_batch=torch.sum(target_index==torch.argmax(out,dim=1))
         losses_batch=F.cross_entropy(out,torch.max(target,1)[1])
