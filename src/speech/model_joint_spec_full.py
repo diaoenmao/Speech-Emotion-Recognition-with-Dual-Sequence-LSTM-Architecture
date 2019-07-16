@@ -55,8 +55,8 @@ class SpectrogramModel(nn.Module):
     def valid_max(self,x,k,s):
         return torch.floor((x-k)/s+1)
     def cnn_shape(self,x,kc,sc,pc,km,sm,pm):
-        temp=int((x+2*pc[0]-kc)/sc)
-        temp=int((temp+2*pm[0]-km)/sm)
+        temp=int((x+2*pc[0]-kc)/sc+1)
+        temp=int((temp+2*pm[0]-km)/sm+1)
         return temp
 
     def __init__(self, in_channels, out_channels, kernel_size_cnn, stride_cnn, 
