@@ -101,7 +101,7 @@ class SpectrogramModel(nn.Module):
         
         self.lstm = nn.LSTM(self.out_channels[-1]*strideF, self.hidden_dim_lstm, self.num_layers, batch_first=True,
                            dropout=self.dropout_rate, bidirectional=self.bidirectional).to(self.device)
-        self.classification = nn.Linear(self.hidden_dim*self.num_directions+self.hidden_dim_lstm*2, self.num_labels).to(self.device)
+        self.classification = nn.Linear(self.hidden_dim*2+self.hidden_dim_lstm*self.num_directions, self.num_labels).to(self.device)
 
         self.LSTM_Audio=LSTM_Audio(hidden_dim,num_layers,self.device,bidirectional=True)
         self.weight= nn.Parameter(torch.FloatTensor([0]),requires_grad=False)
