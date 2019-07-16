@@ -75,7 +75,7 @@ for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is t
         correct += correct_batch.item()
     accuracy=correct*1.0/((j+1)*batch_size)
     losses=losses / ((j+1)*batch_size)
-    scheduler3.step()
+    #scheduler3.step()
     losses_test = 0
     correct_test = 0
     #torch.save(model.module.state_dict(), "/scratch/speech/models/classification/spec_full_joint_checkpoint_epoch_{}.pt".format(epoch+1))
