@@ -41,7 +41,7 @@ optimizer2=optim.SGD(model.parameters(), lr=0.1)
 scheduler = ReduceLROnPlateau(optimizer=optimizer,factor=0.5, patience=2, threshold=1e-3)
 #scheduler2=ReduceLROnPlateau(optimizer=optimizer2, factor=0.5, patience=2, threshold=1e-3)
 #scheduler2 =CosineAnnealingLR(optimizer2, T_max=300, eta_min=0.0001)
-scheduler3=MultiStepLR(optimizer, [5,10,15],gamma=0.3)
+scheduler3=MultiStepLR(optimizer, [5,10,15],gamma=0.1)
 
 # Load the training data
 training_data = IEMOCAP(name='mel', nfft=512, train=True)
