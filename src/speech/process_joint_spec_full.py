@@ -51,39 +51,24 @@ class IEMOCAP(Dataset):
     def __init__(self, name, nfft, train=True):
         if train:
             pickle_in = open('/scratch/speech/hand_raw_dataset/EMO39_'+name+'_spectrogram_nfft{}_train.pkl'.format(nfft), 'rb')
-            pickle_temp=open('/scratch/speech/hand_raw_dataset/EMO39_'+name+'_spectrogram_nfft{}_test.pkl'.format(nfft),'rb')
         else:
             pickle_in=open('/scratch/speech/hand_raw_dataset/EMO39_'+name+'_spectrogram_nfft{}_test.pkl'.format(nfft), 'rb')
-            pickle_temp=open('/scratch/speech/hand_raw_dataset/EMO39_'+name+'_spectrogram_nfft{}_train.pkl'.format(nfft),'rb')
         data = pickle.load(pickle_in)
-        data_temp=pickle.load(pickle_temp)
         self.seq_length = data["seq_length"]
         self.input_lstm= data["input_lstm"]
         self.target = data["target"]
-        #self.segment_labels=data["segment_labels"]
-        #self.seq_length_time=data["seq_length_time"]
-        temp = data["input"]+data_temp['input']
-        self.input_raw=data['input']
-        temp1 = []
-        for utterance in temp:
-            temp1.append(torch.from_numpy(utterance).permute(1,0).float())
-        temp=pad_sequence(temp1,batch_first=True)
-        self.input=temp[:len(data['input'])]
-        #temp1=pad_sequence(temp1,batch_first=True)
-        #self.input = temp1.permute(0,1,3,2).float()
+        self.input=data['input']
 
 
     def __len__(self):
         return len(self.input)
 
     def __getitem__(self, index):
-        #temp=[torch.unsqueeze(torch.from_numpy(i),dim=3).permute(2,0,1,3) for i in self.input[index]]
-        #temp=[torch.from_numpy(i).permute(1,0).float() for i in self.input[index]]
         sample = {'input_lstm': torch.from_numpy(self.input_lstm[index]).float(),
                   'seq_length': int(self.seq_length[index]),
-                  'input': self.input[index],
+                  'input': torch.from_numpy(self.input[index].float()),
                   'target': self.target[index],
-                  'seq_length_spec':self.input_raw[index].shape[1]}
+                  'seq_length_spec':self.input[index].shape[1]}
         return sample
 
 
@@ -97,22 +82,15 @@ def my_collate(batch):
         input_lstm.append(i['input_lstm'])
         seq_length.append(i['seq_length'])
         target.append(i['target'])
-        input.append(i['input'])
+        input.append(i['input'].permute(1,0).float())
         seq_length_spec.append(i['seq_length_spec'])
     seq_length_spec=torch.Tensor(seq_length_spec)
     seq_length=torch.Tensor(seq_length)
     target=torch.from_numpy(np.array(target))
+    input=pad_sequence(sequences=input,batch_first=True)
     input_lstm = pad_sequence(sequences=input_lstm,batch_first=True)
-    #input=pad_sequence(input,batch_first=True)
-    input = [torch.unsqueeze(i, dim=0) for i in input]
-    #pdb.set_trace()
-    input = torch.cat(input, dim=0)
-    #pdb.set_trace()
     input = torch.unsqueeze(input, dim=1)
-    #pdb.set_trace()
-    input = input.permute(0,1,3,2).float()
-    #pdb.set_trace()
-
+    input = input.permute(0,1,3,2)
     #input shape B*max(len(segment))*Freq*max(T)
     return input_lstm,input,target,seq_length,seq_length_spec
 

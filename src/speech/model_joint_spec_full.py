@@ -63,8 +63,10 @@ class SpectrogramModel(nn.Module):
     def cnn_shape(self,x,k,s):
         return int((x-k+1)/s+1)
 
-    def __init__(self, in_channels, out_channels, kernel_size_cnn, stride_cnn, padding_cnn, kernel_size_pool, stride_pool, 
-                    hidden_dim, num_layers, dropout_rate, num_labels, batch_size, hidden_dim_lstm,num_layers_lstm,device, bidirectional=False):
+    def __init__(self, in_channels, out_channels, kernel_size_cnn, stride_cnn, 
+                        padding_cnn, kernel_size_pool, stride_pool, 
+                        hidden_dim, num_layers, dropout_rate, num_labels, batch_size, 
+                        hidden_dim_lstm,num_layers_lstm,device, bidirectional=False):
         super(SpectrogramModel, self).__init__()
         self.device = device
         self.in_channels = [in_channels]+out_channels

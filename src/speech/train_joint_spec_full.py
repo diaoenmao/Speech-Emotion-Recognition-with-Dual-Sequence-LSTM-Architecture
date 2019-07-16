@@ -13,12 +13,21 @@ from torch.nn.utils.rnn import pad_sequence, pack_padded_sequence
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 device_ids=[0,1,2,3]
 batch_size=80
+input_channels=1
 out_channels = [32, 64]
 kernel_size_cnn = [3,3]
 stride_size_cnn = [1,1]
 kernel_size_pool = [4,4]
 stride_size_pool = [4,4]
-model = SpectrogramModel(1, 32, 3, 1, 1, 4, 4, 200, 2, 0.2, 4, batch_size, 200,2,device,True)
+hidden_dim=200
+num_layers=2
+dropout=0.2
+num_labels=4
+hidden_dim_lstm=200
+num_layers_lstm=2
+model = SpectrogramModel(input_channels,out_channels, kernel_size_cnn, stride_size_cnn, 0, kernel_size_pool, 
+                            stride_size_pool, hidden_dim,num_layers,dropout,num_labels, batch_size, 
+                            hidden_dim_lstm,num_layers_lstm,device,True)
 print("============================ Number of parameters ====================================")
 print(str(sum(p.numel() for p in model.parameters() if p.requires_grad)))
 model.cuda()
