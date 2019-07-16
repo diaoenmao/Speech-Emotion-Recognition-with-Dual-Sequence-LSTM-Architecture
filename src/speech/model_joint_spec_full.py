@@ -114,7 +114,8 @@ class SpectrogramModel(nn.Module):
             name = 'cell{}'.format(i)
             seq_length_spec=self.valid_max(self.valid_cnn(seq_length_spec,self.kernel_size_cnn[i]),self.kernel_size_pool[i],self.stride_pool[i])
             x=getattr(self,name)(x)
-        seq_length_spec+=1
+        if seq_length_spec==0: seq_length_spec+=2
+        if seq_length_spec==1: seq_length_spec+=1
         out = torch.flatten(x,start_dim=1,end_dim=2).permute(0,2,1)
         out, hn = self.lstm(out)
         out=out.permute(0,2,1)
