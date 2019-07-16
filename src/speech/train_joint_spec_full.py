@@ -3,7 +3,7 @@ from torch import optim
 from model_joint_spec_full import SpectrogramModel
 from process_joint_spec_full import IEMOCAP,my_collate
 from torch.utils.data import DataLoader
-from torch.optim.lr_scheduler import ReduceLROnPlateau, CosineAnnealingLR
+from torch.optim.lr_scheduler import ReduceLROnPlateau, CosineAnnealingLR, MultiStepLR
 import pdb
 from torch.nn import DataParallel
 import pickle
@@ -41,7 +41,7 @@ optimizer2=optim.SGD(model.parameters(), lr=0.1)
 scheduler = ReduceLROnPlateau(optimizer=optimizer,factor=0.5, patience=2, threshold=1e-3)
 #scheduler2=ReduceLROnPlateau(optimizer=optimizer2, factor=0.5, patience=2, threshold=1e-3)
 #scheduler2 =CosineAnnealingLR(optimizer2, T_max=300, eta_min=0.0001)
-
+scheduler3=MultiStepLR(optimizer, [5,10,15],gamma=0.3)
 
 # Load the training data
 training_data = IEMOCAP(name='mel', nfft=1024, train=True)
@@ -75,7 +75,7 @@ for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is t
         correct += correct_batch.item()
     accuracy=correct*1.0/((j+1)*batch_size)
     losses=losses / ((j+1)*batch_size)
-
+    scheduler3.step()
     losses_test = 0
     correct_test = 0
     #torch.save(model.module.state_dict(), "/scratch/speech/models/classification/spec_full_joint_checkpoint_epoch_{}.pt".format(epoch+1))
