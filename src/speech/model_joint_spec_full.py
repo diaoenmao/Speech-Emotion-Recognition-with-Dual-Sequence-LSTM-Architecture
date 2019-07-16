@@ -2,11 +2,6 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import pdb
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
-import pdb
-import numpy as np
 from torch.nn.utils.rnn import pad_packed_sequence, pad_sequence, pack_padded_sequence
 
 class LSTM_Audio(nn.Module):
@@ -40,7 +35,7 @@ class LFLB(nn.Module):
 
         self.cnn = nn.Conv2d(self.in_channels, self.out_channels, self.kernel_size_cnn, stride=self.stride_cnn, padding=self.padding_cnn).to(self.device)
         self.batch = nn.BatchNorm2d(self.out_channels)
-        self.max_pool = nn.MaxPool2d(self.kernel_size_pool, stride=self.stride_pool)
+        self.max_pool = nn.MaxPool2d(self.kernel_size_pool, stride=self.stride_pool,padding=self.padding_cnn)
         self.relu = nn.ReLU()
 
     def forward(self,input):

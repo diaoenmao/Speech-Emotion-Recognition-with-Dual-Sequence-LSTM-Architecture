@@ -11,8 +11,8 @@ import numpy as np
 from torch.nn.utils.rnn import pad_sequence, pack_padded_sequence
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-device_ids=[0]
-batch_size=1
+device_ids=[0,1,2,3]
+batch_size=128
 input_channels=1
 out_channels = [64,32,16]
 kernel_size_cnn = [3,3,3]
