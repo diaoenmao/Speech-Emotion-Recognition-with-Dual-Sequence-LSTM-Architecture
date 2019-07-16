@@ -92,7 +92,7 @@ class SpectrogramModel(nn.Module):
             cell=LFLB(self.in_channels[i], self.out_channels[i], self.kernel_size_cnn[i], self.stride_cnn[i], self.padding_cnn[i], self.kernel_size_pool[i], self.stride_pool[i], self.device)
             setattr(self, name, cell)
             self._all_layers.append(cell)
-            strideF=self.cnn_shape(strideF,self.kernel_size_cnn[i],self.stride_pool[i])
+            strideF=self.cnn_shape(strideF,self.kernel_size_pool[i],self.stride_pool[i])
         
         self.lstm = nn.LSTM(self.out_channels[-1]*strideF, self.hidden_dim, self.num_layers, batch_first=True,
                            dropout=self.dropout_rate, bidirectional=self.bidirectional).to(self.device)
