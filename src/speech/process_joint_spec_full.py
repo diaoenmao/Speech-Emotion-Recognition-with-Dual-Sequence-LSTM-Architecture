@@ -66,7 +66,7 @@ class IEMOCAP(Dataset):
     def __getitem__(self, index):
         sample = {'input_lstm': torch.from_numpy(self.input_lstm[index]).float(),
                   'seq_length': int(self.seq_length[index]),
-                  'input': torch.from_numpy(self.input[index].float()),
+                  'input': torch.from_numpy(self.input[index]).float(),
                   'target': self.target[index],
                   'seq_length_spec':self.input[index].shape[1]}
         return sample
