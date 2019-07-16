@@ -61,7 +61,7 @@ class SpectrogramModel(nn.Module):
     def valid_max(self,x,k,s):
         return torch.floor((x-k)/s+1)
     def cnn_shape(self,x,k,s):
-        return torch.floor((x-k+1)/s+1)
+        return int((x-k+1)/s+1)
 
     def __init__(self, in_channels, out_channels, kernel_size_cnn, stride_cnn, 
                         padding_cnn, kernel_size_pool, stride_pool, 
@@ -88,7 +88,7 @@ class SpectrogramModel(nn.Module):
         self.hidden_dim_lstm=hidden_dim_lstm
 
 # data shape
-        strideF=torch.tensor(128).float()
+        strideF=128
 
 # for putting all cells together
         self._all_layers = []
@@ -100,7 +100,7 @@ class SpectrogramModel(nn.Module):
             self._all_layers.append(cell)
             strideF=self.cnn_shape(strideF,self.kernel_size_cnn[i],self.stride_pool[i])
         
-        self.lstm = nn.LSTM(self.out_channels[-1]*int(strideF.item()), self.hidden_dim, self.num_layers, batch_first=True,
+        self.lstm = nn.LSTM(self.out_channels[-1]*strideF, self.hidden_dim, self.num_layers, batch_first=True,
                            dropout=self.dropout_rate, bidirectional=self.bidirectional).to(self.device)
         self.classification = nn.Linear(self.hidden_dim*self.num_directions+self.hidden_dim_lstm*2, self.num_labels).to(self.device)
 
