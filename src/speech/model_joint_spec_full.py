@@ -126,11 +126,8 @@ class SpectrogramModel(nn.Module):
         out=out.permute(0,2,1)
         out_lstm=self.LSTM_Audio(input_lstm).permute(0,2,1)
 
-        try:
-            temp1=[torch.unsqueeze(torch.mean(out[k,:,:int(s.item())],dim=1),dim=0) for k,s in enumerate(seq_length_spec)]
-            temp=[torch.unsqueeze(torch.mean(out_lstm[k,:,:int(s.item())],dim=1),dim=0) for k,s in enumerate(seq_length)]
-        except:
-            pdb.set_trace()
+        temp1=[torch.unsqueeze(torch.mean(out[k,:,:int(s.item())],dim=1),dim=0) for k,s in enumerate(seq_length_spec)]
+        temp=[torch.unsqueeze(torch.mean(out_lstm[k,:,:int(s.item())],dim=1),dim=0) for k,s in enumerate(seq_length)]
         out_lstm=torch.cat(temp,dim=0)
         out=torch.cat(temp1,dim=0)
         p=torch.exp(10*self.weight)/(1+torch.exp(10*self.weight))
