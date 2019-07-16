@@ -56,12 +56,12 @@ class LFLB(nn.Module):
 class SpectrogramModel(nn.Module):
 
     def valid_cnn(self,x,k):
-        return int(x-k+1)
+        return torch.floor(x-k+1)
 
     def valid_max(self,x,k,s):
-        return int((x-k)/s+1)
+        return torch.floor((x-k)/s+1)
     def cnn_shape(self,x,k,s):
-        return int((x-k+1)/s+1)
+        return torch.floor((x-k+1)/s+1)
 
     def __init__(self, in_channels, out_channels, kernel_size_cnn, stride_cnn, 
                         padding_cnn, kernel_size_pool, stride_pool, 
@@ -100,20 +100,6 @@ class SpectrogramModel(nn.Module):
             self._all_layers.append(cell)
             strideF=self.cnn_shape(strideF,self.kernel_size_cnn[i],self.stride_pool[i])
         
-        '''
-        self.cnn1 = nn.Conv2d(self.in_channels, self.out_channels, self.kernel_size_cnn, stride=self.stride_cnn, padding=self.padding_cnn).to(self.device)
-        self.batch1 = nn.BatchNorm2d(self.out_channels)
-        self.cnn2 = nn.Conv2d(self.out_channels, self.out_channels, self.kernel_size_cnn, stride=self.stride_cnn, padding=self.padding_cnn).to(self.device)
-        self.batch2 = nn.BatchNorm2d(self.out_channels)
-        #self.cnn3 = nn.Conv2d(self.out_channels, self.out_channels*2, self.kernel_size_cnn, stride=self.stride_cnn, padding=self.padding_cnn).to(self.device)
-        #self.batch3 = nn.BatchNorm2d(self.out_channels*2)
-        #self.cnn4 = nn.Conv2d(self.out_channels*2, self.out_channels*2, self.kernel_size_cnn, stride=self.stride_cnn, padding=self.padding_cnn).to(self.device)
-        #self.batch4 = nn.BatchNorm2d(self.out_channels*2)
-        self.relu = nn.ReLU()
-        self.max_pool1 = nn.MaxPool2d(self.kernel_size_pool*2, stride=self.stride_pool*2)
-        self.max_pool = nn.MaxPool2d(self.kernel_size_pool, stride=self.stride_pool)
-        #self.max_pool4 = nn.MaxPool2d(self.kernel_size_pool//2, stride=self.stride_pool//2)
-        '''
         self.lstm = nn.LSTM(self.out_channels[-1]*strideF, self.hidden_dim, self.num_layers, batch_first=True,
                            dropout=self.dropout_rate, bidirectional=self.bidirectional).to(self.device)
         self.classification = nn.Linear(self.hidden_dim*self.num_directions+self.hidden_dim_lstm*2, self.num_labels).to(self.device)
