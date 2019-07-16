@@ -78,7 +78,7 @@ for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is t
 
     losses_test = 0
     correct_test = 0
-    torch.save(model.module.state_dict(), "/scratch/speech/models/classification/spec_full_joint_checkpoint_epoch_{}.pt".format(epoch+1))
+    #torch.save(model.module.state_dict(), "/scratch/speech/models/classification/spec_full_joint_checkpoint_epoch_{}.pt".format(epoch+1))
     model.eval()
     with torch.no_grad():
         for j,(input_lstm,input, target,seq_length,seq_length_spec) in enumerate(test_loader):
@@ -100,12 +100,12 @@ for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is t
     test_loss.append(losses_test)
     train_loss.append(losses)
     print("Epoch: {}-----------Training Loss: {} -------- Testing Loss: {} -------- Training Acc: {} -------- Testing Acc: {}".format(epoch+1,losses,losses_test, accuracy, accuracy_test)+"\n")
-    with open("/scratch/speech/models/classification/spec_full_joint_stats.txt","a+") as f:
+    with open("/scratch/speech/models/classification/spec_full_joint_stats_2.txt","a+") as f:
         if epoch==0: f.write("\n"+"============================== New Model ==================================="+"\n")
         f.write("Epoch: {}-----------Training Loss: {} -------- Testing Loss: {} -------- Training Acc: {} -------- Testing Acc: {}".format(epoch+1,losses,losses_test, accuracy, accuracy_test)+"\n")
 
 
 
-pickle_out=open("/scratch/speech/models/classification/spec_full_joint_checkpoint_stats.pkl","wb")
+pickle_out=open("/scratch/speech/models/classification/spec_full_joint_2_checkpoint_stats.pkl","wb")
 pickle.dump({"test_acc":test_acc, "train_acc": train_acc, "train_loss": train_loss,"test_loss":test_loss},pickle_out)
 pickle_out.close()
