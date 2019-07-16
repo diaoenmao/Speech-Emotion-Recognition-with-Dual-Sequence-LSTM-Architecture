@@ -125,7 +125,7 @@ class SpectrogramModel(nn.Module):
     def forward(self, input_lstm,input, target,seq_length,seq_length_spec):
         x = input.to(self.device)
         target = target.to(self.device)
-        for i in range(num_layers_cnn):
+        for i in range(self.num_layers_cnn):
             name = 'cell{}'.format(i)
             seq_length_spec=self.valid_max(self.valid_cnn(seq_length_spec,self.kernel_size_cnn[i]),self.kernel_size_pool[i],self.stride_pool[i])
             x=getattr(self,name)(x)
