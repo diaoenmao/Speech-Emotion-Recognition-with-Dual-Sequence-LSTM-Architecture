@@ -24,7 +24,7 @@ hidden_dim=200
 num_layers=2
 dropout=0
 num_labels=4
-hidden_dim_lstm=300
+hidden_dim_lstm=250
 num_layers_lstm=2
 model = SpectrogramModel(input_channels,out_channels, kernel_size_cnn, stride_size_cnn, padding_cnn, kernel_size_pool, 
                             stride_size_pool, hidden_dim,num_layers,dropout,num_labels, batch_size, 
