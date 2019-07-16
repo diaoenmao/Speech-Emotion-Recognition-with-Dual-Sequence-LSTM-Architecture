@@ -137,7 +137,8 @@ class SpectrogramModel(nn.Module):
 
         correct_batch=torch.unsqueeze(correct_batch,dim=0)
         losses_batch=torch.unsqueeze(losses_batch, dim=0)
-        print(losses_batch)
+        if torch.isnan(losses_batch):
+            pdb.set_trace()
 
 
         return  losses_batch,correct_batch
