@@ -93,7 +93,7 @@ class SpectrogramModel(nn.Module):
 # for putting all cells together
         self._all_layers = []
         self.num_layers_cnn=len(out_channels)
-        for i in range(num_layers_cnn):
+        for i in range(self.num_layers_cnn):
             name = 'cell{}'.format(i)
             cell=LFLB(self.in_channels[i], self.out_channels[i], self.kernel_size_cnn[i], self.stride_cnn[i], self.padding_cnn[i], self.kernel_size_pool[i], self.stride_pool[i], self.device)
             setattr(self, name, cell)
