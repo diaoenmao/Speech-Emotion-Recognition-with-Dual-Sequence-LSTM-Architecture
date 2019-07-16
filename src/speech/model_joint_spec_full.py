@@ -46,9 +46,13 @@ class LFLB(nn.Module):
     def forward(self,input):
         input=input.to(self.device)
         out=self.cnn(input)
+        print(out.shape)
         out=self.batch(out)
+        print(out.shape)
         out=self.relu(out)
+        print(out.shape)
         out=self.max_pool(out)
+        print(out.shape)
 
         return out
 
