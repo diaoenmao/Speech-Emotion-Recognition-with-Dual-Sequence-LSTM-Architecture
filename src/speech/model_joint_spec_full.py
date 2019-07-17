@@ -125,7 +125,7 @@ class SpectrogramModel(nn.Module):
                 temp.append(s)
         seq_length_spec=torch.Tensor(temp)
         #out = torch.flatten(x,start_dim=1,end_dim=2).permute(0,2,1)
-        out = out.permute(0,2,1)
+        out = x.permute(0,2,1)
         out, hn = self.lstm(out)
         out=out.permute(0,2,1)
         out_lstm=self.LSTM_Audio(input_lstm).permute(0,2,1)
