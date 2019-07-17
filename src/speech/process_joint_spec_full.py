@@ -89,8 +89,7 @@ def my_collate(batch):
     target=torch.from_numpy(np.array(target))
     input=pad_sequence(sequences=input,batch_first=True)
     input_lstm = pad_sequence(sequences=input_lstm,batch_first=True)
-    input = torch.unsqueeze(input, dim=1)
-    input = input.permute(0,1,3,2)
+    input = input.permute(0,2,1)
     #input shape B*max(len(segment))*Freq*max(T)
     return input_lstm,input,target,seq_length,seq_length_spec
 
