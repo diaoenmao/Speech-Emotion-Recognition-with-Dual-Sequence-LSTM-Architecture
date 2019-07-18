@@ -57,9 +57,9 @@ def combine(name, nfft):
 class IEMOCAP(Dataset):
     def __init__(self, name, nfft, train=True):
         if train:
-            pickle_in = open('/scratch/speech/hand_raw_dataset/EMO39_'+name+'_spectrogram_nfft{}_train.pkl'.format(nfft), 'rb')
+            pickle_in = open('/scratch/speech/hand_raw_dataset/EMO39_'+name+'_spectrogram_nfft{}_augmented_train.pkl'.format(nfft), 'rb')
         else:
-            pickle_in=open('/scratch/speech/hand_raw_dataset/EMO39_'+name+'_spectrogram_nfft{}_test.pkl'.format(nfft), 'rb')
+            pickle_in=open('/scratch/speech/hand_raw_dataset/EMO39_'+name+'_spectrogram_nfft{}_augmented_test.pkl'.format(nfft), 'rb')
         data = pickle.load(pickle_in)
         self.input_lstm= data["input_lstm"]
         self.target = data["target"]
@@ -72,7 +72,7 @@ class IEMOCAP(Dataset):
     def __getitem__(self, index):
         sample = {'input_lstm': torch.from_numpy(self.input_lstm[index]).float(),
                   'seq_length': self.input_lstm[index].shape[0],
-                  'input': torch.squeeze(F.interpolate(torch.unsqueeze(torch.from_numpy(10*np.log10(self.input[index])).float(), dim=0), size=140, mode='nearest'), dim=0),
+                  'input': torch.squeeze(F.interpolate(torch.unsqueeze(torch.from_numpy(10*np.log10(self.input[index])).float(), dim=0), size=250, mode='nearest'), dim=0),
                   #'input': torch.Tensor(self.input[index].permute(2,1,0)).float()
                   'target': self.target[index],
                   'seq_length_spec':self.input[index].shape[1]}
