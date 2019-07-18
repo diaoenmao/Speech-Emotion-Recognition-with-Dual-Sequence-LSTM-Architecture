@@ -7,7 +7,7 @@ import pdb
 from sklearn.model_selection import train_test_split
 import torch.nn.functional as F
 
-'''
+
 def split_data(data):
     input_train, input_test, target_train, target_test, input_lstm_train, input_lstm_test, seq_length_train, seq_length_test = train_test_split(
         data['input'], data['target'], data["input_lstm"],data["seq_length"],test_size=0.2, random_state=42)
@@ -18,7 +18,12 @@ def split_data(data):
 def combine(name, nfft):
     with open('/scratch/speech/datasets/IEMOCAP_39_FOUR_EMO_full.pkl', 'rb') as out1:
         dict1=pickle.load(out1)
+    '''
     with open('/scratch/speech/raw_audio_dataset/'+name+'_spectrogram_nfft{}_full.pkl'.format(nfft), 'rb') as out2:
+        dict2=pickle.load(out2)
+    '''
+
+    with open('/scratch/speech/raw_audio_dataset/spectrogram_full.pkl', 'rb') as out2:
         dict2=pickle.load(out2)
 
     flag=True
@@ -39,15 +44,15 @@ def combine(name, nfft):
 
     dict3={"input_lstm":dict1["input"],"input":dict2["input"],"seq_length": dict1["seq_length"],"target": dict2["target"]}
     train1,test1=split_data(dict3)
-    with open('/scratch/speech/hand_raw_dataset/EMO39_'+name+'_spectrogram_nfft{}_full.pkl'.format(nfft), 'wb') as full:
+    with open('/scratch/speech/hand_raw_dataset/EMO39_spec_full.pkl', 'wb') as full:
         pickle.dump(dict3,full)
-    with open('/scratch/speech/hand_raw_dataset/EMO39_'+name+'_spectrogram_nfft{}_train.pkl'.format(nfft), 'wb') as train:
+    with open('/scratch/speech/hand_raw_dataset/EMO39_spec_train.pkl', 'wb') as train:
         pickle.dump(train1,train)
-    with open('/scratch/speech/hand_raw_dataset/EMO39_'+name+'_spectrogram_nfft{}_test.pkl'.format(nfft), 'wb') as test:
+    with open('/scratch/speech/hand_raw_dataset/EMO39_spec_test.pkl', 'wb') as test:
         pickle.dump(test1,test)
 
-    print('/scratch/speech/hand_raw_dataset/EMO39_'+name+'_spectrogram_nfft{}_full.pkl'.format(nfft))
-'''
+    print('/scratch/speech/hand_raw_dataset/EMO39_spec_full.pkl')
+
 
 class IEMOCAP(Dataset):
     def __init__(self, name, nfft, train=True):
@@ -98,6 +103,7 @@ def my_collate(batch):
     return input_lstm,input,target,seq_length,seq_length_spec
 
 if __name__=="__main__":
+    '''
     combine("linear", 256)
     combine("mel", 256)
     combine("linear", 512)
@@ -106,3 +112,5 @@ if __name__=="__main__":
     combine("mel", 1024)
     combine("linear", 2048)
     combine("mel", 2048)
+    '''
+    combine("linear",256)
