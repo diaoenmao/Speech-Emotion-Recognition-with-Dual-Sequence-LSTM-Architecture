@@ -15,11 +15,11 @@ device_ids=[0,1,2,3]
 batch_size=128
 input_channels=1
 out_channels = [64,16]
-kernel_size_cnn = [3,2]
+kernel_size_cnn = [3,3]
 stride_size_cnn = [1,1]
 padding_cnn=[(1,0),(1,0)]
 kernel_size_pool = [2,2]
-stride_size_pool = [(1,2),(1,2)]
+stride_size_pool = [(2,2),(2,2)]
 hidden_dim=200
 num_layers=2
 dropout=0
@@ -37,7 +37,7 @@ model.train()
 
 # Use Adam as the optimizer with learning rate 0.01 to make it fast for testing purposes
 optimizer = optim.Adam(model.parameters(),lr=0.001)
-optimizer2=optim.SGD(model.parameters(), lr=0.01)
+optimizer2=optim.SGD(model.parameters(), lr=0.1, momentum=0.9)
 scheduler = ReduceLROnPlateau(optimizer=optimizer,factor=0.5, patience=2, threshold=1e-3)
 #scheduler2=ReduceLROnPlateau(optimizer=optimizer2, factor=0.5, patience=2, threshold=1e-3)
 #scheduler2 =CosineAnnealingLR(optimizer2, T_max=300, eta_min=0.0001)
