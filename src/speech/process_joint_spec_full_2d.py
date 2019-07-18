@@ -63,7 +63,7 @@ class IEMOCAP(Dataset):
         data = pickle.load(pickle_in)
         self.input_lstm= data["input_lstm"]
         self.target = data["target"]
-        self.input = data['input']
+        self.input = 10*np.log10(data['input'])
 
 
     def __len__(self):
