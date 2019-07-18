@@ -6,6 +6,7 @@ from torch.utils.data import Dataset
 import pdb
 from sklearn.model_selection import train_test_split
 
+'''
 def split_data(data):
     input_train, input_test, target_train, target_test, input_lstm_train, input_lstm_test, seq_length_train, seq_length_test = train_test_split(
         data['input'], data['target'], data["input_lstm"],data["seq_length"],test_size=0.2, random_state=42)
@@ -45,14 +46,14 @@ def combine(name, nfft):
         pickle.dump(test1,test)
 
     print('/scratch/speech/hand_raw_dataset/EMO39_'+name+'_spectrogram_nfft{}_full.pkl'.format(nfft))
-
+'''
 
 class IEMOCAP(Dataset):
     def __init__(self, name, nfft, train=True):
         if train:
-            pickle_in = open('/scratch/speech/hand_raw_dataset/EMO39_'+name+'_spectrogram_nfft{}_train.pkl'.format(nfft), 'rb')
+            pickle_in = open('/scratch/speech/hand_raw_dataset/EMO39_'+ name +'_spectrogram_nfft{}_augmented_train.pkl'.format(nfft), 'rb')
         else:
-            pickle_in=open('/scratch/speech/hand_raw_dataset/EMO39_'+name+'_spectrogram_nfft{}_test.pkl'.format(nfft), 'rb')
+            pickle_in=open('/scratch/speech/hand_raw_dataset/EMO39_'+ name +'_spectrogram_nfft{}_augmented_test.pkl'.format(nfft), 'rb')
         data = pickle.load(pickle_in)
         #self.seq_length = data["seq_length"]
         self.input_lstm= data["input_lstm"]
