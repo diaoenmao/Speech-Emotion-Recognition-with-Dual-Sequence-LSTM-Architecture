@@ -126,6 +126,6 @@ for i in x:
     target_new.append(target[i])
     seq_length_new.append(seq_length[i])
 
-dict = {'input': input_new, 'target': target_new, 'seq_length_new': seq_length_new}
+dict = {'input': input_new, 'target': target_new, 'seq_length': seq_length_new}
 with open(path + 'raw_audio_augmented' + '_train.pkl', 'wb') as f:
     pickle.dump(dict, f)
