@@ -132,10 +132,10 @@ class SpectrogramModel(nn.Module):
         temp1=[torch.unsqueeze(torch.mean(out[k,:,:int(s.item())],dim=1),dim=0) for k,s in enumerate(seq_length_spec)]
         '''
         temp=[torch.unsqueeze(torch.mean(out_lstm[k,:,:int(s.item())],dim=1),dim=0) for k,s in enumerate(seq_length)]
-        temp1=torch.mean(out,dim=2)
+        out=torch.mean(out,dim=2)
         #temp=torch.mean(out_lstm,dim=2)
         out_lstm=torch.cat(temp,dim=0)
-        out=torch.cat(temp1,dim=0)
+        #out=torch.cat(temp1,dim=0)
         p=torch.exp(10*self.weight)/(1+torch.exp(10*self.weight))
         #out=torch.cat([p*out,(1-p)*out_lstm],dim=1)
         out=self.classification_raw(out)
