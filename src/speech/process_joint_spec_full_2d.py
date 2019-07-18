@@ -73,6 +73,7 @@ class IEMOCAP(Dataset):
         sample = {'input_lstm': torch.from_numpy(self.input_lstm[index]).float(),
                   'seq_length': self.input_lstm[index].shape[0],
                   'input': torch.squeeze(F.interpolate(torch.unsqueeze(torch.from_numpy(self.input[index]).float(), dim=0), size=140, mode='linear'), dim=0),
+                  #'input': torch.Tensor(self.input[index].permute(2,1,0)).float()
                   'target': self.target[index],
                   'seq_length_spec':self.input[index].shape[1]}
         return sample
