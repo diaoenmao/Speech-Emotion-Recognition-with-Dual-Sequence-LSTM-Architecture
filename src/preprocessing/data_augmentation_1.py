@@ -42,7 +42,7 @@ for x, emotion in enumerate(emotions):
     utterances_7_8 = []
 
     for y, utterance in enumerate(emotion):
-        print("Sample " + y + " from emotion " + x)
+        print("Sample " + str(y) + " from emotion " + str(x))
         if len(utterance)/sr < 8:
             if len(utterance)/sr > 7:
                 utterances_7_8.append(utterance)
