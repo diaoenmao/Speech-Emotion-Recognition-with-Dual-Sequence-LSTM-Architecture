@@ -71,7 +71,7 @@ for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is t
         loss.backward()
         weight=model.module.state_dict()["weight"]
         weight=torch.exp(10*weight)/(1+torch.exp(10*weight)).item()
-        optimizer2.step()
+        optimizer.step()
         correct += correct_batch.item()
     accuracy=correct*1.0/((j+1)*batch_size)
     losses=losses / ((j+1)*batch_size)
