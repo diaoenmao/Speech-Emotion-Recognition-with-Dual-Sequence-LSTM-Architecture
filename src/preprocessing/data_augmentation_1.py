@@ -2,6 +2,7 @@ import pickle
 import numpy as np
 import random
 from sklearn.model_selection import train_test_split
+import pdb
 
 def split_data(data):
     input_train, input_test, target_train, target_test, input_lstm_train, input_lstm_test = train_test_split(
@@ -134,7 +135,7 @@ def augment_data(train_data):
             a = np.zeros(4)
             np.put(a, x, 1)
             target.append(a)
-
+    pdb.set_trace()
     input_lstm += additions_lstm
     input += additions
     if len(input_lstm) == len(input) == len(target):
