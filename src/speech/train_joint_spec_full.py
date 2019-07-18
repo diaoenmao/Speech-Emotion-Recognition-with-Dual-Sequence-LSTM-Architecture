@@ -12,22 +12,22 @@ from torch.nn.utils.rnn import pad_sequence, pack_padded_sequence
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 device_ids=[0,1,2,3]
-batch_size=80
-input_channels=1
-out_channels = [32,64,16]
-kernel_size_cnn = [3,2,2]
-stride_size_cnn = [1,1,1]
-padding_cnn=[(1,0),(1,0),(1,0)]
-kernel_size_pool = [2,2,2]
-stride_size_pool = [(1,2),(1,2),(1,2)]
+batch_size=160
+input_channels=128
+out_channels = [64,32]
+kernel_size_cnn = [7,5]
+stride_size_cnn = [1,1]
+padding_cnn=[0,0]
+kernel_size_pool = [2,2]
+stride_size_pool = [3,3]
 hidden_dim=200
 num_layers=2
 dropout=0
 num_labels=4
 hidden_dim_lstm=200
 num_layers_lstm=2
-model = SpectrogramModel(input_channels,out_channels, kernel_size_cnn, stride_size_cnn, padding_cnn, kernel_size_pool, 
-                            stride_size_pool, hidden_dim,num_layers,dropout,num_labels, batch_size, 
+model = SpectrogramModel(input_channels,out_channels, kernel_size_cnn, stride_size_cnn, padding_cnn, kernel_size_pool,
+                            stride_size_pool, hidden_dim,num_layers,dropout,num_labels, batch_size,
                             hidden_dim_lstm,num_layers_lstm,device,False)
 print("============================ Number of parameters ====================================")
 print(str(sum(p.numel() for p in model.parameters() if p.requires_grad)))
@@ -100,12 +100,12 @@ for epoch in range(100):  # again, normally you would NOT do 300 epochs, it is t
     test_loss.append(losses_test)
     train_loss.append(losses)
     print("Epoch: {}-----------Training Loss: {} -------- Testing Loss: {} -------- Training Acc: {} -------- Testing Acc: {}".format(epoch+1,losses,losses_test, accuracy, accuracy_test)+"\n")
-    with open("/scratch/speech/models/classification/spec_full_joint_stats_2.txt","a+") as f:
+    with open("/scratch/speech/models/classification/spec_full_joint_stats_3.txt","a+") as f:
         if epoch==0: f.write("\n"+"============================== New Model ==================================="+"\n")
         f.write("Epoch: {}-----------Training Loss: {} -------- Testing Loss: {} -------- Training Acc: {} -------- Testing Acc: {}".format(epoch+1,losses,losses_test, accuracy, accuracy_test)+"\n")
 
 
 
-pickle_out=open("/scratch/speech/models/classification/spec_full_joint_2_checkpoint_stats.pkl","wb")
+pickle_out=open("/scratch/speech/models/classification/spec_full_joint_3_checkpoint_stats.pkl","wb")
 pickle.dump({"test_acc":test_acc, "train_acc": train_acc, "train_loss": train_loss,"test_loss":test_loss},pickle_out)
 pickle_out.close()

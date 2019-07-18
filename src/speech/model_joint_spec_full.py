@@ -20,6 +20,7 @@ class LSTM_Audio(nn.Module):
         input = input.to(self.device)
         out, hn = self.lstm(input)
         return out
+
 class LFLB(nn.Module):
     def __init__(self, in_channels, out_channels, kernel_size_cnn, stride_cnn, padding_cnn, padding_pool,kernel_size_pool, stride_pool, device):
         super(LFLB, self).__init__()
@@ -33,9 +34,9 @@ class LFLB(nn.Module):
         self.kernel_size_pool = kernel_size_pool
         self.stride_pool = stride_pool
 
-        self.cnn = nn.Conv2d(self.in_channels, self.out_channels, self.kernel_size_cnn, stride=self.stride_cnn, padding=self.padding_cnn).to(self.device)
-        self.batch = nn.BatchNorm2d(self.out_channels)
-        self.max_pool = nn.MaxPool2d(self.kernel_size_pool, stride=self.stride_pool,padding=self.padding_pool)
+        self.cnn = nn.Conv1d(self.in_channels, self.out_channels, self.kernel_size_cnn, stride=self.stride_cnn, padding=self.padding_cnn).to(self.device)
+        self.batch = nn.BatchNorm1d(self.out_channels)
+        self.max_pool = nn.MaxPool1d(self.kernel_size_pool, stride=self.stride_pool,padding=self.padding_pool)
         self.relu = nn.ReLU()
 
     def forward(self,input):
@@ -53,15 +54,16 @@ class SpectrogramModel(nn.Module):
         return torch.floor(x-k+1)
 
     def valid_max(self,x,k,s):
-        return torch.floor((x-k)/s[0]+1)
+        return torch.floor((x-k)/s+1)
+
     def cnn_shape(self,x,kc,sc,pc,km,sm,pm):
-        temp=int((x+2*pc[0]-kc)/sc+1)
-        temp=int((temp+2*pm[0]-km)/sm[0]+1)
+        temp=int((x+2*pc-kc)/sc+1)
+        temp=int((temp+2*pm-km)/sm+1)
         return temp
 
-    def __init__(self, in_channels, out_channels, kernel_size_cnn, stride_cnn, 
-                        padding_cnn, kernel_size_pool, stride_pool, 
-                        hidden_dim, num_layers, dropout_rate, num_labels, batch_size, 
+    def __init__(self, in_channels, out_channels, kernel_size_cnn, stride_cnn,
+                        padding_cnn, kernel_size_pool, stride_pool,
+                        hidden_dim, num_layers, dropout_rate, num_labels, batch_size,
                         hidden_dim_lstm,num_layers_lstm,device, bidirectional=False):
         super(SpectrogramModel, self).__init__()
         self.device = device
@@ -69,9 +71,9 @@ class SpectrogramModel(nn.Module):
         self.out_channels = out_channels
         self.kernel_size_cnn = kernel_size_cnn
         self.stride_cnn = stride_cnn
-        self.padding_cnn =[(int((self.kernel_size_cnn[i]-1)/2),0) for i in range(len(out_channels))]
+        self.padding_cnn =[int((self.kernel_size_cnn[i]-1)/2) for i in range(len(out_channels))]
         self.kernel_size_pool = kernel_size_pool
-        self.padding_pool=[(int((self.kernel_size_pool[i]-1)/2),0) for i in range(len(out_channels))]
+        self.padding_pool=[int((self.kernel_size_pool[i]-1)/2) for i in range(len(out_channels))]
         self.stride_pool = stride_pool
 
 # lstm
@@ -85,21 +87,21 @@ class SpectrogramModel(nn.Module):
         self.hidden_dim_lstm=hidden_dim_lstm
 
 # data shape
-        strideF=128
+        #strideF=128
 
 # for putting all cells together
         self._all_layers = []
-        self.num_layers_cnn=len(out_channels)
+        self.num_layers_cnn = len(out_channels)
         for i in range(self.num_layers_cnn):
             name = 'cell{}'.format(i)
-            cell=LFLB(self.in_channels[i], self.out_channels[i], self.kernel_size_cnn[i], self.stride_cnn[i], 
+            cell = LFLB(self.in_channels[i], self.out_channels[i], self.kernel_size_cnn[i], self.stride_cnn[i],
                         self.padding_cnn[i], self.padding_pool[i],self.kernel_size_pool[i], self.stride_pool[i], self.device)
             setattr(self, name, cell)
             self._all_layers.append(cell)
-            strideF=self.cnn_shape(strideF,self.kernel_size_cnn[i],self.stride_cnn[i],self.padding_cnn[i],
-                                    self.kernel_size_pool[i],self.stride_pool[i],self.padding_pool[i])
-        
-        self.lstm = nn.LSTM(self.out_channels[-1]*strideF, self.hidden_dim_lstm, self.num_layers, batch_first=True,
+            #strideF = self.cnn_shape(strideF,self.kernel_size_cnn[i],self.stride_cnn[i],self.padding_cnn[i],
+                                    #self.kernel_size_pool[i],self.stride_pool[i],self.padding_pool[i])
+
+        self.lstm = nn.LSTM(self.out_channels[-1], self.hidden_dim_lstm, self.num_layers, batch_first=True,
                            dropout=self.dropout_rate, bidirectional=self.bidirectional).to(self.device)
         self.classification_hand = nn.Linear(self.hidden_dim*2, self.num_labels).to(self.device)
         self.classification_raw=nn.Linear(self.hidden_dim_lstm*self.num_directions, self.num_labels).to(self.device)
@@ -122,7 +124,8 @@ class SpectrogramModel(nn.Module):
             else:
                 temp.append(s)
         seq_length_spec=torch.Tensor(temp)
-        out = torch.flatten(x,start_dim=1,end_dim=2).permute(0,2,1)
+        #out = torch.flatten(x,start_dim=1,end_dim=2).permute(0,2,1)
+        out = x.permute(0,2,1)
         out, hn = self.lstm(out)
         out=out.permute(0,2,1)
         out_lstm=self.LSTM_Audio(input_lstm).permute(0,2,1)
