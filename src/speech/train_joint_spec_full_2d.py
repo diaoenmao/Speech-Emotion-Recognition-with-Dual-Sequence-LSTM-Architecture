@@ -12,7 +12,7 @@ from torch.nn.utils.rnn import pad_sequence, pack_padded_sequence
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 device_ids=[0,1,2,3]
-batch_size=20
+batch_size=300
 input_channels=1
 out_channels = [64,16]
 kernel_size_cnn = [3,3]
@@ -37,7 +37,7 @@ model.train()
 
 # Use Adam as the optimizer with learning rate 0.01 to make it fast for testing purposes
 optimizer = optim.Adam(model.parameters(),lr=0.001)
-optimizer2=optim.SGD(model.parameters(), lr=0.1, momentum=0.9)
+optimizer2=optim.SGD(model.parameters(), lr=0.1)
 scheduler = ReduceLROnPlateau(optimizer=optimizer,factor=0.5, patience=2, threshold=1e-3)
 #scheduler2=ReduceLROnPlateau(optimizer=optimizer2, factor=0.5, patience=2, threshold=1e-3)
 #scheduler2 =CosineAnnealingLR(optimizer2, T_max=300, eta_min=0.0001)
