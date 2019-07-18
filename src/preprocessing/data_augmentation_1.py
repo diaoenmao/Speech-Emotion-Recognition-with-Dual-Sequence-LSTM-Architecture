@@ -1,131 +1,186 @@
 import pickle
 import numpy as np
 import random
+from sklearn.model_selection import train_test_split
 
-file = open('/scratch/speech/raw_audio_dataset/raw_audio_train.pkl', 'rb')
-data = pickle.load(file)
+def split_data(data):
+    input_train, input_test, target_train, target_test, input_lstm_train, input_lstm_test = train_test_split(
+        data['input'], data['target'], data['input_lstm'], test_size=0.2, random_state=42)
+    train = {'input': input_train, 'target': target_train, 'input_lstm': input_lstm_train}
+    test = {'input': input_test, 'target': target_test, 'input_lstm': input_lstm_test}
+    return train, test
 
-path = '/scratch/speech/raw_audio_dataset/'
-sr = 16000
+def augment_data(train_data):
+    sr = 16000
+    happy = []
+    neutral = []
+    angry = []
+    sad = []
 
-happy = []
-neutral = []
-angry = []
-sad = []
+    input_lstm = train_data['input_lstm']
+    input = train_data['input']
+    target = train_data['target']
 
-input = data['input']
-target = data['target']
-seq_length = data['seq_length']
+    for utterance_lstm, utterance, label in zip(input_lstm, input, target):
+        if label == [1,0,0,0]:
+            happy.append((utterance_lstm, utterance))
+        elif label == [0,1,0,0]:
+            neutral.append((utterance_lstm, utterance))
+        elif label == [0,0,1,0]:
+            angry.append((utterance_lstm, utterance))
+        else:
+            sad.append((utterance_lstm, utterance))
 
-for utterance, label in zip(data['input'], data['target']):
-    if label == [1,0,0,0]:
-        happy.append(utterance)
-    elif label == [0,1,0,0]:
-        neutral.append(utterance)
-    elif label == [0,0,1,0]:
-        angry.append(utterance)
+    emotions = [happy, neutral, angry, sad]
+    additions_lstm = []
+    additions = []
+
+    for x, emotion in enumerate(emotions):
+
+        utterances_0_1 = []
+        utterances_1_2 = []
+        utterances_2_3 = []
+        utterances_3_4 = []
+        utterances_4_5 = []
+        utterances_5_6 = []
+        utterances_6_7 = []
+        utterances_7_8 = []
+
+        utterances_0_1_lstm = []
+        utterances_1_2_lstm = []
+        utterances_2_3_lstm = []
+        utterances_3_4_lstm = []
+        utterances_4_5_lstm = []
+        utterances_5_6_lstm = []
+        utterances_6_7_lstm = []
+        utterances_7_8_lstm = []
+
+        for y, (utterance_lstm, utterance) in enumerate(emotion):
+            print("Sample " + str(y) + " from emotion " + str(x))
+            if len(utterance)/sr < 8:
+                if len(utterance)/sr > 7:
+                    utterances_7_8_lstm.append(utterance_lstm)
+                    utterances_7_8.append(utterance)
+                elif len(utterance)/sr > 6:
+                    utterances_6_7_lstm.append(utterance_lstm)
+                    utterances_6_7.append(utterance)
+                elif len(utterance)/sr > 5:
+                    utterances_5_6_lstm.append(utterance_lstm)
+                    utterances_5_6.append(utterance)
+                elif len(utterance)/sr > 4:
+                    utterances_4_5_lstm.append(utterance_lstm)
+                    utterances_4_5.append(utterance)
+                elif len(utterance)/sr > 3:
+                    utterances_3_4_lstm.append(utterance_lstm)
+                    utterances_3_4.append(utterance)
+                elif len(utterance)/sr > 2:
+                    utterances_2_3_lstm.append(utterance_lstm)
+                    utterances_2_3.append(utterance)
+                elif len(utterance)/sr > 1:
+                    utterances_1_2_lstm.append(utterance_lstm)
+                    utterances_1_2.append(utterance)
+                else:
+                    utterances_0_1_lstm.append(utterance_lstm)
+                    utterances_0_1.append(utterance)
+
+        matrix_0_8 = []
+        for i in range(len(utterances_0_1)):
+            for j in range(len(utterances_7_8)):
+                matrix_0_8.append((i, j))
+
+        matrix_1_7 = []
+        for i in range(len(utterances_1_2)):
+            for j in range(len(utterances_6_7)):
+                matrix_1_7.append((i, j))
+
+        matrix_2_6 = []
+        for i in range(len(utterances_2_3)):
+            for j in range(len(utterances_5_6)):
+                matrix_2_6.append((i, j))
+
+        matrix_3_5 = []
+        for i in range(len(utterances_3_4)):
+            for j in range(len(utterances_4_5)):
+                matrix_3_5.append((i, j))
+
+        rand_0_8 = np.random.choice(np.array(matrix_0_8, dtype='i,i'), size=2000)
+        for (i, j) in rand_0_8:
+            additions_lstm.append(np.append(utterances_0_1_lstm[i], utterances_7_8_lstm[j], axis=0))
+            additions.append(np.append(utterances_0_1[i], utterances_7_8[j]))
+            a = np.zeros(4)
+            np.put(a, x, 1)
+            target.append(a)
+
+        rand_1_7 = np.random.choice(np.array(matrix_1_7, dtype='i,i'), size=2000)
+        for (i, j) in rand_1_7:
+            additions_lstm.append(np.append(utterances_1_2_lstm[i], utterances_6_7_lstm[j], axis=0))
+            additions.append(np.append(utterances_1_2[i], utterances_6_7[j]))
+            a = np.zeros(4)
+            np.put(a, x, 1)
+            target.append(a)
+
+        rand_2_6 = np.random.choice(np.array(matrix_2_6, dtype='i,i'), size=2000)
+        for (i, j) in rand_2_6:
+            additions_lstm.append(np.append(utterances_2_3_lstm[i], utterances_5_6_lstm[j], axis=0))
+            additions.append(np.append(utterances_2_3[i], utterances_5_6[j]))
+            a = np.zeros(4)
+            np.put(a, x, 1)
+            target.append(a)
+
+        rand_3_5 = np.random.choice(np.array(matrix_3_5, dtype='i,i'), size=2000)
+        for (i, j) in rand_3_5:
+            additions_lstm.append(np.append(utterances_3_4_lstm[i], utterances_4_5_lstm[j], axis=0))
+            additions.append(np.append(utterances_3_4[i], utterances_4_5[j]))
+            a = np.zeros(4)
+            np.put(a, x, 1)
+            target.append(a)
+
+    input_lstm += additions_lstm
+    input += additions
+    if len(input_lstm) == len(input) == len(target):
+        print("equal lengths")
+    x = list(range(len(input_lstm)))
+    random.shuffle(x)
+    input_lstm_new = []
+    input_new = []
+    target_new = []
+    for i in x:
+        input_lstm_new.append(input_lstm[i])
+        input_new.append(input[i])
+        target_new.append(target[i])
+    train_new = {'input_lstm': input_lstm_new, 'input': input_new, 'target': target_new}
+    return train_new
+
+def combine():
+    with open('/scratch/speech/datasets/IEMOCAP_39_FOUR_EMO_full.pkl', 'rb') as out1:
+        dict1 = pickle.load(out1)
+    with open('/scratch/speech/raw_audio_dataset/raw_audio_full.pkl', 'rb') as out2:
+        dict2 = pickle.load(out2)
+
+    flag = True
+    for i in range(len(dict1["target"])):
+        if np.argmax(dict1["target"][i]) == np.argmax(dict2["target"][i]):
+            continue
+        else:
+            flag = False
+            break
+    if flag:
+        print("Datasets consistent")
     else:
-        sad.append(utterance)
+        raise ValueError("Datasets inconsistent")
 
-emotions = [happy, neutral, angry, sad]
-additions = []
+    dict3 = {"input_lstm": dict1["input"], "input": dict2["input"], "target": dict2["target"]}
+    train, test = split_data(dict3)
+    train_new = augment_data(train)
 
-for x, emotion in enumerate(emotions):
+    #with open('/scratch/speech/hand_raw_dataset/EMO39_'+name+'_spectrogram_nfft{}_full.pkl'.format(nfft), 'wb') as full:
+        #pickle.dump(dict3,full)
+    with open('/scratch/speech/hand_raw_dataset/EMO39_raw_audio_augmented_train.pkl', 'wb') as f:
+        pickle.dump(train_new, f)
+    with open('/scratch/speech/hand_raw_dataset/EMO39_raw_audio_augmented_test.pkl', 'wb') as f:
+        pickle.dump(test, f)
 
-    utterances_0_1 = []
-    utterances_1_2 = []
-    utterances_2_3 = []
-    utterances_3_4 = []
-    utterances_4_5 = []
-    utterances_5_6 = []
-    utterances_6_7 = []
-    utterances_7_8 = []
+    print("Successfully copied to pickle.")
 
-    for y, utterance in enumerate(emotion):
-        print("Sample " + str(y) + " from emotion " + str(x))
-        if len(utterance)/sr < 8:
-            if len(utterance)/sr > 7:
-                utterances_7_8.append(utterance)
-            elif len(utterance)/sr > 6:
-                utterances_6_7.append(utterance)
-            elif len(utterance)/sr > 5:
-                utterances_5_6.append(utterance)
-            elif len(utterance)/sr > 4:
-                utterances_4_5.append(utterance)
-            elif len(utterance)/sr > 3:
-                utterances_3_4.append(utterance)
-            elif len(utterance)/sr > 2:
-                utterances_2_3.append(utterance)
-            elif len(utterance)/sr > 1:
-                utterances_1_2.append(utterance)
-            else:
-                utterances_0_1.append(utterance)
-
-    matrix_0_8 = []
-    for i in range(len(utterances_0_1)):
-        for j in range(len(utterances_7_8)):
-            matrix_0_8.append((i, j))
-
-    matrix_1_7 = []
-    for i in range(len(utterances_1_2)):
-        for j in range(len(utterances_6_7)):
-            matrix_1_7.append((i, j))
-
-    matrix_2_6 = []
-    for i in range(len(utterances_2_3)):
-        for j in range(len(utterances_5_6)):
-            matrix_2_6.append((i, j))
-
-    matrix_3_5 = []
-    for i in range(len(utterances_3_4)):
-        for j in range(len(utterances_4_5)):
-            matrix_3_5.append((i, j))
-
-    rand_0_8 = np.random.choice(np.array(matrix_0_8, dtype='i,i'), size=2000)
-    for (i, j) in rand_0_8:
-        additions.append(np.append(utterances_0_1[i], utterances_7_8[j]))
-        a = np.zeros(4)
-        np.put(a, x, 1)
-        target.append(a)
-        seq_length.append(len(utterances_0_1[i] + len(utterances_7_8[j])))
-
-    rand_1_7 = np.random.choice(np.array(matrix_1_7, dtype='i,i'), size=2000)
-    for (i, j) in rand_1_7:
-        additions.append(np.append(utterances_1_2[i], utterances_6_7[j]))
-        a = np.zeros(4)
-        np.put(a, x, 1)
-        target.append(a)
-        seq_length.append(len(utterances_1_2[i] + len(utterances_6_7[j])))
-
-    rand_2_6 = np.random.choice(np.array(matrix_2_6, dtype='i,i'), size=2000)
-    for (i, j) in rand_2_6:
-        additions.append(np.append(utterances_2_3[i], utterances_5_6[j]))
-        a = np.zeros(4)
-        np.put(a, x, 1)
-        target.append(a)
-        seq_length.append(len(utterances_2_3[i] + len(utterances_5_6[j])))
-
-    rand_3_5 = np.random.choice(np.array(matrix_3_5, dtype='i,i'), size=2000)
-    for (i, j) in rand_3_5:
-        additions.append(np.append(utterances_3_4[i], utterances_4_5[j]))
-        a = np.zeros(4)
-        np.put(a, x, 1)
-        target.append(a)
-        seq_length.append(len(utterances_3_4[i] + len(utterances_4_5[j])))
-
-input += additions
-if len(input) == len(target) == len(seq_length):
-    print("equal lengths")
-x = list(range(len(input)))
-random.shuffle(x)
-input_new = []
-target_new = []
-seq_length_new = []
-for i in x:
-    input_new.append(input[i])
-    target_new.append(target[i])
-    seq_length_new.append(seq_length[i])
-
-dict = {'input': input_new, 'target': target_new, 'seq_length': seq_length_new}
-with open(path + 'raw_audio_augmented' + '_train.pkl', 'wb') as f:
-    pickle.dump(dict, f)
+if __name__ == '__main__':
+    combine()
