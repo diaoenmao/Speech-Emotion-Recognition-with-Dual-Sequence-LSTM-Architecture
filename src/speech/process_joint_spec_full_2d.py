@@ -5,7 +5,9 @@ import numpy as np
 from torch.utils.data import Dataset
 import pdb
 from sklearn.model_selection import train_test_split
+import torch.nn.functional as F
 
+'''
 def split_data(data):
     input_train, input_test, target_train, target_test, input_lstm_train, input_lstm_test, seq_length_train, seq_length_test = train_test_split(
         data['input'], data['target'], data["input_lstm"],data["seq_length"],test_size=0.2, random_state=42)
@@ -45,7 +47,7 @@ def combine(name, nfft):
         pickle.dump(test1,test)
 
     print('/scratch/speech/hand_raw_dataset/EMO39_'+name+'_spectrogram_nfft{}_full.pkl'.format(nfft))
-
+'''
 
 class IEMOCAP(Dataset):
     def __init__(self, name, nfft, train=True):
@@ -56,7 +58,7 @@ class IEMOCAP(Dataset):
         data = pickle.load(pickle_in)
         self.input_lstm= data["input_lstm"]
         self.target = data["target"]
-        self.input=data['input']
+        self.input = data['input']
 
 
     def __len__(self):
@@ -65,7 +67,7 @@ class IEMOCAP(Dataset):
     def __getitem__(self, index):
         sample = {'input_lstm': torch.from_numpy(self.input_lstm[index]).float(),
                   'seq_length': self.input_lstm[index].shape[0],
-                  'input': torch.from_numpy(self.input[index]).float(),
+                  'input': torch.squeeze(F.interpolate(torch.unsqueeze(torch.from_numpy(self.input[index]).float(), dim=0), size=250, mode='linear'), dim=0),
                   'target': self.target[index],
                   'seq_length_spec':self.input[index].shape[1]}
         return sample
@@ -81,15 +83,17 @@ def my_collate(batch):
         input_lstm.append(i['input_lstm'])
         seq_length.append(i['seq_length'])
         target.append(i['target'])
-        input.append(i['input'].permute(1,0).float())
+        input.append(i['input'].float())
         seq_length_spec.append(i['seq_length_spec'])
+    input=torch.stack(input,dim=0)
     seq_length_spec=torch.Tensor(seq_length_spec)
     seq_length=torch.Tensor(seq_length)
     target=torch.from_numpy(np.array(target))
-    input=pad_sequence(sequences=input,batch_first=True)
+    #input=pad_sequence(sequences=input,batch_first=True)
     input_lstm = pad_sequence(sequences=input_lstm,batch_first=True)
     input = torch.unsqueeze(input, dim=1)
-    input = input.permute(0,1,3,2)
+    #input = input.permute(0,1,3,2)
+
     #input shape B*max(len(segment))*Freq*max(T)
     return input_lstm,input,target,seq_length,seq_length_spec
 
