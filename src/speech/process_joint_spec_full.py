@@ -54,7 +54,7 @@ class IEMOCAP(Dataset):
         else:
             pickle_in=open('/scratch/speech/hand_raw_dataset/EMO39_'+name+'_spectrogram_nfft{}_test.pkl'.format(nfft), 'rb')
         data = pickle.load(pickle_in)
-        self.seq_length = data["seq_length"]
+        #self.seq_length = data["seq_length"]
         self.input_lstm= data["input_lstm"]
         self.target = data["target"]
         self.input=data['input']
@@ -65,7 +65,7 @@ class IEMOCAP(Dataset):
 
     def __getitem__(self, index):
         sample = {'input_lstm': torch.from_numpy(self.input_lstm[index]).float(),
-                  'seq_length': int(self.seq_length[index]),
+                  'seq_length': self.input_lstm[index].shape[0],
                   'input': torch.from_numpy(self.input[index]).float(),
                   'target': self.target[index],
                   'seq_length_spec':self.input[index].shape[1]}
