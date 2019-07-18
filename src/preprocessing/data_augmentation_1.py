@@ -18,7 +18,7 @@ def augment_data(train_data):
     angry = []
     sad = []
 
-    input_lstm = train_data['input_lstm']
+    input_lstm = train_data['input_lstm'].tolist()
     input = train_data['input']
     target = train_data['target']
 
@@ -135,7 +135,7 @@ def augment_data(train_data):
             a = np.zeros(4)
             np.put(a, x, 1)
             target.append(a)
-    pdb.set_trace()
+
     input_lstm += additions_lstm
     input += additions
     if len(input_lstm) == len(input) == len(target):
