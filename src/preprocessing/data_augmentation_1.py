@@ -81,7 +81,7 @@ for x, emotion in enumerate(emotions):
         for j in range(len(utterances_4_5)):
             matrix_3_5.append((i, j))
 
-    rand_0_8 = np.random.choice(matrix_0_8, size=2000)
+    rand_0_8 = np.random.choice(np.array(matrix_0_8, dtype='i,i'), size=2000)
     for (i, j) in rand_0_8:
         additions.append(np.append(utterances_0_1[i], utterances_7_8[j]))
         a = np.zeros(4)
@@ -89,7 +89,7 @@ for x, emotion in enumerate(emotions):
         target.append(a)
         seq_length.append(len(utterances_0_1[i] + len(utterances_7_8[j])))
 
-    rand_1_7 = np.random.choice(matrix_1_7, size=2000)
+    rand_1_7 = np.random.choice(np.array(matrix_1_7, dtype='i,i'), size=2000)
     for (i, j) in rand_1_7:
         additions.append(np.append(utterances_1_2[i], utterances_6_7[j]))
         a = np.zeros(4)
@@ -97,7 +97,7 @@ for x, emotion in enumerate(emotions):
         target.append(a)
         seq_length.append(len(utterances_1_2[i] + len(utterances_6_7[j])))
 
-    rand_2_6 = np.random.choice(matrix_2_6, size=2000)
+    rand_2_6 = np.random.choice(np.array(matrix_2_6, dtype='i,i'), size=2000)
     for (i, j) in rand_2_6:
         additions.append(np.append(utterances_2_3[i], utterances_5_6[j]))
         a = np.zeros(4)
@@ -105,7 +105,7 @@ for x, emotion in enumerate(emotions):
         target.append(a)
         seq_length.append(len(utterances_2_3[i] + len(utterances_5_6[j])))
 
-    rand_3_5 = np.random.choice(matrix_3_5, size=2000)
+    rand_3_5 = np.random.choice(np.array(matrix_3_5, dtype='i,i'), size=2000)
     for (i, j) in rand_3_5:
         additions.append(np.append(utterances_3_4[i], utterances_4_5[j]))
         a = np.zeros(4)
