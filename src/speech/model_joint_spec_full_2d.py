@@ -101,9 +101,9 @@ class SpectrogramModel(nn.Module):
         
         self.lstm = nn.LSTM(self.out_channels[-1]*strideF, self.hidden_dim_lstm, self.num_layers, batch_first=True,
                            dropout=self.dropout_rate, bidirectional=self.bidirectional).to(self.device)
-        #self.classification_hand = nn.Linear(self.hidden_dim*2, self.num_labels).to(self.device)
-        #self.classification_raw=nn.Linear(self.hidden_dim_lstm*self.num_directions, self.num_labels).to(self.device)
-        self.classification=nn.Linear(self.hidden_dim_lstm*self.num_directions+self.hidden_dim*2, self.num_labels).to(self.device)
+        self.classification_hand = nn.Linear(self.hidden_dim*2, self.num_labels).to(self.device)
+        self.classification_raw=nn.Linear(self.hidden_dim_lstm*self.num_directions, self.num_labels).to(self.device)
+        #self.classification=nn.Linear(self.hidden_dim_lstm*self.num_directions+self.hidden_dim*2, self.num_labels).to(self.device)
 
         self.LSTM_Audio=LSTM_Audio(hidden_dim,num_layers,self.device,bidirectional=True)
         self.weight= nn.Parameter(torch.FloatTensor([0.1]),requires_grad=False)
@@ -137,19 +137,19 @@ class SpectrogramModel(nn.Module):
         #temp=torch.mean(out_lstm,dim=2)
         out_lstm=torch.cat(temp,dim=0)
         #out=torch.cat(temp1,dim=0)
-        #p=torch.exp(10*self.weight)/(1+torch.exp(10*self.weight))
+        p=torch.exp(10*self.weight)/(1+torch.exp(10*self.weight))
         #out=torch.cat([p*out,(1-p)*out_lstm],dim=1)
-        out=torch.cat([out,out_lstm],dim=1)
-        #out=self.classification_raw(out)
-        #out_lstm=self.classification_hand(out_lstm)
-        #out_final=p*out+(1-p)*out_lstm
-        out=self.classification(out)
+        #out=torch.cat([out,out_lstm],dim=1)
+        out=self.classification_raw(out)
+        out_lstm=self.classification_hand(out_lstm)
+        out_final=p*out+(1-p)*out_lstm
+        #out=self.classification(out)
         target_index = torch.argmax(target, dim=1).to(self.device)
-        correct_batch=torch.sum(target_index==torch.argmax(out,dim=1))
-        #losses_batch_raw=F.cross_entropy(out,torch.max(target,1)[1])
-        #losses_batch_hand=F.cross_entropy(out_lstm,torch.max(target,1)[1])
-        #losses_batch=p*losses_batch_raw+(1-p)*losses_batch_hand
-        losses_batch=F.cross_entropy(out,torch.max(target,1)[1])
+        correct_batch=torch.sum(target_index==torch.argmax(out_final,dim=1))
+        losses_batch_raw=F.cross_entropy(out,torch.max(target,1)[1])
+        losses_batch_hand=F.cross_entropy(out_lstm,torch.max(target,1)[1])
+        losses_batch=p*losses_batch_raw+(1-p)*losses_batch_hand
+        #losses_batch=F.cross_entropy(out,torch.max(target,1)[1])
 
 
         correct_batch=torch.unsqueeze(correct_batch,dim=0)
