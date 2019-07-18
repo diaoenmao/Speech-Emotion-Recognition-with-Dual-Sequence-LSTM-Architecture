@@ -4,34 +4,53 @@ import pickle
 import librosa
 import pdb
 
-save_path = '/scratch/speech/raw_audio_dataset/'
-infile = open('/scratch/speech/raw_audio_dataset/raw_audio_augmented_train.pkl', 'rb')
-data = pickle.load(infile)
+save_path = '/scratch/speech/hand_raw_dataset/'
+f_train = open('/scratch/speech/hand_raw_dataset/EMO39_raw_audio_augmented_train.pkl', 'rb')
+f_test = open('/scratch/speech/hand_raw_dataset/EMO39_raw_audio_augmented_test.pkl', 'rb')
+train_data = pickle.load(f_train)
+test_data = pickle.load(f_test)
 
 sample_rate = 16000
 nfft = pow(2, 9)
 
-def create_data(data):
-    utterances_new = []
-    utterances_new_mel = []
-    for i, utterance in enumerate(data['input']):
-        plt.clf()
-        lin_spectrogram, freqs, t, im = plt.specgram(utterance, Fs=sample_rate, NFFT=nfft)
-        mel_spectrogram = librosa.feature.melspectrogram(y=utterance.astype('float'), sr=sample_rate, n_fft=nfft)
-        #mel_spectrogram = librosa.feature.melspectrogram(S=lin_spectrogram, n_fft=nfft)
-        utterances_new.append(lin_spectrogram)
-        utterances_new_mel.append(mel_spectrogram)
-        print(i)
-    return utterances_new, utterances_new_mel, data['target']
+def create_data(train_data, test_data, n_fft):
+    utterances_new_train = []
+    utterances_new_mel_train = []
+    utterances_new_test = []
+    utterances_new_mel_test = []
 
-def save(linear_dataset, mel_dataset):
-    with open(save_path + 'linear_spectrogram_nfft{}'.format(nfft) + '_full.pkl', 'wb') as f:
-        pickle.dump(linear_dataset, f)
-    with open(save_path + 'mel_spectrogram_nfft{}'.format(nfft) + '_full.pkl', 'wb') as f:
-        pickle.dump(mel_dataset, f)
+    for i, (utterance_train, utterance_test) in enumerate(zip(train_data['input'], test_data['input'])):
+        plt.clf()
+        lin_spectrogram_train, freqs, t, im = plt.specgram(utterance_train, Fs=sample_rate, NFFT=n_fft)
+        lin_spectrogram_test, freqs, t, im = plt.specgram(utterance_test, Fs=sample_rate, NFFT=n_fft)
+        mel_spectrogram_train = librosa.feature.melspectrogram(y=utterance_train.astype('float'), sr=sample_rate, n_fft=n_fft)
+        mel_spectrogram_test = librosa.feature.melspectrogram(y=utterance_test.astype('float'), sr=sample_rate, n_fft=n_fft)
+        #mel_spectrogram = librosa.feature.melspectrogram(S=lin_spectrogram, n_fft=nfft)
+        utterances_new_train.append(lin_spectrogram_train)
+        utterances_new_mel_train.append(mel_spectrogram_train)
+        utterances_new_test.append(lin_spectrogram_test)
+        utterances_new_mel_test.append(mel_spectrogram_test)
+        print(i)
+    return utterances_new_train, utterances_new_mel_train, utterances_new_test, utterances_new_mel_test
 
 if __name__ == '__main__':
-    utterances_new, utterances_new_mel, target = create_data(data)
-    linear_dataset = {'input': utterances_new, 'target': target}
-    mel_dataset = {'input': utterances_new_mel, 'target': target}
-    save(linear_dataset, mel_dataset)
+    utterances_new_train, utterances_new_mel_train, utterances_new_test, utterancs_new_mel_test = create_data(train_data, test_data, n_fft=nfft)
+
+    input_lstm_train = train_data['input_lstm']
+    target_train = train_data['target']
+    input_lstm_test = test_data['input_lstm']
+    target_test = test_data['target']
+
+    linear_dataset_train = {'input_lstm': input_lstm_train, 'input': utterances_new_train, 'target': target_train}
+    mel_dataset_train = {'input_lstm': input_lstm_train, 'input': utterances_new_mel_train, 'target': target_train}
+    linear_dataset_test = {'input_lstm': input_lstm_test, 'input': utterances_new_test, 'target': target_test}
+    mel_dataset_test = {'input_lstm': input_lstm_test, 'input': utterances_new_mel_test, 'target': target_test}
+
+    with open(save_path + 'EMO39_linear_spectrogram_nfft{}_augmented'.format(nfft) + '_train.pkl', 'wb') as f:
+        pickle.dump(linear_dataset_train, f)
+    with open(save_path + 'EMO39_mel_spectrogram_nfft{}_augmented'.format(nfft) + '_train.pkl', 'wb') as f:
+        pickle.dump(mel_dataset_train, f)
+    with open(save_path + 'EMO39_linear_spectrogram_nfft{}_augmented'.format(nfft) + '_test.pkl', 'wb') as f:
+        pickle.dump(linear_dataset_test, f)
+    with open(save_path + 'EMO39_mel_spectrogram_nfft{}_augmented'.format(nfft) + '_test.pkl', 'wb') as f:
+        pickle.dump(mel_dataset_test, f)
