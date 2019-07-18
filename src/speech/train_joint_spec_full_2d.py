@@ -24,7 +24,7 @@ hidden_dim=200
 num_layers=2
 dropout=0
 num_labels=4
-hidden_dim_lstm=200
+hidden_dim_lstm=300
 num_layers_lstm=2
 model = SpectrogramModel(input_channels,out_channels, kernel_size_cnn, stride_size_cnn, padding_cnn, kernel_size_pool,
                             stride_size_pool, hidden_dim,num_layers,dropout,num_labels, batch_size,
@@ -36,7 +36,7 @@ model=DataParallel(model,device_ids=device_ids)
 model.train()
 
 # Use Adam as the optimizer with learning rate 0.01 to make it fast for testing purposes
-optimizer = optim.Adam(model.parameters(),lr=0.001)
+optimizer = optim.Adam(model.parameters(),lr=0.0001)
 optimizer2=optim.SGD(model.parameters(), lr=0.1)
 scheduler = ReduceLROnPlateau(optimizer=optimizer,factor=0.5, patience=2, threshold=1e-3)
 #scheduler2=ReduceLROnPlateau(optimizer=optimizer2, factor=0.5, patience=2, threshold=1e-3)
