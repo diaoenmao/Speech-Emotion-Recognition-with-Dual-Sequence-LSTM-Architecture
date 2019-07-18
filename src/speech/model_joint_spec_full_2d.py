@@ -113,21 +113,27 @@ class SpectrogramModel(nn.Module):
         target = target.to(self.device)
         for i in range(self.num_layers_cnn):
             name = 'cell{}'.format(i)
-            seq_length_spec=self.valid_max(self.valid_cnn(seq_length_spec,self.kernel_size_cnn[i]),self.kernel_size_pool[i],self.stride_pool[i])
+            #seq_length_spec=self.valid_max(self.valid_cnn(seq_length_spec,self.kernel_size_cnn[i]),self.kernel_size_pool[i],self.stride_pool[i])
             x=getattr(self,name)(x)
         temp=[]
+        '''
         for s in seq_length_spec:
             if s==0 or s==1:
                 temp.append(2)
             else:
                 temp.append(s)
         seq_length_spec=torch.Tensor(temp)
+        '''
         out = torch.flatten(x,start_dim=1,end_dim=2).permute(0,2,1)
         out, hn = self.lstm(out)
         out=out.permute(0,2,1)
         out_lstm=self.LSTM_Audio(input_lstm).permute(0,2,1)
+        '''
         temp1=[torch.unsqueeze(torch.mean(out[k,:,:int(s.item())],dim=1),dim=0) for k,s in enumerate(seq_length_spec)]
+        '''
         temp=[torch.unsqueeze(torch.mean(out_lstm[k,:,:int(s.item())],dim=1),dim=0) for k,s in enumerate(seq_length)]
+        temp1=torch.mean(out,dim=2)
+        #temp=torch.mean(out_lstm,dim=2)
         out_lstm=torch.cat(temp,dim=0)
         out=torch.cat(temp1,dim=0)
         p=torch.exp(10*self.weight)/(1+torch.exp(10*self.weight))
