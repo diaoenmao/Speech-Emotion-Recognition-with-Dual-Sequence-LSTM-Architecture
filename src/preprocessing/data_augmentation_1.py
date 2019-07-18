@@ -5,10 +5,10 @@ from sklearn.model_selection import train_test_split
 import pdb
 
 def split_data(data):
-    input_train, input_test, target_train, target_test, input_lstm_train, input_lstm_test = train_test_split(
-        data['input'], data['target'], data['input_lstm'], test_size=0.2, random_state=42)
-    train = {'input': input_train, 'target': target_train, 'input_lstm': input_lstm_train}
-    test = {'input': input_test, 'target': target_test, 'input_lstm': input_lstm_test}
+    input_lstm_train, input_lstm_test, input_train, input_test, target_train, target_test = train_test_split(
+        data['input_lstm'], data['input'], data['target'], test_size=0.2, random_state=42)
+    train = {'input_lstm': input_lstm_train, 'input': input_train, 'target': target_train}
+    test = {'input_lstm': input_lstm_test, 'input': input_test, 'target': target_test}
     return train, test
 
 def augment_data(train_data):
