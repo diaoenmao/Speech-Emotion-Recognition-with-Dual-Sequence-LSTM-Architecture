@@ -12,7 +12,7 @@ from torch.nn.utils.rnn import pad_sequence, pack_padded_sequence
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 device_ids=[0,1,2,3]
-batch_size=200
+batch_size=256
 input_channels=1
 out_channels = [64,16]
 kernel_size_cnn = [2,2]
@@ -24,7 +24,7 @@ hidden_dim=200
 num_layers=2
 dropout=0
 num_labels=4
-hidden_dim_lstm=300
+hidden_dim_lstm=200
 num_layers_lstm=2
 model = SpectrogramModel(input_channels,out_channels, kernel_size_cnn, stride_size_cnn, padding_cnn, kernel_size_pool,
                             stride_size_pool, hidden_dim,num_layers,dropout,num_labels, batch_size,
