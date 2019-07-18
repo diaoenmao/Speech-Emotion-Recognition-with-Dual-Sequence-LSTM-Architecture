@@ -85,7 +85,7 @@ def my_collate(batch):
         target.append(i['target'])
         input.append(i['input'].float())
         seq_length_spec.append(i['seq_length_spec'])
-    input=torch.Tensor(input)
+    input=torch.stack(input,dim=0)
     seq_length_spec=torch.Tensor(seq_length_spec)
     seq_length=torch.Tensor(seq_length)
     target=torch.from_numpy(np.array(target))
