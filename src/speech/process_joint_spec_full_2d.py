@@ -70,7 +70,6 @@ class IEMOCAP(Dataset):
                   'input': torch.squeeze(F.interpolate(torch.unsqueeze(torch.from_numpy(self.input[index]).float(), dim=0), size=250, mode='linear'), dim=0),
                   'target': self.target[index],
                   'seq_length_spec':self.input[index].shape[1]}
-        print(sample['input'].shape)
         return sample
 
 
