@@ -59,7 +59,7 @@ class IEMOCAP(Dataset):
         if train:
             pickle_in = open('/scratch/speech/hand_raw_dataset/EMO39_'+name+'_spectrogram_nfft{}_augmented_train.pkl'.format(nfft), 'rb')
         else:
-            pickle_in=open('/scratch/speech/hand_raw_dataset/EMO39_'+name+'_spectrogramnfft{}_augmented_test.pkl'.format(nfft), 'rb')
+            pickle_in=open('/scratch/speech/hand_raw_dataset/EMO39_'+name+'_spectrogram_nfft{}_augmented_test.pkl'.format(nfft), 'rb')
         data = pickle.load(pickle_in)
         self.input_lstm= data["input_lstm"]
         self.target = data["target"]
