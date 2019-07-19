@@ -1,15 +1,4 @@
 #!/bin/bash
-python train_joint_spec_full_2d.py -n mel -fft 256 -b 100 -out1 64 -out2 16 -kc 2 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 256 -b 100 -out1 64 -out2 16 -kc 2 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 256 -b 100 -out1 64 -out2 16 -kc 2 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 256 -b 100 -out1 64 -out2 16 -kc 2 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 256 -b 100 -out1 64 -out2 16 -kc 3 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 256 -b 100 -out1 64 -out2 16 -kc 3 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 256 -b 100 -out1 64 -out2 16 -kc 3 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 256 -b 100 -out1 64 -out2 16 -kc 3 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 256 -b 100 -out1 64 -out2 16 -kc 4 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 256 -b 100 -out1 64 -out2 16 -kc 4 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 256 -b 100 -out1 64 -out2 16 -kc 4 -sc 1 -kp 4 -sp 2
 python train_joint_spec_full_2d.py -n mel -fft 256 -b 100 -out1 64 -out2 16 -kc 4 -sc 1 -kp 4 -sp 4
 python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 64 -out2 16 -kc 2 -sc 1 -kp 2 -sp 2
 python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 64 -out2 16 -kc 2 -sc 1 -kp 2 -sp 4
