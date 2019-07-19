@@ -20,6 +20,6 @@ if __name__ == '__main__':
     kernel_size_cnn=[[3,3],[2,2],[4,4]]
     stride_size_cnn=[[1,1]]
     kernel_size_pool=[[2,2],[3,3],[4,4]]
-    stride_size_pool=[[[2,2],[2,2],[[4,4],[4,4]]
+    stride_size_pool=[[[2,2],[2,2]],[[4,4],[4,4]]]
     generate_bash(dataset,batch_size,out_channels, kernel_size_cnn, stride_size_cnn, kernel_size_pool,stride_size_pool)
     print("Success")
