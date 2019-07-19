@@ -134,6 +134,7 @@ class MultiSpectrogramModel(nn.Module):
         self.num_layers_lstm = num_layers_lstm
         self.device = device
         self.bidirectional = bidirectional
+        self.num_directions = 1 + self.bidirectional
 
         self._all_layers = []
         self.num_branches = 3
@@ -164,7 +165,7 @@ class MultiSpectrogramModel(nn.Module):
         out_lstm = self.LSTM_Audio(input_lstm).permute(0,2,1)
         temp = [torch.unsqueeze(torch.mean(out_lstm[k,:,:int(s.item())],dim=1),dim=0) for k,s in enumerate(seq_length)]
         out_lstm = torch.cat(temp,dim=0)
-        #pdb.set_trace()        
+        #pdb.set_trace()
         out1 = torch.mean(input1, dim=2)
         out2 = torch.mean(input2, dim=2)
         out3 = torch.mean(input3, dim=2)
