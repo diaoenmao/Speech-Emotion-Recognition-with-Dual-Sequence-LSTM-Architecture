@@ -86,8 +86,8 @@ for epoch in range(epoch_num):  # again, normally you would NOT do 300 epochs, i
     losses = 0
     correct=0
     model.train()
+    pdb.set_trace()
     for j, (input_lstm, input1, input2, input3, target, seq_length) in enumerate(train_loader):
-        print(j)
         if (j+1)%20==0:
             print("=================================Train Batch"+ str(j+1)+str(weight)+"===================================================")
         model.zero_grad()
