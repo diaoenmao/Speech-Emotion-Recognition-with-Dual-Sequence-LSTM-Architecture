@@ -28,7 +28,6 @@ def train_model(args):
     out_channels = args.out_channels
     kernel_size_cnn = args.kernel_size_cnn
     stride_size_cnn = args.stride_size_cnn
-    padding_cnn=[(1,0),(1,0)]
     kernel_size_pool = args.kernel_size_pool
     stride_size_pool = args.stride_size_pool
     hidden_dim=200
@@ -36,16 +35,16 @@ def train_model(args):
     dropout=0
     num_labels=4
     hidden_dim_lstm=200
-    epoch_num=10
+    epoch_num=2
     num_layers_lstm=2
-    model = SpectrogramModel(input_channels,out_channels, kernel_size_cnn, stride_size_cnn, padding_cnn, kernel_size_pool,
+    model = SpectrogramModel(input_channels,out_channels, kernel_size_cnn, stride_size_cnn, kernel_size_pool,
                                 stride_size_pool, hidden_dim,num_layers,dropout,num_labels, batch_size,
                                 hidden_dim_lstm,num_layers_lstm,device,False)
     print("============================ Number of parameters ====================================")
     print(str(sum(p.numel() for p in model.parameters() if p.requires_grad)))
-    path="dataset:{};batch_size:{};out_channels:{};kernel_size_cnn:{};stride_size_cnn:{};kernel_size_pool:{};stride_size_pool".format(args.dataset,args.batch_size,args.out_channels,args.kernel_size_cnn, args.stride_size_cnn, args.kernel_size_pool, args.stride_size_pool)
+    path="dataset:{};batch_size:{};out_channels:{};kernel_size_cnn:{};stride_size_cnn:{};kernel_size_pool:{};stride_size_pool:{}".format(args.dataset,args.batch_size,args.out_channels,args.kernel_size_cnn, args.stride_size_cnn, args.kernel_size_pool,args.stride_size_pool)
     with open("/scratch/speech/models/classification/spec_full_joint_stats_2.txt","a+") as f:
-        f.write("\n"+"model_parameters "+path+"\n")
+        f.write("\n"+"model_parameters"+"\n"+path+"\n")
     model.cuda()
     model=DataParallel(model,device_ids=device_ids)
     model.train()
@@ -116,8 +115,8 @@ def train_model(args):
         train_loss.append(losses)
         print("Epoch: {}-----------Training Loss: {} -------- Testing Loss: {} -------- Training Acc: {} -------- Testing Acc: {}".format(epoch+1,losses,losses_test, accuracy, accuracy_test)+"\n")
         with open("/scratch/speech/models/classification/spec_full_joint_stats_2.txt","a+") as f:
-            if epoch==epoch_num-1: f.write("\n"+"Best Accuracy:{}".format(max(test_acc))+"\n")
             f.write("Epoch: {}-----------Training Loss: {} -------- Testing Loss: {} -------- Training Acc: {} -------- Testing Acc: {}".format(epoch+1,losses,losses_test, accuracy, accuracy_test)+"\n")
+            if epoch==epoch_num-1: f.write("\n"+"Best Accuracy:{}".format(max(test_acc))+"\n")
             if epoch==epoch_num-1: f.write("\n"+"=============== model ends ==================="+"\n")
 
 
