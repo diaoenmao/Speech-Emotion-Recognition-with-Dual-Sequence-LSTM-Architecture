@@ -11,25 +11,8 @@ import numpy as np
 from torch.nn.utils.rnn import pad_sequence, pack_padded_sequence
 import argparse
 
-'''
-def init_parser():
-    parser = argparse.ArgumentParser(description='Train and test your model as specified by the parameters you enter')
-    parser.add_argument('--name', '-n', default='mel', type=str, dest='name')
-    parser.add_argument('--nfft','-fft',default=512,type=int,dest='nfft')
-    parser.add_argument('--batch_size', '-b', default=128, type=int, dest='batch_size')
-    parser.add_argument('--out_channels_1', '-out1', default=64, type=int, dest='out_channels1')
-    parser.add_argument('--out_channels_2', '-out2', default=16, type=int, dest='out_channels2')
-    parser.add_argument('--kernel_size_cnn', '-kc', default=2, type=int, dest='kernel_size_cnn')
-    parser.add_argument('--stride_size_cnn', '-sc', default=1, type=int, dest='stride_size_cnn')
-    parser.add_argument('--kernel_size_pool', '-kp', default=2, type=int, dest='kernel_size_pool')
-    parser.add_argument('--stride_size_pool', '-sp', default=2, type=int, dest='stride_size_pool')
-    return parser.parse_args()
-'''
-
-#def train_model(args):
-
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-device_ids=[0,1,2,3]
+device_ids=[0]
 batch_size=4
 input_channels=1
 out_channels = [64,16]
@@ -47,10 +30,10 @@ num_layers_lstm=2
 model = MultiSpectrogramModel(input_channels,out_channels, kernel_size_cnn, stride_size_cnn, kernel_size_pool,
                             stride_size_pool, hidden_dim,num_layers,dropout,num_labels, batch_size,
                             hidden_dim_lstm,num_layers_lstm,device, False)
-'''
+
 print("============================ Number of parameters ====================================")
 print(str(sum(p.numel() for p in model.parameters() if p.requires_grad)))
-'''
+
 #path="name:{};nfft:{};batch_size:{};out_channels:{};kernel_size_cnn:{};stride_size_cnn:{};kernel_size_pool:{};stride_size_pool:{}".format(args.name,args.nfft,args.batch_size,out_channels,kernel_size_cnn,stride_size_cnn,kernel_size_pool,stride_size_pool)
 with open("/scratch/speech/models/classification/multi_spec_joint_stats.txt","a+") as f:
     f.write("\n"+"============ model starts ===========")
@@ -72,11 +55,11 @@ training_data = IEMOCAP(name='mel', nfft=[512, 1024, 2048], train=True)
 train_loader = DataLoader(dataset=training_data, batch_size=batch_size, shuffle=True, collate_fn=my_collate, num_workers=0, drop_last=True)
 testing_data = IEMOCAP(name='mel', nfft=[512, 1024, 2048], train=False)
 test_loader = DataLoader(dataset=testing_data, batch_size=batch_size, shuffle=True, collate_fn=my_collate, num_workers=0,drop_last=True)
-'''
+
 print("=================")
 print(len(training_data))
 print("===================")
-'''
+
 test_acc=[]
 train_acc=[]
 test_loss=[]
