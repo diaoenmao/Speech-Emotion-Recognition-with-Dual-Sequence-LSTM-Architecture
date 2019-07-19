@@ -14,7 +14,7 @@ import argparse
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 device_ids=[0]
 batch_size=4
-input_channels = [1] + out_channels
+input_channels = 1
 out_channels = [64,16]
 kernel_size_cnn = [4]*2
 stride_size_cnn = [2]*2
@@ -73,6 +73,7 @@ for epoch in range(epoch_num):  # again, normally you would NOT do 300 epochs, i
         if (j+1)%20==0:
             print("=================================Train Batch"+ str(j+1)+str(weight)+"===================================================")
         model.zero_grad()
+        pdb.set_trace()
         losses_batch,correct_batch= model(input_lstm, input1, input2, input3, target, seq_length)
         loss = torch.mean(losses_batch,dim=0)
         correct_batch=torch.sum(correct_batch,dim=0)
