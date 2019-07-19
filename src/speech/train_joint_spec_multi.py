@@ -73,7 +73,6 @@ for epoch in range(epoch_num):  # again, normally you would NOT do 300 epochs, i
         if (j+1)%20==0:
             print("=================================Train Batch"+ str(j+1)+str(weight)+"===================================================")
         model.zero_grad()
-        pdb.set_trace()
         losses_batch,correct_batch= model(input_lstm, input1, input2, input3, target, seq_length)
         loss = torch.mean(losses_batch,dim=0)
         correct_batch=torch.sum(correct_batch,dim=0)
