@@ -69,9 +69,9 @@ class SpectrogramModel(nn.Module):
         self.out_channels = out_channels
         self.kernel_size_cnn = kernel_size_cnn
         self.stride_cnn = stride_cnn
-        self.padding_cnn =[(int((self.kernel_size_cnn[i]-1)/2),0) for i in range(len(out_channels))]
+        self.padding_cnn =[(int((self.kernel_size_cnn[i]-1)/2),int((self.kernel_size_cnn[i]-1)/2)) for i in range(len(out_channels))]
         self.kernel_size_pool = kernel_size_pool
-        self.padding_pool=[(int((self.kernel_size_pool[i]-1)/2),0) for i in range(len(out_channels))]
+        self.padding_pool=[(int((self.kernel_size_pool[i]-1)/2),int((self.kernel_size_pool[i]-1)/2)) for i in range(len(out_channels))]
         self.stride_pool = stride_pool
 
 # lstm
