@@ -72,7 +72,7 @@ class IEMOCAP(Dataset):
         self.input = [data1['input'], data2['input'], data3['input']]
 
     def __len__(self):
-        return len(self.input)
+        return len(self.input[0])
 
     def __getitem__(self, index):
         input = [torch.squeeze(F.interpolate(torch.unsqueeze(torch.from_numpy(10*np.log10(data[index])).float(), dim=0), size=140, mode='nearest'), dim=0) for data in self.input]
