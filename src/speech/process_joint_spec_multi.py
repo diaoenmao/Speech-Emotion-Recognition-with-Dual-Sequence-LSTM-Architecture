@@ -82,7 +82,7 @@ class IEMOCAP(Dataset):
                   'input2': input[1],
                   'input3': input[2],
                   #'input': torch.Tensor(self.input[index].permute(2,1,0)).float()
-                  'target': self.target[index]
+                  'target': self.target[index]}
                   #'seq_length_spec':self.input[index].shape[1]}
         return sample
 
