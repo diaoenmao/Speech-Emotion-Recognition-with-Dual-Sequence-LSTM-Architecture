@@ -142,15 +142,15 @@ class SpectrogramModel(nn.Module):
         #out=torch.cat([out,out_lstm],dim=1)
         out=self.classification_raw(out)
         out_lstm=self.classification_hand(out_lstm)
-        #out_final=p*out+(1-p)*out_lstm
-        out_final=out
+        out_final=p*out+(1-p)*out_lstm
+        #out_final=out
         #out=self.classification(out)
         target_index = torch.argmax(target, dim=1).to(self.device)
         correct_batch=torch.sum(target_index==torch.argmax(out_final,dim=1))
         losses_batch_raw=F.cross_entropy(out,torch.max(target,1)[1])
-        #losses_batch_hand=F.cross_entropy(out_lstm,torch.max(target,1)[1])
-        #losses_batch=p*losses_batch_raw+(1-p)*losses_batch_hand
-        losses_batch=losses_batch_raw
+        losses_batch_hand=F.cross_entropy(out_lstm,torch.max(target,1)[1])
+        losses_batch=p*losses_batch_raw+(1-p)*losses_batch_hand
+        #losses_batch=losses_batch_raw
         #losses_batch=F.cross_entropy(out,torch.max(target,1)[1])
 
 
