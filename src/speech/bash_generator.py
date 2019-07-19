@@ -6,7 +6,8 @@ def generate_bash(dataset,batch_size,out_channels, kernel_size_cnn, stride_size_
                 for sc in stride_size_cnn:
                     for kp in kernel_size_pool:
                         for sp in stride_size_pool:
-                            commands.append("python train_joint_spec_full_2d.py -d {} -b {} -out {} -kc {} -sc {} -kp {} -sp {}".format(d, b, out, kc,sc,kp,sp))
+                            for out in out_channels:
+                                commands.append("python train_joint_spec_full_2d.py -d {} -b {} -out {} -kc {} -sc {} -kp {} -sp {}".format(d, b, out, kc,sc,kp,sp))
     with open('gpu_full_autogen_bash.sh','w+') as f:
         f.write('#!/bin/bash\n')
         for j in commands:
