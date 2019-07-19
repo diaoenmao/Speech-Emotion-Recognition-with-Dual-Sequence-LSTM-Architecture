@@ -151,7 +151,7 @@ class MultiSpectrogramModel(nn.Module):
 
         self.LSTM_Audio=LSTM_Audio(hidden_dim,num_layers,self.device,bidirectional=False)
         self.classification_hand = nn.Linear(self.hidden_dim, self.num_labels).to(self.device)
-        self.classification_raw = nn.Linear(self.hidden_dim_lstm*self.num_directions, self.num_labels).to(self.device)
+        self.classification_raw = nn.Linear(self.hidden_dim_lstm*self.num_directions*self.num_branches, self.num_labels).to(self.device)
         self.weight= nn.Parameter(torch.FloatTensor([0]),requires_grad=False)
 
     def forward(self, input_lstm, input1, input2, input3, target, seq_length):
