@@ -40,6 +40,7 @@ class LFLB(nn.Module):
         self.relu = nn.ReLU()
 
     def forward(self,input):
+        pdb.set_trace()
         input=input.to(self.device)
         out=self.cnn(input)
         out=self.batch(out)
@@ -103,6 +104,7 @@ class SpectrogramModel(nn.Module):
                            dropout=self.dropout_rate, bidirectional=self.bidirectional).to(self.device)
 
     def forward(self, input):
+        pdb.set_trace()
         x = input.to(self.device)
         for i in range(self.num_layers_cnn):
             name = 'spec_cell{}'.format(i)
