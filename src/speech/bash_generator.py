@@ -11,7 +11,7 @@ def generate_bash(dataset,batch_size,out_channels, kernel_size_cnn, stride_size_
     with open('gpu_full_autogen_bash.sh','w+') as f:
         f.write('#!/bin/bash\n')
         for j in commands:
-            f.write(j)
+            f.write(j+"\n")
 
 if __name__ == '__main__':
     dataset= [['mel',512],['linear',256],['linear',512]]
