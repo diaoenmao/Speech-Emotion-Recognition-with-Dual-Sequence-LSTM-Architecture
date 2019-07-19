@@ -1,29 +1,24 @@
-def generate_bash(cuda, models, dropout_rates, batch_sizes, learning_rates, epochs, hidden_dims, bidirections):
+def generate_bash(dataset,batch_size,out_channels, kernel_size_cnn, stride_size_cnn, kernel_size_pool,stride_size_pool):
     commands = []
-    for model in models:
-        for dr in dropout_rates:
-            for b in batch_sizes:
-                for lr in learning_rates:
-                    for e in epochs:
-                        for hd in hidden_dims:
-                            for bi in bidirections:
-                                commands.append(
-                                    "python full_train_and_test.py -m {} -dr {} -b {} -lr {} -e {} -hd {} -tc {}".format(
-                                        model, dr, b, lr, e, hd, bi))
-    for i, device in enumerate(cuda):
-        with open('gpu{}_autogen_bash.sh'.format(device),'w+') as f:
-            f.write('#!/bin/bash\n')
-            for j in range(int(len(commands) * 1.0 * i / len(cuda)),int(len(commands) * 1.0 * (i+1) / len(cuda))):
-                f.write("CUDA_VISIBLE_DEVICES=\"{}\" {}\n".format(device, commands[j]))
+    for d in dataset:
+        for b in batch_size:
+            for kc in kernel_size_cnn:
+                for sc in stride_size_cnn:
+                    for kp in kernel_size_pool:
+                        for sp in stride_size_pool:
+                            commands.append("python train_joint_spec_full_2d.py -d {} -b {} -out {} -kc {} -sc {} -kp {} -sp {}".format(d, b, out, kc,sc,kp,sp))
+    with open('gpu_full_autogen_bash.sh','w+') as f:
+        f.write('#!/bin/bash\n')
+        for j in commands:
+            f.write(j)
 
 if __name__ == '__main__':
-    cuda = ["0","1","2","3"]
-    models = ['Mean_Pool_2',"ATT"]
-    dropout_rates = [0.0, 0.2, 0.4,0.8]
-    batch_sizes = [128]
-    learning_rates = [0.001]
-    epochs = [150]
-    hidden_dims = [200, 250, 300]
-    bidirections = ['-bi', '']
-    generate_bash(cuda, models, dropout_rates, batch_sizes, learning_rates, epochs, hidden_dims, bidirections)
+    dataset= [['mel',512],['linear',256],['linear',512]]
+    batch_size = [100]
+    out_channels=[[64,16],[128,32],[256,16],[16,64],[32,128],[16,256]]
+    kernel_size_cnn=[[3,3],[2,2],[4,4]]
+    stride_size_cnn=[[1,1]]
+    kernel_size_pool=[[2,2],[3,3],[4,4]]
+    stride_size_pool=[[(2,2),(2,2)],[(4,4),(4,4)]]
+    generate_bash(dataset,batch_size,out_channels, kernel_size_cnn, stride_size_cnn, kernel_size_pool,stride_size_pool)
     print("Success")

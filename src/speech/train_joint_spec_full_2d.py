@@ -15,10 +15,10 @@ def init_parser():
     parser.add_argument('--dataset', '-d', default=['mel',512], type=list, dest='dataset')
     parser.add_argument('--batch_size', '-b', default=128, type=int, dest='batch_size')
     parser.add_argument('--out_channels', '-out', default=[64,16], type=list, dest='out_channels')
-    parser.add_argument('--kernel_size_cnn', '-kernel_size_cnn', default=[2,2], type=list, dest='kernel_size_cnn')
-    parser.add_argument('--stride_size_cnn', '-stride_size_cnn', default=[1,1], type=list, dest='stride_size_cnn')
-    parser.add_argument('--kernel_size_pool', '-kernel_size_pool', default=[2,2], type=list, dest='kernel_size_pool')
-    parser.add_argument('--stride_size_pool', '-stride_size_pool', default=[(2,2),(2,2)], type=list, dest='stride_size_pool')
+    parser.add_argument('--kernel_size_cnn', '-kc', default=[2,2], type=list, dest='kernel_size_cnn')
+    parser.add_argument('--stride_size_cnn', '-sc', default=[1,1], type=list, dest='stride_size_cnn')
+    parser.add_argument('--kernel_size_pool', '-kp', default=[2,2], type=list, dest='kernel_size_pool')
+    parser.add_argument('--stride_size_pool', '-sp', default=[(2,2),(2,2)], type=list, dest='stride_size_pool')
     return parser.parse_args()
 def train_model(args):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -116,8 +116,8 @@ def train_model(args):
         print("Epoch: {}-----------Training Loss: {} -------- Testing Loss: {} -------- Training Acc: {} -------- Testing Acc: {}".format(epoch+1,losses,losses_test, accuracy, accuracy_test)+"\n")
         with open("/scratch/speech/models/classification/spec_full_joint_stats_2.txt","a+") as f:
             f.write("Epoch: {}-----------Training Loss: {} -------- Testing Loss: {} -------- Training Acc: {} -------- Testing Acc: {}".format(epoch+1,losses,losses_test, accuracy, accuracy_test)+"\n")
-            if epoch==epoch_num-1: f.write("\n"+"Best Accuracy:{}".format(max(test_acc))+"\n")
-            if epoch==epoch_num-1: f.write("\n"+"=============== model ends ==================="+"\n")
+            if epoch==epoch_num-1: f.write("Best Accuracy:{}".format(max(test_acc))+"\n")
+            if epoch==epoch_num-1: f.write("=============== model ends ==================="+"\n")
 
 
 
