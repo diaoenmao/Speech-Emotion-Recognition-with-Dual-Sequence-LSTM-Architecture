@@ -151,7 +151,7 @@ class MultiSpectrogramModel(nn.Module):
 
         self.LSTM_Audio=LSTM_Audio(hidden_dim,num_layers,self.device,bidirectional=False)
         self.classification_hand = nn.Linear(self.hidden_dim, self.num_labels).to(self.device)
-        self.classification_raw = nn.Linear(self.hidden_dim_lstm*self.num_directions, self.num_labels).to(self.device)
+        self.classification_raw = nn.Linear(self.hidden_dim_lstm*self.num_directions*self.num_branches, self.num_labels).to(self.device)
         self.weight= nn.Parameter(torch.FloatTensor([0]),requires_grad=False)
 
     def forward(self, input_lstm, input1, input2, input3, target, seq_length):
@@ -171,12 +171,11 @@ class MultiSpectrogramModel(nn.Module):
         out_lstm = self.LSTM_Audio(input_lstm).permute(0,2,1)
         temp = [torch.unsqueeze(torch.mean(out_lstm[k,:,:int(s.item())],dim=1),dim=0) for k,s in enumerate(seq_length)]
         out_lstm = torch.cat(temp,dim=0)
-        pdb.set_trace()
         out1 = torch.mean(input1, dim=2)
         out2 = torch.mean(input2, dim=2)
         out3 = torch.mean(input3, dim=2)
         out = [out1, out2, out3]
-        out = torch.cat(out, dim=0)
+        out = torch.cat(out, dim=1)
         p = torch.exp(10*self.weight)/(1+torch.exp(10*self.weight))
         out = self.classification_raw(out)
         out_lstm = self.classification_hand(out_lstm)
