@@ -13,7 +13,7 @@ import argparse
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 device_ids=[0]
-batch_size=4
+batch_size=20
 input_channels = 1
 out_channels = [64,16]
 kernel_size_cnn = [4]*2
