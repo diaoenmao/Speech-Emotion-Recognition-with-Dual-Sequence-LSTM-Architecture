@@ -43,7 +43,7 @@ def train_model(args):
                                 hidden_dim_lstm,num_layers_lstm,device,False)
     print("============================ Number of parameters ====================================")
     print(str(sum(p.numel() for p in model.parameters() if p.requires_grad)))
-    path="dataset:{};batch_size:{};out_channels:{};kernel_size_cnn:{};stride_size_cnn:{};kernel_size_pool:{};stride_size_pool".format(args.dataset,args.batch_size,args.out_channels,args.kernel_size_cnn, args.stride_size_cnn, args.kernel_size_pool, agrs.stride_size_pool)
+    path="dataset:{};batch_size:{};out_channels:{};kernel_size_cnn:{};stride_size_cnn:{};kernel_size_pool:{};stride_size_pool".format(args.dataset,args.batch_size,args.out_channels,args.kernel_size_cnn, args.stride_size_cnn, args.kernel_size_pool, args.stride_size_pool)
     with open("/scratch/speech/models/classification/spec_full_joint_stats_2.txt","a+") as f:
         f.write("\n"+"model_parameters "+path+"\n")
     model.cuda()
