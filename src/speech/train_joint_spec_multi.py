@@ -12,8 +12,8 @@ from torch.nn.utils.rnn import pad_sequence, pack_padded_sequence
 import argparse
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-device_ids=[0]
-batch_size=20
+device_ids=[0,1,2,3]
+batch_size=100
 input_channels = 1
 out_channels = [64,16]
 kernel_size_cnn = [4]*2
