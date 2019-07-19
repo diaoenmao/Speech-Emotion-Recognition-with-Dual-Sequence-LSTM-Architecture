@@ -151,7 +151,7 @@ class MultiSpectrogramModel(nn.Module):
 
         self.LSTM_Audio=LSTM_Audio(hidden_dim,num_layers,self.device,bidirectional=False)
         self.classification_hand = nn.Linear(self.hidden_dim, self.num_labels).to(self.device)
-        self.classification_raw = nn.Linear(self.hidden_dim_lstm*self.num_directions*self.num_branches, self.num_labels).to(self.device)
+        self.classification_raw = nn.Linear(self.hidden_dim_lstm*self.num_directions, self.num_labels).to(self.device)
         self.weight= nn.Parameter(torch.FloatTensor([0]),requires_grad=False)
 
     def forward(self, input_lstm, input1, input2, input3, target, seq_length):
@@ -174,18 +174,22 @@ class MultiSpectrogramModel(nn.Module):
         out1 = torch.mean(input1, dim=2)
         out2 = torch.mean(input2, dim=2)
         out3 = torch.mean(input3, dim=2)
-        out = [out1, out2, out3]
-        out = torch.cat(out, dim=1)
-        p = torch.exp(10*self.weight)/(1+torch.exp(10*self.weight))
-        out = self.classification_raw(out)
+        out1 = self.classification_raw(out1)
+        out2 = self.classification_raw(out2)
+        out3 = self.classification_raw(out3)
+        #out = [out1, out2, out3]
+        #out = torch.cat(out, dim=1)
+        #p = torch.exp(10*self.weight)/(1+torch.exp(10*self.weight))
+        p = 0.25
+        #out = self.classification_raw(out)
         out_lstm = self.classification_hand(out_lstm)
-        out_final = p*out + (1-p)*out_lstm
+        out_final = p*(out1 + out2 + out3 + out_lstm)
 
         target_index = torch.argmax(target, dim=1).to(self.device)
         correct_batch=torch.sum(target_index==torch.argmax(out_final,dim=1))
-        losses_batch_raw=F.cross_entropy(out,torch.max(target,1)[1])
-        losses_batch_hand=F.cross_entropy(out_lstm,torch.max(target,1)[1])
-        losses_batch=p*losses_batch_raw+(1-p)*losses_batch_hand
+        losses_batch=F.cross_entropy(out_final,torch.max(target,1)[1])
+        #losses_batch_hand=F.cross_entropy(out_lstm,torch.max(target,1)[1])
+        #losses_batch=p*losses_batch_raw+(1-p)*losses_batch_hand
         correct_batch=torch.unsqueeze(correct_batch,dim=0)
         losses_batch=torch.unsqueeze(losses_batch, dim=0)
         return losses_batch, correct_batch
