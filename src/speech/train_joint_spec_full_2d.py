@@ -18,7 +18,7 @@ def init_parser():
     parser.add_argument('--kernel_size_cnn', '-kc', default=[2,2], type=list, dest='kernel_size_cnn')
     parser.add_argument('--stride_size_cnn', '-sc', default=[1,1], type=list, dest='stride_size_cnn')
     parser.add_argument('--kernel_size_pool', '-kp', default=[2,2], type=list, dest='kernel_size_pool')
-    parser.add_argument('--stride_size_pool', '-sp', default=[(2,2),(2,2)], type=list, dest='stride_size_pool')
+    parser.add_argument('--stride_size_pool', '-sp', default=[[2,2],[2,2]], type=list, dest='stride_size_pool')
     return parser.parse_args()
 def train_model(args):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
