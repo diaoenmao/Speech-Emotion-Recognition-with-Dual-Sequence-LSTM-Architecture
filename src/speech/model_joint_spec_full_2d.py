@@ -59,8 +59,7 @@ class SpectrogramModel(nn.Module):
         temp=int((temp+2*pm[0]-km)/sm[0]+1)
         return temp
 
-    def __init__(self, in_channels, out_channels, kernel_size_cnn, stride_cnn, 
-                        padding_cnn, kernel_size_pool, stride_pool, 
+    def __init__(self, in_channels, out_channels, kernel_size_cnn, stride_cnn, kernel_size_pool, stride_pool, 
                         hidden_dim, num_layers, dropout_rate, num_labels, batch_size, 
                         hidden_dim_lstm,num_layers_lstm,device, bidirectional=False):
         super(SpectrogramModel, self).__init__()
