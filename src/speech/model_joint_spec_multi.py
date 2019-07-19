@@ -40,7 +40,7 @@ class LFLB(nn.Module):
         self.relu = nn.ReLU()
 
     def forward(self,input):
-        pdb.set_trace()
+        #pdb.set_trace()
         input=input.to(self.device)
         out=self.cnn(input)
         out=self.batch(out)
@@ -104,7 +104,7 @@ class SpectrogramModel(nn.Module):
                            dropout=self.dropout_rate, bidirectional=self.bidirectional).to(self.device)
 
     def forward(self, input):
-        pdb.set_trace()
+        #pdb.set_trace()
         x = input.to(self.device)
         for i in range(self.num_layers_cnn):
             name = 'spec_cell{}'.format(i)
@@ -159,15 +159,15 @@ class MultiSpectrogramModel(nn.Module):
         input2 = input2.to(self.device)
         input3 = input3.to(self.device)
         target = target.to(self.device)
-        for i in range(self.num_branches):
-            name = 'multi_spec_cell{}'.format(i)
-            input1 = getattr(self, name)(input1)
-            print("DONE WITH 1")
-            input2 = getattr(self, name)(input2)
-            print("DONE WITH 2")
-            input3 = getattr(self, name)(input3)
-            print("DONE WITH 3")
-        pdb.set_trace()
+        #for i in range(self.num_branches):
+        name = 'multi_spec_cell{}'.format(i)
+        input1 = getattr(self, name)(input1)
+        #print("DONE WITH 1")
+        input2 = getattr(self, name)(input2)
+        #print("DONE WITH 2")
+        input3 = getattr(self, name)(input3)
+        #print("DONE WITH 3")
+        #pdb.set_trace()
         out_lstm = self.LSTM_Audio(input_lstm).permute(0,2,1)
         temp = [torch.unsqueeze(torch.mean(out_lstm[k,:,:int(s.item())],dim=1),dim=0) for k,s in enumerate(seq_length)]
         out_lstm = torch.cat(temp,dim=0)
