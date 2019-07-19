@@ -137,7 +137,7 @@ class SpectrogramModel(nn.Module):
         #temp=torch.mean(out_lstm,dim=2)
         out_lstm=torch.cat(temp,dim=0)
         #out=torch.cat(temp1,dim=0)
-        #p=torch.exp(10*self.weight)/(1+torch.exp(10*self.weight))
+        p=torch.exp(10*self.weight)/(1+torch.exp(10*self.weight))
         #out=torch.cat([p*out,(1-p)*out_lstm],dim=1)
         #out=torch.cat([out,out_lstm],dim=1)
         out=self.classification_raw(out)
