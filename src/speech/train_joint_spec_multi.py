@@ -87,7 +87,9 @@ for epoch in range(epoch_num):  # again, normally you would NOT do 300 epochs, i
     correct=0
     model.train()
     for j, (input_lstm, input1, input2, input3, target, seq_length) in enumerate(train_loader):
-        if (j+1)%20==0: print("=================================Train Batch"+ str(j+1)+str(weight)+"===================================================")
+        print(j)
+        if (j+1)%20==0:
+            print("=================================Train Batch"+ str(j+1)+str(weight)+"===================================================")
         model.zero_grad()
         losses_batch,correct_batch= model(input_lstm, input1, input2, input3, target, seq_length)
         loss = torch.mean(losses_batch,dim=0)
@@ -98,7 +100,6 @@ for epoch in range(epoch_num):  # again, normally you would NOT do 300 epochs, i
         weight=torch.exp(10*weight)/(1+torch.exp(10*weight)).item()
         optimizer.step()
         correct += correct_batch.item()
-        print(j)
     #print(j)
     accuracy=correct*1.0/((j+1)*batch_size)
     losses=losses / ((j+1)*batch_size)
