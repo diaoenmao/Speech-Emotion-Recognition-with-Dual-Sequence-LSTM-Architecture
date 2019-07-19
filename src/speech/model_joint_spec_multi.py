@@ -92,7 +92,7 @@ class SpectrogramModel(nn.Module):
         self._all_layers = []
         self.num_layers_cnn=len(out_channels)
         for i in range(self.num_layers_cnn):
-            name = 'spec_cell{}'.format(i)
+            name = 'lflb_cell{}'.format(i)
             cell = LFLB(self.in_channels[i], self.out_channels[i], self.kernel_size_cnn[i], self.stride_cnn[i],
                         self.padding_cnn[i], self.padding_pool[i],self.kernel_size_pool[i], self.stride_pool[i], self.device)
             setattr(self, name, cell)
@@ -107,7 +107,7 @@ class SpectrogramModel(nn.Module):
         #pdb.set_trace()
         x = input.to(self.device)
         for i in range(self.num_layers_cnn):
-            name = 'spec_cell{}'.format(i)
+            name = 'lflb_cell{}'.format(i)
             x = getattr(self, name)(x)
         out = torch.flatten(x,start_dim=1,end_dim=2).permute(0,2,1)
         out, hn = self.lstm(out)
@@ -142,7 +142,7 @@ class MultiSpectrogramModel(nn.Module):
         self.num_branches = 3
 
         for i in range(self.num_branches):
-            name = 'multi_spec_cell{}'.format(i)
+            name = 'spec_cell{}'.format(i)
             cell = SpectrogramModel(self.in_channels, self.out_channels, self.kernel_size_cnn, self.stride_cnn, self.kernel_size_pool, self.stride_pool,
                                 self.hidden_dim, self.num_layers, self.dropout_rate, self.num_labels, self.batch_size,
                                 self.hidden_dim_lstm, self.num_layers_lstm, self.device, self.bidirectional)
@@ -160,12 +160,12 @@ class MultiSpectrogramModel(nn.Module):
         input3 = input3.to(self.device)
         target = target.to(self.device)
         #for i in range(self.num_branches):
-        name = 'multi_spec_cell{}'.format(i)
-        input1 = getattr(self, name)(input1)
+        name = 'spec_cell{}'
+        input1 = getattr(self, name.format("0"))(input1)
         #print("DONE WITH 1")
-        input2 = getattr(self, name)(input2)
+        input2 = getattr(self, name.format("1"))(input2)
         #print("DONE WITH 2")
-        input3 = getattr(self, name)(input3)
+        input3 = getattr(self, name.format("2"))(input3)
         #print("DONE WITH 3")
         #pdb.set_trace()
         out_lstm = self.LSTM_Audio(input_lstm).permute(0,2,1)
