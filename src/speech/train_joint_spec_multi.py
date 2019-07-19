@@ -52,7 +52,7 @@ scheduler3 =MultiStepLR(optimizer, [5,10,15],gamma=0.1)
 
 # Load the training data
 training_data = IEMOCAP(name='mel', nfft=[512, 1024, 2048], train=True)
-train_loader = DataLoader(dataset=training_data, batch_size=batch_size, shuffle=True, collate_fn=my_collate, num_workers=0, drop_last=True)
+train_loader = DataLoader(dataset=training_data, batch_size=batch_size, shuffle=True, collate_fn=my_collate, num_workers=0)
 testing_data = IEMOCAP(name='mel', nfft=[512, 1024, 2048], train=False)
 test_loader = DataLoader(dataset=testing_data, batch_size=batch_size, shuffle=True, collate_fn=my_collate, num_workers=0,drop_last=True)
 
@@ -83,7 +83,7 @@ for epoch in range(epoch_num):  # again, normally you would NOT do 300 epochs, i
         weight=torch.exp(10*weight)/(1+torch.exp(10*weight)).item()
         optimizer.step()
         correct += correct_batch.item()
-    #print(j)
+        print(j)
     accuracy=correct*1.0/((j+1)*batch_size)
     losses=losses / ((j+1)*batch_size)
     #scheduler3.step()
