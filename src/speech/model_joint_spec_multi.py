@@ -5,15 +5,15 @@ import pdb
 from torch.nn.utils.rnn import pad_packed_sequence, pad_sequence, pack_padded_sequence
 
 class LSTM_Audio(nn.Module):
-    def __init__(self, hidden_dim, num_layers, device,dropout_rate=0 ,bidirectional=False):
+    def __init__(self, hidden_dim_lstm, num_layers, device,dropout_rate=0 ,bidirectional=False):
         super(LSTM_Audio, self).__init__()
         self.device = device
         self.num_features = 39
-        self.hidden_dim = hidden_dim
+        self.hidden_dim_lstm = hidden_dim_lstm
         self.num_layers = num_layers
         self.dropout_rate = dropout_rate
         self.bidirectional = bidirectional
-        self.lstm = nn.LSTM(self.num_features, self.hidden_dim, self.num_layers, batch_first=True,
+        self.lstm = nn.LSTM(self.num_features, self.hidden_dim_lstm, self.num_layers, batch_first=True,
                            dropout=self.dropout_rate, bidirectional=self.bidirectional).to(self.device)
 
     def forward(self, input):
@@ -101,7 +101,7 @@ class SpectrogramModel(nn.Module):
             strideF=self.cnn_shape(strideF,self.kernel_size_cnn[i],self.stride_cnn[i],self.padding_cnn[i],
                                     self.kernel_size_pool[i],self.stride_pool[i],self.padding_pool[i])
 
-        self.lstm = nn.LSTM(self.out_channels[-1]*strideF, self.hidden_dim_lstm, self.num_layers, batch_first=True,
+        self.lstm = nn.LSTM(self.out_channels[-1]*strideF, self.hidden_dim, self.num_layers, batch_first=True,
                            dropout=self.dropout_rate, bidirectional=self.bidirectional).to(self.device)
 
     def forward(self, input):
@@ -150,13 +150,15 @@ class MultiSpectrogramModel(nn.Module):
             setattr(self, name, cell)
             self._all_layers.append(cell)
 
-        self.LSTM_Audio=LSTM_Audio(hidden_dim,num_layers,self.device,bidirectional=False)
-        self.classification_hand = nn.Linear(self.hidden_dim, self.num_labels).to(self.device)
+        self.LSTM_Audio=LSTM_Audio(self.hidden_dim_lstm,self.num_layers,self.device,bidirectional=False)
+        self.classification_hand = nn.Linear(self.hidden_dim_lstm, self.num_labels).to(self.device)
+        '''
         self.classification_raw = nn.Sequential(
                                 nn.Linear(self.hidden_dim_lstm*self.num_directions*self.num_branches, self.hidden_dim_lstm*self.num_directions*self.num_branches//2),
                                 nn.ReLU(),
-                                nn.linear(self.hidden_dim_lstm*self.num_directions*self.num_branches//2,self.num_labels))
-                                .to(self.device)
+                                nn.linear(self.hidden_dim_lstm*self.num_directions*self.num_branches//2,self.num_labels)).to(self.device)
+        '''
+        self.classification_raw=nn.Linear(self.hidden_dim*self.num_directions*self.num_branches,self.num_labels).to(self.device)
         self.weight= nn.Parameter(torch.FloatTensor([0]),requires_grad=False)
 
     def forward(self, input_lstm, input1, input2, target, seq_length):
