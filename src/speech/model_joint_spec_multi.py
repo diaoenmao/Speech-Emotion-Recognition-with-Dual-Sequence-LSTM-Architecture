@@ -63,7 +63,7 @@ class SpectrogramModel(nn.Module):
 
     def __init__(self, in_channels, out_channels, kernel_size_cnn, stride_cnn, kernel_size_pool, stride_pool,
                         hidden_dim, num_layers, dropout_rate, num_labels, batch_size,
-                        hidden_dim_lstm,num_layers_lstm,device, bidirectional=False):
+                        hidden_dim_lstm,num_layers_lstm,device, bidirectional=False, nfft):
         super(SpectrogramModel, self).__init__()
         self.device = device
         self.in_channels = [in_channels]+out_channels
@@ -86,7 +86,7 @@ class SpectrogramModel(nn.Module):
         self.hidden_dim_lstm=hidden_dim_lstm
 
 # data shape
-        strideF = 128
+        strideF = nfft//2 + 1
 
 # for putting all cells together
         self._all_layers = []
@@ -117,7 +117,7 @@ class SpectrogramModel(nn.Module):
 class MultiSpectrogramModel(nn.Module):
     def __init__(self, in_channels, out_channels, kernel_size_cnn, stride_cnn, kernel_size_pool, stride_pool,
                     hidden_dim, num_layers, dropout_rate, num_labels, batch_size,
-                    hidden_dim_lstm,num_layers_lstm, device, bidirectional=False):
+                    hidden_dim_lstm,num_layers_lstm, device, bidirectional=False, nfft):
         super(MultiSpectrogramModel, self).__init__()
         self.in_channels = in_channels
         self.out_channels = out_channels
@@ -145,7 +145,7 @@ class MultiSpectrogramModel(nn.Module):
             name = 'spec_cell{}'.format(i)
             cell = SpectrogramModel(self.in_channels, self.out_channels, self.kernel_size_cnn, self.stride_cnn, self.kernel_size_pool, self.stride_pool,
                                 self.hidden_dim, self.num_layers, self.dropout_rate, self.num_labels, self.batch_size,
-                                self.hidden_dim_lstm, self.num_layers_lstm, self.device, self.bidirectional)
+                                self.hidden_dim_lstm, self.num_layers_lstm, self.device, self.bidirectional, nfft[i])
             setattr(self, name, cell)
             self._all_layers.append(cell)
 
