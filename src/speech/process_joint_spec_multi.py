@@ -59,17 +59,17 @@ class IEMOCAP(Dataset):
         if train:
             f1 = open('/scratch/speech/hand_raw_dataset/EMO39_'+name+'_spectrogram_nfft{}_train.pkl'.format(nfft[0]), 'rb')
             f2 = open('/scratch/speech/hand_raw_dataset/EMO39_'+name+'_spectrogram_nfft{}_train.pkl'.format(nfft[1]), 'rb')
-            f3 = open('/scratch/speech/hand_raw_dataset/EMO39_'+name+'_spectrogram_nfft{}_train.pkl'.format(nfft[2]), 'rb')
+            #f3 = open('/scratch/speech/hand_raw_dataset/EMO39_'+name+'_spectrogram_nfft{}_train.pkl'.format(nfft[2]), 'rb')
         else:
             f1 = open('/scratch/speech/hand_raw_dataset/EMO39_'+name+'_spectrogram_nfft{}_test.pkl'.format(nfft[0]), 'rb')
             f2 = open('/scratch/speech/hand_raw_dataset/EMO39_'+name+'_spectrogram_nfft{}_test.pkl'.format(nfft[1]), 'rb')
-            f3 = open('/scratch/speech/hand_raw_dataset/EMO39_'+name+'_spectrogram_nfft{}_test.pkl'.format(nfft[2]), 'rb')
+            #f3 = open('/scratch/speech/hand_raw_dataset/EMO39_'+name+'_spectrogram_nfft{}_test.pkl'.format(nfft[2]), 'rb')
         data1 = pickle.load(f1)
         data2 = pickle.load(f2)
-        data3 = pickle.load(f3)
+        #data3 = pickle.load(f3)
         self.input_lstm = data1["input_lstm"]
         self.target = data1["target"]
-        self.input = [data1['input'], data2['input'], data3['input']]
+        self.input = [data1['input'], data2['input']]
 
     def __len__(self):
         return len(self.input[0])
@@ -80,7 +80,7 @@ class IEMOCAP(Dataset):
                   'seq_length': self.input_lstm[index].shape[0],
                   'input1': input[0],
                   'input2': input[1],
-                  'input3': input[2],
+                  #'input3': input[2],
                   #'input': torch.Tensor(self.input[index].permute(2,1,0)).float()
                   'target': self.target[index]}
                   #'seq_length_spec':self.input[index].shape[1]}
@@ -93,17 +93,17 @@ def my_collate(batch):
     target = []
     input1 = []
     input2 = []
-    input3 = []
+    #input3 = []
     for i in batch:
         input_lstm.append(i['input_lstm'])
         seq_length.append(i['seq_length'])
         target.append(i['target'])
         input1.append(i['input1'].float())
         input2.append(i['input2'].float())
-        input3.append(i['input3'].float())
+        #input3.append(i['input3'].float())
     input1 = torch.stack(input1, dim=0)
     input2 = torch.stack(input2, dim=0)
-    input3 = torch.stack(input3, dim=0)
+    #input3 = torch.stack(input3, dim=0)
     #seq_length_spec=torch.Tensor(seq_length_spec)
     seq_length = torch.Tensor(seq_length)
     target = torch.from_numpy(np.array(target))
@@ -111,11 +111,11 @@ def my_collate(batch):
     input_lstm = pad_sequence(sequences=input_lstm, batch_first=True)
     input1 = torch.unsqueeze(input1, dim=1)
     input2 = torch.unsqueeze(input2, dim=1)
-    input3 = torch.unsqueeze(input3, dim=1)
+    #input3 = torch.unsqueeze(input3, dim=1)
     #input = input.permute(0,1,3,2)
 
     #input shape B*max(len(segment))*Freq*max(T)
-    return input_lstm, input1, input2, input3, target, seq_length
+    return input_lstm, input1, input2, target, seq_length
 
 if __name__=="__main__":
     '''
