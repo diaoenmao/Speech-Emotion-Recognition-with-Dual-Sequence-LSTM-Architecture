@@ -69,17 +69,19 @@ class IEMOCAP(Dataset):
         #data3 = pickle.load(f3)
         self.input_lstm = data1["input_lstm"]
         self.target = data1["target"]
-        self.input = [data1['input'], data2['input']]
+        self.input1 = data1['input']
+        self.input2 = data2['input']
 
     def __len__(self):
         return len(self.input[0])
 
     def __getitem__(self, index):
-        input = [torch.squeeze(F.interpolate(torch.unsqueeze(torch.from_numpy(10*np.log10(data[index])).float(), dim=0), size=230, mode='nearest'), dim=0) for data in self.input]
+        input1 = torch.squeeze(F.interpolate(torch.unsqueeze(torch.from_numpy(10*np.log10(input1[index])).float(), dim=0), size=230, mode='nearest'), dim=0)
+        input2 = torch.squeeze(F.interpolate(torch.unsqueeze(torch.from_numpy(10*np.log10(input2[index])).float(), dim=0), size=120, mode='nearest'), dim=0)
         sample = {'input_lstm': torch.from_numpy(self.input_lstm[index]).float(),
                   'seq_length': self.input_lstm[index].shape[0],
-                  'input1': input[0],
-                  'input2': input[1],
+                  'input1': input1,
+                  'input2': input2,
                   #'input3': input[2],
                   #'input': torch.Tensor(self.input[index].permute(2,1,0)).float()
                   'target': self.target[index]}
