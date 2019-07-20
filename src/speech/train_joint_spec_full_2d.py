@@ -41,7 +41,7 @@ def train_model(args):
     num_layers_lstm=2
     model = SpectrogramModel(input_channels,out_channels, kernel_size_cnn, stride_size_cnn, kernel_size_pool,
                                 stride_size_pool, hidden_dim,num_layers,dropout,num_labels, batch_size,
-                                hidden_dim_lstm,num_layers_lstm,device,False)
+                                hidden_dim_lstm,num_layers_lstm,device,args.nfft,False)
     '''
     print("============================ Number of parameters ====================================")
     print(str(sum(p.numel() for p in model.parameters() if p.requires_grad)))
