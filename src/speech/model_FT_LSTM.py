@@ -20,11 +20,11 @@ class FTLSTMCell(nn.Module):
         return inputx, inputy
 
     def __init__(self,  inputx, inputy, dropout=0):
+        # inputx, inputy should be one single time step, B*D
         super(FTLSTMCell, self).__init__()
-        inputx,inputy=self.alignment(inputx,inputy)
+        inputxy=torch.unsqueeze(torch.cat([inputx,inputy],dim=1),dim=2)
         x=inputx.shape[1]
         y=inputy.shape[1]
-        xy=torch.unsqueeze(torch.cat([inputx,inputy],dim=1),dim=2)
         self.WTf=nn.Parameter(torch.zeros())
         
         self.max_pool = nn.MaxPool1d(self.kernel_size_pool, stride=self.stride_pool, padding=self.padding_pool)
