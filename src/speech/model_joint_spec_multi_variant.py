@@ -134,6 +134,8 @@ class MultiSpectrogramModel(nn.Module):
             try:
                 temp1=torch.cat([input1[:,:,2*i],input1[:,:,2*i+1],input1[:,:,2*i+2]],dim=1)
             except:
+                print(input1.shape)
+                print(input2.shape)
                 try:
                     temp1=torch.cat([input1[:,:,2*i-1],input1[:,:,2*i],input1[:,:,2*i+1]],dim=1)
                 except:
