@@ -70,9 +70,9 @@ class SpectrogramModel(nn.Module):
         self.out_channels = out_channels
         self.kernel_size_cnn = kernel_size_cnn
         self.stride_cnn = stride_cnn
-        self.padding_cnn =[(int((self.kernel_size_cnn[i]-1)/2),int((self.kernel_size_cnn[i]-1)/2)) for i in range(len(out_channels))]
+        self.padding_cnn =[(int((self.kernel_size_cnn[0]-1)/2),int((self.kernel_size_cnn[1]-1)/2)) for i in range(len(out_channels))]
         self.kernel_size_pool = kernel_size_pool
-        self.padding_pool=[(int((self.kernel_size_pool[i]-1)/2),int((self.kernel_size_pool[i]-1)/2)) for i in range(len(out_channels))]
+        self.padding_pool=[(int((self.kernel_size_pool[0]-1)/2),int((self.kernel_size_pool[1]-1)/2)) for i in range(len(out_channels))]
         self.stride_pool = stride_pool
 
 # lstm
@@ -145,7 +145,7 @@ class MultiSpectrogramModel(nn.Module):
 
         for i in range(self.num_branches):
             name = 'spec_cell{}'.format(i)
-            cell = SpectrogramModel(self.in_channels, self.out_channels, self.kernel_size_cnn[i], self.stride_cnn, self.kernel_size_pool, self.stride_pool,
+            cell = SpectrogramModel(self.in_channels, self.out_channels, self.kernel_size_cnn[i], self.stride_cnn[i], self.kernel_size_pool[i], self.stride_pool,
                                 self.hidden_dim, self.num_layers, self.dropout_rate, self.num_labels, self.batch_size,
                                 self.hidden_dim_lstm, self.num_layers_lstm, self.device, nfft[i], self.bidirectional)
             setattr(self, name, cell)
