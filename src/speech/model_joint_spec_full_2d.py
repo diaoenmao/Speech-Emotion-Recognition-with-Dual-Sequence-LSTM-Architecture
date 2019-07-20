@@ -116,7 +116,6 @@ class SpectrogramModel(nn.Module):
             name = 'cell{}'.format(i)
             #seq_length_spec=self.valid_max(self.valid_cnn(seq_length_spec,self.kernel_size_cnn[i]),self.kernel_size_pool[i],self.stride_pool[i])
             x=getattr(self,name)(x)
-        print(x.shape)
         temp=[]
         '''
         for s in seq_length_spec:
