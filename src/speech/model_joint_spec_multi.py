@@ -98,8 +98,11 @@ class SpectrogramModel(nn.Module):
                         self.padding_cnn[i], self.padding_pool[i],self.kernel_size_pool[i], self.stride_pool[i], self.device)
             setattr(self, name, cell)
             self._all_layers.append(cell)
+            print(strideF)
             strideF=self.cnn_shape(strideF,self.kernel_size_cnn[i],self.stride_cnn[i],self.padding_cnn[i],
                                     self.kernel_size_pool[i],self.stride_pool[i],self.padding_pool[i])
+
+        print(strideF)
 
         self.lstm = nn.LSTM(self.out_channels[-1]*strideF, self.hidden_dim_lstm, self.num_layers, batch_first=True,
                            dropout=self.dropout_rate, bidirectional=self.bidirectional).to(self.device)
