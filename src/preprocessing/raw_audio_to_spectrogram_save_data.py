@@ -15,7 +15,7 @@ def create_data(data, n_fft):
     utterances_new = []
     for i, utterance in enumerate(data['input']):
         plt.clf()
-        mel_spectrogram = librosa.feature.melspectrogram(y=utterance.astype('float'), sr=sample_rate, n_fft=n_fft, hop_length=nfft//2, n_mels=n_fft//2)
+        mel_spectrogram = librosa.feature.melspectrogram(y=utterance.astype('float'), sr=sample_rate, n_fft=n_fft, hop_length=nfft//2, n_mels=n_fft//4)
         utterances_new.append(mel_spectrogram)
         print(i)
     print('Parsing through data done.')
