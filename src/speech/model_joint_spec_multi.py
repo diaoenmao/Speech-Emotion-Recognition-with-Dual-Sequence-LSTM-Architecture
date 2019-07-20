@@ -63,7 +63,7 @@ class SpectrogramModel(nn.Module):
 
     def __init__(self, in_channels, out_channels, kernel_size_cnn, stride_cnn, kernel_size_pool, stride_pool,
                         hidden_dim, num_layers, dropout_rate, num_labels, batch_size,
-                        hidden_dim_lstm,num_layers_lstm,device, bidirectional=False, nfft):
+                        hidden_dim_lstm,num_layers_lstm,device, nfft, bidirectional=False):
         super(SpectrogramModel, self).__init__()
         self.device = device
         self.in_channels = [in_channels]+out_channels
@@ -118,7 +118,7 @@ class SpectrogramModel(nn.Module):
 class MultiSpectrogramModel(nn.Module):
     def __init__(self, in_channels, out_channels, kernel_size_cnn, stride_cnn, kernel_size_pool, stride_pool,
                     hidden_dim, num_layers, dropout_rate, num_labels, batch_size,
-                    hidden_dim_lstm,num_layers_lstm, device, bidirectional=False, nfft):
+                    hidden_dim_lstm,num_layers_lstm, device, nfft, bidirectional=False):
         super(MultiSpectrogramModel, self).__init__()
         self.in_channels = in_channels
         self.out_channels = out_channels
