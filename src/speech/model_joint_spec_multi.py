@@ -145,7 +145,7 @@ class MultiSpectrogramModel(nn.Module):
 
         for i in range(self.num_branches):
             name = 'spec_cell{}'.format(i)
-            cell = SpectrogramModel(self.in_channels, self.out_channels, self.kernel_size_cnn, self.stride_cnn, self.kernel_size_pool, self.stride_pool,
+            cell = SpectrogramModel(self.in_channels, self.out_channels, self.kernel_size_cnn[i], self.stride_cnn, self.kernel_size_pool, self.stride_pool,
                                 self.hidden_dim, self.num_layers, self.dropout_rate, self.num_labels, self.batch_size,
                                 self.hidden_dim_lstm, self.num_layers_lstm, self.device, nfft[i], self.bidirectional)
             setattr(self, name, cell)
