@@ -42,14 +42,15 @@ def train_model(args):
     model = SpectrogramModel(input_channels,out_channels, kernel_size_cnn, stride_size_cnn, kernel_size_pool,
                                 stride_size_pool, hidden_dim,num_layers,dropout,num_labels, batch_size,
                                 hidden_dim_lstm,num_layers_lstm,device,args.nfft,False)
+    '''
     print("============================ Number of parameters ====================================")
     print(str(sum(p.numel() for p in model.parameters() if p.requires_grad)))
     '''
+    
     path="name:{};nfft:{};batch_size:{};out_channels:{};kernel_size_cnn:{};stride_size_cnn:{};kernel_size_pool:{};stride_size_pool:{}".format(args.name,args.nfft,args.batch_size,out_channels,kernel_size_cnn,stride_size_cnn,kernel_size_pool,stride_size_pool)
     with open("/scratch/speech/models/classification/spec_full_joint_stats_2.txt","a+") as f:
         f.write("\n"+"============ model starts ===========")
         f.write("\n"+"model_parameters"+"\n"+path+"\n")
-    '''
     model.cuda()
     model=DataParallel(model,device_ids=device_ids)
     model.train()
@@ -67,20 +68,20 @@ def train_model(args):
     train_loader = DataLoader(dataset=training_data, batch_size=batch_size, shuffle=True, collate_fn=my_collate, num_workers=0, drop_last=True)
     testing_data = IEMOCAP(name=args.name, nfft=args.nfft, train=False)
     test_loader = DataLoader(dataset=testing_data, batch_size=batch_size, shuffle=True, collate_fn=my_collate, num_workers=0,drop_last=True)
-    print("=================")
-    print(len(training_data))
-    print("===================")
+    #print("=================")
+    #print(len(training_data))
+    #print("===================")
     test_acc=[]
     train_acc=[]
     test_loss=[]
     train_loss=[]
     for epoch in range(epoch_num):  # again, normally you would NOT do 300 epochs, it is toy data
-        print("===================================" + str(epoch+1) + "==============================================")
+        #print("===================================" + str(epoch+1) + "==============================================")
         losses = 0
         correct=0
         model.train()
         for j, (input_lstm,input, target,seq_length,seq_length_spec) in enumerate(train_loader):
-            if (j+1)%20==0: print("=================================Train Batch"+ str(j+1)+str(weight)+"===================================================")
+            #if (j+1)%20==0: print("=================================Train Batch"+ str(j+1)+str(weight)+"===================================================")
             model.zero_grad()
             #input_lstm = pad_sequence(sequences=input_lstm,batch_first=True)
             losses_batch,correct_batch= model(input_lstm,input, target,seq_length,seq_length_spec)
@@ -101,7 +102,7 @@ def train_model(args):
         model.eval()
         with torch.no_grad():
             for j,(input_lstm,input, target,seq_length,seq_length_spec) in enumerate(test_loader):
-                if (j+1)%10==0: print("=================================Test Batch"+ str(j+1)+ "===================================================")
+                #if (j+1)%10==0: print("=================================Test Batch"+ str(j+1)+ "===================================================")
                 #input_lstm = pad_sequence(sequences=input_lstm,batch_first=True)
                 losses_batch,correct_batch= model(input_lstm,input, target,seq_length,seq_length_spec)
                 loss = torch.mean(losses_batch,dim=0)
@@ -109,7 +110,7 @@ def train_model(args):
                 losses_test += loss.item() * batch_size
                 correct_test += correct_batch.item()
 
-        print("how many correct:", correct_test)
+        #print("how many correct:", correct_test)
         accuracy_test = correct_test * 1.0 / ((j+1)*batch_size)
         losses_test = losses_test / ((j+1)*batch_size)
 
@@ -118,8 +119,7 @@ def train_model(args):
         train_acc.append(accuracy)
         test_loss.append(losses_test)
         train_loss.append(losses)
-        print("Epoch: {}-----------Training Loss: {} -------- Testing Loss: {} -------- Training Acc: {} -------- Testing Acc: {}".format(epoch+1,losses,losses_test, accuracy, accuracy_test)+"\n")
-        '''
+        #print("Epoch: {}-----------Training Loss: {} -------- Testing Loss: {} -------- Training Acc: {} -------- Testing Acc: {}".format(epoch+1,losses,losses_test, accuracy, accuracy_test)+"\n")
         with open("/scratch/speech/models/classification/spec_full_joint_stats_2.txt","a+") as f:
             f.write("Epoch: {}-----------Training Loss: {} -------- Testing Loss: {} -------- Training Acc: {} -------- Testing Acc: {}".format(epoch+1,losses,losses_test, accuracy, accuracy_test)+"\n")
             if epoch==epoch_num-1: f.write("Best Accuracy:{}".format(max(test_acc))+"\n")
@@ -133,7 +133,6 @@ def train_model(args):
     pickle.dump({"test_acc":test_acc, "train_acc": train_acc, "train_loss": train_loss,"test_loss":test_loss},pickle_out)
     pickle_out.close()
     print("success:{}, Best Accuracy:{}".format(path,max(test_acc)))
-    '''
 if __name__ == '__main__':
     args = init_parser()
     train_model(args)
