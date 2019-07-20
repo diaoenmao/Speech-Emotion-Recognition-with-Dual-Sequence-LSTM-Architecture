@@ -129,6 +129,7 @@ def train_model(args):
             f.write("Epoch: {}-----------Training Loss: {} -------- Testing Loss: {} -------- Training Acc: {} -------- Testing Acc: {}".format(epoch+1,losses,losses_test, accuracy, accuracy_test)+"\n")
             if epoch==epoch_num-1: f.write("Best Accuracy:{}".format(max(test_acc))+"\n")
             if epoch==epoch_num-1: f.write("=============== model ends ==================="+"\n")
+    print("success:{}, Best Accuracy:{}".format(path,max(test_acc)))
 
 
 
@@ -137,7 +138,6 @@ def train_model(args):
     pickle.dump({"test_acc":test_acc, "train_acc": train_acc, "train_loss": train_loss,"test_loss":test_loss},pickle_out)
     pickle_out.close()
 '''
-    print("success:{}, Best Accuracy:{}".format(path,max(test_acc)))
 
 if __name__ == '__main__':
     args = init_parser()
