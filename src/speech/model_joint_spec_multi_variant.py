@@ -134,7 +134,10 @@ class MultiSpectrogramModel(nn.Module):
             try:
                 temp1=torch.cat([input1[:,:,2*i],input1[:,:,2*i+1],input1[:,:,2*i+2]],dim=1)
             except:
-                temp1=torch.cat([input1[:,:,2*i-1],input1[:,:,2*i],input1[:,:,2*i+1]],dim=1)
+                try:
+                    temp1=torch.cat([input1[:,:,2*i-1],input1[:,:,2*i],input1[:,:,2*i+1]],dim=1)
+                except:
+                    temp1=torch.cat([input1[:,:,2*i-2],input1[:,:,2*i-1],input1[:,:,2*i]],dim=1)
             temp2=torch.cat([temp1,input2[:,:,i]],dim=1)
             temp.append(temp2)
         input_final=torch.stack(temp,dim=2)
