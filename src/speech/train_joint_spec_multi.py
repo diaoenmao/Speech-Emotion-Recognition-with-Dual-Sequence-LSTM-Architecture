@@ -13,8 +13,6 @@ import argparse
 
 def init_parser():
     parser = argparse.ArgumentParser(description='Train and test your model as specified by the parameters you enter')
-    parser.add_argument('--name', '-n', default='mel', type=str, dest='name')
-    parser.add_argument('--nfft','-fft',default=512,type=int,dest='nfft')
     parser.add_argument('--batch_size', '-b', default=128, type=int, dest='batch_size')
     parser.add_argument('--out_channels_1', '-out1', default=64, type=int, dest='out_channels1')
     parser.add_argument('--out_channels_2', '-out2', default=16, type=int, dest='out_channels2')
@@ -52,7 +50,7 @@ def train_model(args):
     #print("============================ Number of parameters ====================================")
     #print(str(sum(p.numel() for p in model.parameters() if p.requires_grad)))
 
-    path="name:{};nfft:{};batch_size:{};out_channels:{};kernel_size_cnn:{};stride_size_cnn:{};kernel_size_pool:{};stride_size_pool:{}".format(args.name,args.nfft,args.batch_size,out_channels,kernel_size_cnn,stride_size_cnn,kernel_size_pool,stride_size_pool)
+    path="batch_size:{};out_channels:{};kernel_size_cnn:{};stride_size_cnn:{};kernel_size_pool:{};stride_size_pool:{}".format(args.batch_size,out_channels,kernel_size_cnn,stride_size_cnn,kernel_size_pool,stride_size_pool)
     with open("/scratch/speech/models/classification/spec_multi_joint_stats.txt","a+") as f:
         f.write("\n"+"============ model starts ===========")
         f.write("\n"+"model_parameters: "+str(sum(p.numel() for p in model.parameters() if p.requires_grad))+"\n"+path+"\n")
@@ -69,9 +67,9 @@ def train_model(args):
     scheduler3 =MultiStepLR(optimizer, [5,10,15],gamma=0.1)
 
     # Load the training data
-    training_data = IEMOCAP(name=args.name, nfft=nfft, train=True)
+    training_data = IEMOCAP(name='mel', nfft=nfft, train=True)
     train_loader = DataLoader(dataset=training_data, batch_size=batch_size, shuffle=True, collate_fn=my_collate, num_workers=0, drop_last=True)
-    testing_data = IEMOCAP(name=args.name, nfft=nfft, train=False)
+    testing_data = IEMOCAP(name='mel', nfft=nfft, train=False)
     test_loader = DataLoader(dataset=testing_data, batch_size=batch_size, shuffle=True, collate_fn=my_collate, num_workers=0,drop_last=True)
 
     #print("=================")

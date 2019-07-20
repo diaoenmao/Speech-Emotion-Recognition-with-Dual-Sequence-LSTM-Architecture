@@ -1,289 +1,109 @@
 #!/bin/bash
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 64 -out2 16 -kc 2 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 64 -out2 16 -kc 2 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 64 -out2 16 -kc 2 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 64 -out2 16 -kc 2 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 64 -out2 16 -kc 3 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 64 -out2 16 -kc 3 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 64 -out2 16 -kc 3 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 64 -out2 16 -kc 3 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 64 -out2 16 -kc 4 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 64 -out2 16 -kc 4 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 64 -out2 16 -kc 4 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 64 -out2 16 -kc 4 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 64 -out2 16 -kc 2 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 64 -out2 16 -kc 2 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 64 -out2 16 -kc 2 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 64 -out2 16 -kc 2 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 64 -out2 16 -kc 3 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 64 -out2 16 -kc 3 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 64 -out2 16 -kc 3 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 64 -out2 16 -kc 3 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 64 -out2 16 -kc 4 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 64 -out2 16 -kc 4 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 64 -out2 16 -kc 4 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 64 -out2 16 -kc 4 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 64 -out2 16 -kc 2 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 64 -out2 16 -kc 2 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 64 -out2 16 -kc 2 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 64 -out2 16 -kc 2 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 64 -out2 16 -kc 3 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 64 -out2 16 -kc 3 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 64 -out2 16 -kc 3 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 64 -out2 16 -kc 3 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 64 -out2 16 -kc 4 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 64 -out2 16 -kc 4 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 64 -out2 16 -kc 4 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 64 -out2 16 -kc 4 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 64 -out2 16 -kc 2 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 64 -out2 16 -kc 2 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 64 -out2 16 -kc 2 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 64 -out2 16 -kc 2 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 64 -out2 16 -kc 3 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 64 -out2 16 -kc 3 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 64 -out2 16 -kc 3 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 64 -out2 16 -kc 3 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 64 -out2 16 -kc 4 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 64 -out2 16 -kc 4 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 64 -out2 16 -kc 4 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 64 -out2 16 -kc 4 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 128 -out2 32 -kc 2 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 128 -out2 32 -kc 2 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 128 -out2 32 -kc 2 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 128 -out2 32 -kc 2 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 128 -out2 32 -kc 3 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 128 -out2 32 -kc 3 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 128 -out2 32 -kc 3 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 128 -out2 32 -kc 3 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 128 -out2 32 -kc 4 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 128 -out2 32 -kc 4 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 128 -out2 32 -kc 4 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 128 -out2 32 -kc 4 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 128 -out2 32 -kc 2 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 128 -out2 32 -kc 2 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 128 -out2 32 -kc 2 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 128 -out2 32 -kc 2 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 128 -out2 32 -kc 3 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 128 -out2 32 -kc 3 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 128 -out2 32 -kc 3 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 128 -out2 32 -kc 3 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 128 -out2 32 -kc 4 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 128 -out2 32 -kc 4 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 128 -out2 32 -kc 4 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 128 -out2 32 -kc 4 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 128 -out2 32 -kc 2 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 128 -out2 32 -kc 2 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 128 -out2 32 -kc 2 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 128 -out2 32 -kc 2 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 128 -out2 32 -kc 3 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 128 -out2 32 -kc 3 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 128 -out2 32 -kc 3 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 128 -out2 32 -kc 3 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 128 -out2 32 -kc 4 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 128 -out2 32 -kc 4 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 128 -out2 32 -kc 4 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 128 -out2 32 -kc 4 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 128 -out2 32 -kc 2 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 128 -out2 32 -kc 2 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 128 -out2 32 -kc 2 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 128 -out2 32 -kc 2 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 128 -out2 32 -kc 3 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 128 -out2 32 -kc 3 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 128 -out2 32 -kc 3 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 128 -out2 32 -kc 3 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 128 -out2 32 -kc 4 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 128 -out2 32 -kc 4 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 128 -out2 32 -kc 4 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 128 -out2 32 -kc 4 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 256 -out2 16 -kc 2 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 256 -out2 16 -kc 2 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 256 -out2 16 -kc 2 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 256 -out2 16 -kc 2 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 256 -out2 16 -kc 3 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 256 -out2 16 -kc 3 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 256 -out2 16 -kc 3 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 256 -out2 16 -kc 3 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 256 -out2 16 -kc 4 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 256 -out2 16 -kc 4 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 256 -out2 16 -kc 4 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 256 -out2 16 -kc 4 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 256 -out2 16 -kc 2 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 256 -out2 16 -kc 2 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 256 -out2 16 -kc 2 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 256 -out2 16 -kc 2 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 256 -out2 16 -kc 3 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 256 -out2 16 -kc 3 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 256 -out2 16 -kc 3 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 256 -out2 16 -kc 3 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 256 -out2 16 -kc 4 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 256 -out2 16 -kc 4 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 256 -out2 16 -kc 4 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 256 -out2 16 -kc 4 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 256 -out2 16 -kc 2 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 256 -out2 16 -kc 2 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 256 -out2 16 -kc 2 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 256 -out2 16 -kc 2 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 256 -out2 16 -kc 3 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 256 -out2 16 -kc 3 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 256 -out2 16 -kc 3 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 256 -out2 16 -kc 3 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 256 -out2 16 -kc 4 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 256 -out2 16 -kc 4 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 256 -out2 16 -kc 4 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 256 -out2 16 -kc 4 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 256 -out2 16 -kc 2 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 256 -out2 16 -kc 2 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 256 -out2 16 -kc 2 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 256 -out2 16 -kc 2 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 256 -out2 16 -kc 3 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 256 -out2 16 -kc 3 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 256 -out2 16 -kc 3 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 256 -out2 16 -kc 3 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 256 -out2 16 -kc 4 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 256 -out2 16 -kc 4 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 256 -out2 16 -kc 4 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 256 -out2 16 -kc 4 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 16 -out2 64 -kc 2 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 16 -out2 64 -kc 2 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 16 -out2 64 -kc 2 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 16 -out2 64 -kc 2 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 16 -out2 64 -kc 3 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 16 -out2 64 -kc 3 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 16 -out2 64 -kc 3 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 16 -out2 64 -kc 3 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 16 -out2 64 -kc 4 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 16 -out2 64 -kc 4 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 16 -out2 64 -kc 4 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 16 -out2 64 -kc 4 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 16 -out2 64 -kc 2 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 16 -out2 64 -kc 2 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 16 -out2 64 -kc 2 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 16 -out2 64 -kc 2 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 16 -out2 64 -kc 3 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 16 -out2 64 -kc 3 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 16 -out2 64 -kc 3 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 16 -out2 64 -kc 3 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 16 -out2 64 -kc 4 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 16 -out2 64 -kc 4 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 16 -out2 64 -kc 4 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 16 -out2 64 -kc 4 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 16 -out2 64 -kc 2 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 16 -out2 64 -kc 2 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 16 -out2 64 -kc 2 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 16 -out2 64 -kc 2 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 16 -out2 64 -kc 3 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 16 -out2 64 -kc 3 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 16 -out2 64 -kc 3 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 16 -out2 64 -kc 3 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 16 -out2 64 -kc 4 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 16 -out2 64 -kc 4 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 16 -out2 64 -kc 4 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 16 -out2 64 -kc 4 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 16 -out2 64 -kc 2 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 16 -out2 64 -kc 2 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 16 -out2 64 -kc 2 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 16 -out2 64 -kc 2 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 16 -out2 64 -kc 3 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 16 -out2 64 -kc 3 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 16 -out2 64 -kc 3 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 16 -out2 64 -kc 3 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 16 -out2 64 -kc 4 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 16 -out2 64 -kc 4 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 16 -out2 64 -kc 4 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 16 -out2 64 -kc 4 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 32 -out2 128 -kc 2 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 32 -out2 128 -kc 2 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 32 -out2 128 -kc 2 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 32 -out2 128 -kc 2 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 32 -out2 128 -kc 3 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 32 -out2 128 -kc 3 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 32 -out2 128 -kc 3 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 32 -out2 128 -kc 3 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 32 -out2 128 -kc 4 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 32 -out2 128 -kc 4 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 32 -out2 128 -kc 4 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 32 -out2 128 -kc 4 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 32 -out2 128 -kc 2 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 32 -out2 128 -kc 2 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 32 -out2 128 -kc 2 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 32 -out2 128 -kc 2 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 32 -out2 128 -kc 3 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 32 -out2 128 -kc 3 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 32 -out2 128 -kc 3 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 32 -out2 128 -kc 3 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 32 -out2 128 -kc 4 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 32 -out2 128 -kc 4 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 32 -out2 128 -kc 4 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 32 -out2 128 -kc 4 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 32 -out2 128 -kc 2 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 32 -out2 128 -kc 2 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 32 -out2 128 -kc 2 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 32 -out2 128 -kc 2 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 32 -out2 128 -kc 3 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 32 -out2 128 -kc 3 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 32 -out2 128 -kc 3 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 32 -out2 128 -kc 3 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 32 -out2 128 -kc 4 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 32 -out2 128 -kc 4 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 32 -out2 128 -kc 4 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 32 -out2 128 -kc 4 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 32 -out2 128 -kc 2 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 32 -out2 128 -kc 2 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 32 -out2 128 -kc 2 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 32 -out2 128 -kc 2 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 32 -out2 128 -kc 3 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 32 -out2 128 -kc 3 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 32 -out2 128 -kc 3 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 32 -out2 128 -kc 3 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 32 -out2 128 -kc 4 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 32 -out2 128 -kc 4 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 32 -out2 128 -kc 4 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 32 -out2 128 -kc 4 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 16 -out2 256 -kc 2 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 16 -out2 256 -kc 2 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 16 -out2 256 -kc 2 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 16 -out2 256 -kc 2 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 16 -out2 256 -kc 3 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 16 -out2 256 -kc 3 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 16 -out2 256 -kc 3 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 16 -out2 256 -kc 3 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 16 -out2 256 -kc 4 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 16 -out2 256 -kc 4 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 16 -out2 256 -kc 4 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 512 -b 100 -out1 16 -out2 256 -kc 4 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 16 -out2 256 -kc 2 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 16 -out2 256 -kc 2 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 16 -out2 256 -kc 2 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 16 -out2 256 -kc 2 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 16 -out2 256 -kc 3 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 16 -out2 256 -kc 3 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 16 -out2 256 -kc 3 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 16 -out2 256 -kc 3 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 16 -out2 256 -kc 4 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 16 -out2 256 -kc 4 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 16 -out2 256 -kc 4 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n mel -fft 1024 -b 100 -out1 16 -out2 256 -kc 4 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 16 -out2 256 -kc 2 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 16 -out2 256 -kc 2 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 16 -out2 256 -kc 2 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 16 -out2 256 -kc 2 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 16 -out2 256 -kc 3 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 16 -out2 256 -kc 3 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 16 -out2 256 -kc 3 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 16 -out2 256 -kc 3 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 16 -out2 256 -kc 4 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 16 -out2 256 -kc 4 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 16 -out2 256 -kc 4 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 256 -b 100 -out1 16 -out2 256 -kc 4 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 16 -out2 256 -kc 2 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 16 -out2 256 -kc 2 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 16 -out2 256 -kc 2 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 16 -out2 256 -kc 2 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 16 -out2 256 -kc 3 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 16 -out2 256 -kc 3 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 16 -out2 256 -kc 3 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 16 -out2 256 -kc 3 -sc 1 -kp 4 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 16 -out2 256 -kc 4 -sc 1 -kp 2 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 16 -out2 256 -kc 4 -sc 1 -kp 2 -sp 4
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 16 -out2 256 -kc 4 -sc 1 -kp 4 -sp 2
-python train_joint_spec_full_2d.py -n linear -fft 1024 -b 100 -out1 16 -out2 256 -kc 4 -sc 1 -kp 4 -sp 4
+python train_joint_spec_full_2d.py -b 200 -out1 16 -out2 64 -kc1 4 -kc2 2 -sc1 1 -sc2 1 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 16 -out2 64 -kc1 4 -kc2 2 -sc1 1 -sc2 1 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 16 -out2 64 -kc1 4 -kc2 2 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 16 -out2 64 -kc1 4 -kc2 2 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 16 -out2 64 -kc1 4 -kc2 2 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 16 -out2 64 -kc1 4 -kc2 2 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 16 -out2 64 -kc1 3 -kc2 2 -sc1 1 -sc2 1 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 16 -out2 64 -kc1 3 -kc2 2 -sc1 1 -sc2 1 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 16 -out2 64 -kc1 3 -kc2 2 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 16 -out2 64 -kc1 3 -kc2 2 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 16 -out2 64 -kc1 3 -kc2 2 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 16 -out2 64 -kc1 3 -kc2 2 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 16 -out2 64 -kc1 5 -kc2 3 -sc1 1 -sc2 1 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 16 -out2 64 -kc1 5 -kc2 3 -sc1 1 -sc2 1 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 16 -out2 64 -kc1 5 -kc2 3 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 16 -out2 64 -kc1 5 -kc2 3 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 16 -out2 64 -kc1 5 -kc2 3 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 16 -out2 64 -kc1 5 -kc2 3 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 16 -out2 64 -kc1 2 -kc2 2 -sc1 1 -sc2 1 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 16 -out2 64 -kc1 2 -kc2 2 -sc1 1 -sc2 1 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 16 -out2 64 -kc1 2 -kc2 2 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 16 -out2 64 -kc1 2 -kc2 2 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 16 -out2 64 -kc1 2 -kc2 2 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 16 -out2 64 -kc1 2 -kc2 2 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 16 -out2 64 -kc1 3 -kc2 3 -sc1 1 -sc2 1 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 16 -out2 64 -kc1 3 -kc2 3 -sc1 1 -sc2 1 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 16 -out2 64 -kc1 3 -kc2 3 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 16 -out2 64 -kc1 3 -kc2 3 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 16 -out2 64 -kc1 3 -kc2 3 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 16 -out2 64 -kc1 3 -kc2 3 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 16 -out2 64 -kc1 4 -kc2 4 -sc1 1 -sc2 1 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 16 -out2 64 -kc1 4 -kc2 4 -sc1 1 -sc2 1 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 16 -out2 64 -kc1 4 -kc2 4 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 16 -out2 64 -kc1 4 -kc2 4 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 16 -out2 64 -kc1 4 -kc2 4 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 16 -out2 64 -kc1 4 -kc2 4 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 16 -out2 64 -kc1 2 -kc2 1 -sc1 1 -sc2 1 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 16 -out2 64 -kc1 2 -kc2 1 -sc1 1 -sc2 1 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 16 -out2 64 -kc1 2 -kc2 1 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 16 -out2 64 -kc1 2 -kc2 1 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 16 -out2 64 -kc1 2 -kc2 1 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 16 -out2 64 -kc1 2 -kc2 1 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 16 -out2 64 -kc1 3 -kc2 1 -sc1 1 -sc2 1 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 16 -out2 64 -kc1 3 -kc2 1 -sc1 1 -sc2 1 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 16 -out2 64 -kc1 3 -kc2 1 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 16 -out2 64 -kc1 3 -kc2 1 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 16 -out2 64 -kc1 3 -kc2 1 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 16 -out2 64 -kc1 3 -kc2 1 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 16 -out2 64 -kc1 4 -kc2 1 -sc1 1 -sc2 1 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 16 -out2 64 -kc1 4 -kc2 1 -sc1 1 -sc2 1 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 16 -out2 64 -kc1 4 -kc2 1 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 16 -out2 64 -kc1 4 -kc2 1 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 16 -out2 64 -kc1 4 -kc2 1 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 16 -out2 64 -kc1 4 -kc2 1 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 64 -out2 16 -kc1 4 -kc2 2 -sc1 1 -sc2 1 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 64 -out2 16 -kc1 4 -kc2 2 -sc1 1 -sc2 1 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 64 -out2 16 -kc1 4 -kc2 2 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 64 -out2 16 -kc1 4 -kc2 2 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 64 -out2 16 -kc1 4 -kc2 2 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 64 -out2 16 -kc1 4 -kc2 2 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 64 -out2 16 -kc1 3 -kc2 2 -sc1 1 -sc2 1 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 64 -out2 16 -kc1 3 -kc2 2 -sc1 1 -sc2 1 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 64 -out2 16 -kc1 3 -kc2 2 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 64 -out2 16 -kc1 3 -kc2 2 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 64 -out2 16 -kc1 3 -kc2 2 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 64 -out2 16 -kc1 3 -kc2 2 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 64 -out2 16 -kc1 5 -kc2 3 -sc1 1 -sc2 1 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 64 -out2 16 -kc1 5 -kc2 3 -sc1 1 -sc2 1 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 64 -out2 16 -kc1 5 -kc2 3 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 64 -out2 16 -kc1 5 -kc2 3 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 64 -out2 16 -kc1 5 -kc2 3 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 64 -out2 16 -kc1 5 -kc2 3 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 64 -out2 16 -kc1 2 -kc2 2 -sc1 1 -sc2 1 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 64 -out2 16 -kc1 2 -kc2 2 -sc1 1 -sc2 1 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 64 -out2 16 -kc1 2 -kc2 2 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 64 -out2 16 -kc1 2 -kc2 2 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 64 -out2 16 -kc1 2 -kc2 2 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 64 -out2 16 -kc1 2 -kc2 2 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 64 -out2 16 -kc1 3 -kc2 3 -sc1 1 -sc2 1 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 64 -out2 16 -kc1 3 -kc2 3 -sc1 1 -sc2 1 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 64 -out2 16 -kc1 3 -kc2 3 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 64 -out2 16 -kc1 3 -kc2 3 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 64 -out2 16 -kc1 3 -kc2 3 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 64 -out2 16 -kc1 3 -kc2 3 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 64 -out2 16 -kc1 4 -kc2 4 -sc1 1 -sc2 1 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 64 -out2 16 -kc1 4 -kc2 4 -sc1 1 -sc2 1 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 64 -out2 16 -kc1 4 -kc2 4 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 64 -out2 16 -kc1 4 -kc2 4 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 64 -out2 16 -kc1 4 -kc2 4 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 64 -out2 16 -kc1 4 -kc2 4 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 64 -out2 16 -kc1 2 -kc2 1 -sc1 1 -sc2 1 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 64 -out2 16 -kc1 2 -kc2 1 -sc1 1 -sc2 1 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 64 -out2 16 -kc1 2 -kc2 1 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 64 -out2 16 -kc1 2 -kc2 1 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 64 -out2 16 -kc1 2 -kc2 1 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 64 -out2 16 -kc1 2 -kc2 1 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 64 -out2 16 -kc1 3 -kc2 1 -sc1 1 -sc2 1 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 64 -out2 16 -kc1 3 -kc2 1 -sc1 1 -sc2 1 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 64 -out2 16 -kc1 3 -kc2 1 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 64 -out2 16 -kc1 3 -kc2 1 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 64 -out2 16 -kc1 3 -kc2 1 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 64 -out2 16 -kc1 3 -kc2 1 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 64 -out2 16 -kc1 4 -kc2 1 -sc1 1 -sc2 1 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 64 -out2 16 -kc1 4 -kc2 1 -sc1 1 -sc2 1 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 64 -out2 16 -kc1 4 -kc2 1 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 64 -out2 16 -kc1 4 -kc2 1 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 64 -out2 16 -kc1 4 -kc2 1 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2
+python train_joint_spec_full_2d.py -b 200 -out1 64 -out2 16 -kc1 4 -kc2 1 -sc1 2 -sc2 2 -kp1 2 -kp2 2 -sp 2

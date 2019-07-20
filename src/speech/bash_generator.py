@@ -14,7 +14,7 @@ def generate_bash(batch_size,out_channels, kernel_size_cnn, stride_size_cnn, ker
                         kp1=kp[0]
                         kp2=kp[1]
                         for sp in stride_size_pool:
-                            commands.append("python train_joint_spec_full_2d.py -n {} -fft {} -b {} -out1 {} -out2 {} -kc1 {} -kc2 {} -sc1 {} -sc2 {} -kp1 {} -kp2 {} -sp {}".format(n,fft,b,out1,out2,kc1,kc2,sc1,sc1,kp1,kp2,sp))
+                            commands.append("python train_joint_spec_full_2d.py -b {} -out1 {} -out2 {} -kc1 {} -kc2 {} -sc1 {} -sc2 {} -kp1 {} -kp2 {} -sp {}".format(b,out1,out2,kc1,kc2,sc1,sc1,kp1,kp2,sp))
     with open('gpu_full_autogen_bash.sh','w+') as f:
         f.write('#!/bin/bash\n')
         for j in commands:
