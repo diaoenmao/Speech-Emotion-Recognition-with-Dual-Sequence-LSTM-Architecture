@@ -86,7 +86,8 @@ class SpectrogramModel(nn.Module):
         self.hidden_dim_lstm=hidden_dim_lstm
 
 # data shape
-        strideF = nfft//2 + 1
+        self.nfft = nfft
+        strideF = self.nfft//2 + 1
 
 # for putting all cells together
         self._all_layers = []
