@@ -194,6 +194,7 @@ class MultiSpectrogramModel(nn.Module):
         input2 = getattr(self, name.format("1"))(input2)
         input_raw=self.alignment(input1,input2)
         out_raw,_=self.lstm(input_raw.permute(0,2,1))
+        pdb.set_trace()
         out_raw=out_raw.permute(0,2,1)
         out_lstm = self.LSTM_Audio(input_lstm).permute(0,2,1)
         temp = [torch.unsqueeze(torch.mean(out_lstm[k,:,:int(s.item())],dim=1),dim=0) for k,s in enumerate(seq_length)]
