@@ -87,7 +87,7 @@ class SpectrogramModel(nn.Module):
 
 # data shape
         self.nfft = nfft
-        strideF = self.nfft//2
+        strideF = self.nfft//4
         #strideF = 128
 
 # for putting all cells together
