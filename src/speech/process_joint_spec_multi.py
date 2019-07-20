@@ -57,12 +57,12 @@ def combine(name, nfft):
 class IEMOCAP(Dataset):
     def __init__(self, name, nfft, train=True):
         if train:
-            f1 = open('/scratch/speech/hand_raw_dataset/EMO39_'+name+'_spectrogram_nfft{}_train.pkl'.format(nfft[0]), 'rb')
-            f2 = open('/scratch/speech/hand_raw_dataset/EMO39_'+name+'_spectrogram_nfft{}_train.pkl'.format(nfft[1]), 'rb')
+            f1 = open('/scratch/speech/hand_raw_dataset/EMO39_'+name+'_spectrogram_nfft{}_updated_train.pkl'.format(nfft[0]), 'rb')
+            f2 = open('/scratch/speech/hand_raw_dataset/EMO39_'+name+'_spectrogram_nfft{}_updated_train.pkl'.format(nfft[1]), 'rb')
             #f3 = open('/scratch/speech/hand_raw_dataset/EMO39_'+name+'_spectrogram_nfft{}_train.pkl'.format(nfft[2]), 'rb')
         else:
-            f1 = open('/scratch/speech/hand_raw_dataset/EMO39_'+name+'_spectrogram_nfft{}_test.pkl'.format(nfft[0]), 'rb')
-            f2 = open('/scratch/speech/hand_raw_dataset/EMO39_'+name+'_spectrogram_nfft{}_test.pkl'.format(nfft[1]), 'rb')
+            f1 = open('/scratch/speech/hand_raw_dataset/EMO39_'+name+'_spectrogram_nfft{}_updated_test.pkl'.format(nfft[0]), 'rb')
+            f2 = open('/scratch/speech/hand_raw_dataset/EMO39_'+name+'_spectrogram_nfft{}_updated_test.pkl'.format(nfft[1]), 'rb')
             #f3 = open('/scratch/speech/hand_raw_dataset/EMO39_'+name+'_spectrogram_nfft{}_test.pkl'.format(nfft[2]), 'rb')
         data1 = pickle.load(f1)
         data2 = pickle.load(f2)
@@ -75,7 +75,7 @@ class IEMOCAP(Dataset):
         return len(self.input[0])
 
     def __getitem__(self, index):
-        input = [torch.squeeze(F.interpolate(torch.unsqueeze(torch.from_numpy(10*np.log10(data[index])).float(), dim=0), size=140, mode='nearest'), dim=0) for data in self.input]
+        input = [torch.squeeze(F.interpolate(torch.unsqueeze(torch.from_numpy(10*np.log10(data[index])).float(), dim=0), size=230, mode='nearest'), dim=0) for data in self.input]
         sample = {'input_lstm': torch.from_numpy(self.input_lstm[index]).float(),
                   'seq_length': self.input_lstm[index].shape[0],
                   'input1': input[0],
