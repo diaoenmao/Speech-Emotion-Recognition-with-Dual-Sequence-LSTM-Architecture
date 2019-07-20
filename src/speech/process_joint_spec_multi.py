@@ -76,8 +76,8 @@ class IEMOCAP(Dataset):
         return len(self.input1)
 
     def __getitem__(self, index):
-        input1 = torch.squeeze(F.interpolate(torch.unsqueeze(torch.from_numpy(10*np.log10(input1[index])).float(), dim=0), size=230, mode='nearest'), dim=0)
-        input2 = torch.squeeze(F.interpolate(torch.unsqueeze(torch.from_numpy(10*np.log10(input2[index])).float(), dim=0), size=120, mode='nearest'), dim=0)
+        input1 = torch.squeeze(F.interpolate(torch.unsqueeze(torch.from_numpy(10*np.log10(self.input1[index])).float(), dim=0), size=230, mode='nearest'), dim=0)
+        input2 = torch.squeeze(F.interpolate(torch.unsqueeze(torch.from_numpy(10*np.log10(self.input2[index])).float(), dim=0), size=120, mode='nearest'), dim=0)
         sample = {'input_lstm': torch.from_numpy(self.input_lstm[index]).float(),
                   'seq_length': self.input_lstm[index].shape[0],
                   'input1': input1,
