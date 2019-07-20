@@ -130,19 +130,16 @@ class MultiSpectrogramModel(nn.Module):
     def alignment(self,input1,input2):
         # input2 has less time steps
         temp=[]
+        if (input1.shape[2]-1)<(input2.shape[2])*2:
+            input2=input2[:,:,:(input1.shape[2]-1)//2]
+        print(input1.shape)
+        print(input2.shape)
         for i in range(input2.shape[2]):
-            try:
-                temp1=torch.cat([input1[:,:,2*i],input1[:,:,2*i+1],input1[:,:,2*i+2]],dim=1)
-            except:
-                print(input1.shape)
-                print(input2.shape)
-                try:
-                    temp1=torch.cat([input1[:,:,2*i-1],input1[:,:,2*i],input1[:,:,2*i+1]],dim=1)
-                except:
-                    temp1=torch.cat([input1[:,:,2*i-2],input1[:,:,2*i-1],input1[:,:,2*i]],dim=1)
+            temp1=torch.cat([input1[:,:,2*i],input1[:,:,2*i+1],input1[:,:,2*i+2]],dim=1)
             temp2=torch.cat([temp1,input2[:,:,i]],dim=1)
             temp.append(temp2)
         input_final=torch.stack(temp,dim=2)
+        print(input_final.shape)
         return input_final
     def __init__(self, in_channels, out_channels, kernel_size_cnn, stride_cnn, kernel_size_pool, stride_pool,
                     hidden_dim, num_layers, dropout_rate, num_labels, batch_size,
