@@ -110,7 +110,9 @@ class SpectrogramModel(nn.Module):
         for i in range(self.num_layers_cnn):
             name = 'lflb_cell{}'.format(i)
             x = getattr(self, name)(x)
+        pdb.set_trace()
         out = torch.flatten(x,start_dim=1,end_dim=2).permute(0,2,1)
+        pdb.set_trace()
         out, hn = self.lstm(out)
         out = out.permute(0,2,1)
         return out
