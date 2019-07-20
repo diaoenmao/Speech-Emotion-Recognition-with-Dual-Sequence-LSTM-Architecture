@@ -27,9 +27,10 @@ num_labels=4
 hidden_dim_lstm=200
 epoch_num=40
 num_layers_lstm=2
+nfft=[512,1024,2048]
 model = MultiSpectrogramModel(input_channels,out_channels, kernel_size_cnn, stride_size_cnn, kernel_size_pool,
                             stride_size_pool, hidden_dim,num_layers,dropout,num_labels, batch_size,
-                            hidden_dim_lstm,num_layers_lstm,device, False)
+                            hidden_dim_lstm,num_layers_lstm,device, False, nfft)
 
 print("============================ Number of parameters ====================================")
 print(str(sum(p.numel() for p in model.parameters() if p.requires_grad)))
@@ -51,9 +52,9 @@ scheduler = ReduceLROnPlateau(optimizer=optimizer,factor=0.5, patience=2, thresh
 scheduler3 =MultiStepLR(optimizer, [5,10,15],gamma=0.1)
 
 # Load the training data
-training_data = IEMOCAP(name='mel', nfft=[512, 1024, 2048], train=True)
+training_data = IEMOCAP(name='linear', nfft=nfft, train=True)
 train_loader = DataLoader(dataset=training_data, batch_size=batch_size, shuffle=True, collate_fn=my_collate, num_workers=0,drop_last=True)
-testing_data = IEMOCAP(name='mel', nfft=[512, 1024, 2048], train=False)
+testing_data = IEMOCAP(name='linear', nfft=nfft, train=False)
 test_loader = DataLoader(dataset=testing_data, batch_size=batch_size, shuffle=True, collate_fn=my_collate, num_workers=0,drop_last=True)
 
 print("=================")
