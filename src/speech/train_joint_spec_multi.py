@@ -42,7 +42,7 @@ def train_model(args):
     dropout=0
     num_labels=4
     hidden_dim_lstm=200
-    epoch_num=70
+    epoch_num=50
     num_layers_lstm=2
     nfft=[512,1024]
     model = MultiSpectrogramModel(input_channels,out_channels, kernel_size_cnn, stride_size_cnn, kernel_size_pool,
