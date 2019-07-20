@@ -95,12 +95,12 @@ class SpectrogramModel(nn.Module):
         self.num_layers_cnn=len(out_channels)
         for i in range(self.num_layers_cnn):
             name = 'lflb_cell{}'.format(i)
-            cell = LFLB(self.in_channels[i], self.out_channels[i], self.kernel_size_cnn[i], self.stride_cnn[i],
-                        self.padding_cnn[i], self.padding_pool[i],self.kernel_size_pool[i], self.stride_pool[i], self.device)
+            cell = LFLB(self.in_channels[i], self.out_channels[i], self.kernel_size_cnn, self.stride_cnn,
+                        self.padding_cnn[i], self.padding_pool[i],self.kernel_size_pool, self.stride_pool, self.device)
             setattr(self, name, cell)
             self._all_layers.append(cell)
-            strideF=self.cnn_shape(strideF,self.kernel_size_cnn[i],self.stride_cnn[i],self.padding_cnn[i],
-                                    self.kernel_size_pool[i],self.stride_pool[i],self.padding_pool[i])
+            strideF=self.cnn_shape(strideF,self.kernel_size_cnn[0],self.stride_cnn[0],self.padding_cnn[i][0],
+                                    self.kernel_size_pool[0],self.stride_pool,self.padding_pool[i][0])
 
         self.lstm = nn.LSTM(self.out_channels[-1]*strideF, self.hidden_dim, self.num_layers, batch_first=True,
                            dropout=self.dropout_rate, bidirectional=self.bidirectional).to(self.device)
@@ -145,7 +145,7 @@ class MultiSpectrogramModel(nn.Module):
 
         for i in range(self.num_branches):
             name = 'spec_cell{}'.format(i)
-            cell = SpectrogramModel(self.in_channels, self.out_channels, self.kernel_size_cnn[i], self.stride_cnn[i], self.kernel_size_pool[i], self.stride_pool,
+            cell = SpectrogramModel(self.in_channels, self.out_channels, self.kernel_size_cnn[i], self.stride_cnn[i], self.kernel_size_pool[i], self.stride_pool[i],
                                 self.hidden_dim, self.num_layers, self.dropout_rate, self.num_labels, self.batch_size,
                                 self.hidden_dim_lstm, self.num_layers_lstm, self.device, nfft[i], self.bidirectional)
             setattr(self, name, cell)
