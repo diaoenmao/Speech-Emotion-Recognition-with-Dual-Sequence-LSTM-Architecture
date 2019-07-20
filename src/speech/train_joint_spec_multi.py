@@ -27,7 +27,7 @@ num_labels=4
 hidden_dim_lstm=200
 epoch_num=40
 num_layers_lstm=2
-nfft=[512,1024,2048]
+nfft=[256,512,1024]
 model = MultiSpectrogramModel(input_channels,out_channels, kernel_size_cnn, stride_size_cnn, kernel_size_pool,
                             stride_size_pool, hidden_dim,num_layers,dropout,num_labels, batch_size,
                             hidden_dim_lstm,num_layers_lstm,device, nfft, False)
