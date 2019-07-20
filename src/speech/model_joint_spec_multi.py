@@ -88,6 +88,7 @@ class SpectrogramModel(nn.Module):
 # data shape
         self.nfft = nfft
         strideF = self.nfft//2 + 1
+        pdb.set_trace()
 
 # for putting all cells together
         self._all_layers = []
