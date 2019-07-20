@@ -127,6 +127,15 @@ class SpectrogramModel(nn.Module):
         return out
 
 class MultiSpectrogramModel(nn.Module):
+    def alignment(self,input1,input2):
+        # input2 has less time steps
+        temp=[]
+        for i in range(input2.shape[2]):
+            temp1=torch.cat([input1[:,:,2*i],input1[:,:,2*i+1],input1[:,:,2*i+2]],dim=1)
+            temp2=torch.cat([temp1,input2[:,:,i]],dim=1)
+            temp.append(temp2)
+        input_final=torch.stack(temp,dim=2)
+        return input_final
     def __init__(self, in_channels, out_channels, kernel_size_cnn, stride_cnn, kernel_size_pool, stride_pool,
                     hidden_dim, num_layers, dropout_rate, num_labels, batch_size,
                     hidden_dim_lstm,num_layers_lstm, device, nfft, bidirectional=False):
@@ -171,7 +180,8 @@ class MultiSpectrogramModel(nn.Module):
 
         #self.classification_raw=nn.Linear(self.hidden_dim*self.num_directions*self.num_branches,self.num_labels).to(self.device)
         self.weight= nn.Parameter(torch.FloatTensor([0]),requires_grad=False)
-        self.lstm=nn.LSTM()
+        self.lstm=nn.LSTM(3*(self.hidden_dim_lstm//2)+self.hidden_dim_lstm,self.hidden_dim_lstm,self.num_layers, batch_first=True,
+                           dropout=self.dropout_rate, bidirectional=self.bidirectional).to(self.device)
 
     def forward(self, input_lstm, input1, input2, target, seq_length):
         input1 = input1.to(self.device)
@@ -180,21 +190,20 @@ class MultiSpectrogramModel(nn.Module):
         name = 'spec_cell{}'
         input1 = getattr(self, name.format("0"))(input1)
         input2 = getattr(self, name.format("1"))(input2)
+        input_raw=self.alignment(input1,input2)
+        out_raw=self.lstm(input_raw.permute(0,2,1)).permute(0,2,1)
         out_lstm = self.LSTM_Audio(input_lstm).permute(0,2,1)
         temp = [torch.unsqueeze(torch.mean(out_lstm[k,:,:int(s.item())],dim=1),dim=0) for k,s in enumerate(seq_length)]
         out_lstm = torch.cat(temp,dim=0)
-        out1 = torch.mean(input1, dim=2)
-        out2 = torch.mean(input2, dim=2)
-        out = [out1, out2]
-        out = torch.cat(out, dim=1)
+
         p = torch.exp(10*self.weight)/(1+torch.exp(10*self.weight))
-        out = self.classification_raw(out)
+        out_raw = self.classification_raw(out_raw)
         out_lstm = self.classification_hand(out_lstm)
-        out_final = p*out + (1-p)*out_lstm
+        out_final = p*out_raw + (1-p)*out_lstm
 
         target_index = torch.argmax(target, dim=1).to(self.device)
         correct_batch=torch.sum(target_index==torch.argmax(out_final,dim=1))
-        losses_batch_raw=F.cross_entropy(out,torch.max(target,1)[1])
+        losses_batch_raw=F.cross_entropy(out_raw,torch.max(target,1)[1])
         losses_batch_hand=F.cross_entropy(out_lstm,torch.max(target,1)[1])
         losses_batch=p*losses_batch_raw+(1-p)*losses_batch_hand
         correct_batch=torch.unsqueeze(correct_batch,dim=0)
