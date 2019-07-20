@@ -88,7 +88,6 @@ class SpectrogramModel(nn.Module):
 # data shape
         self.nfft = nfft
         strideF = self.nfft//2 + 1
-        pdb.set_trace()
 
 # for putting all cells together
         self._all_layers = []
@@ -99,11 +98,8 @@ class SpectrogramModel(nn.Module):
                         self.padding_cnn[i], self.padding_pool[i],self.kernel_size_pool[i], self.stride_pool[i], self.device)
             setattr(self, name, cell)
             self._all_layers.append(cell)
-            print(strideF)
             strideF=self.cnn_shape(strideF,self.kernel_size_cnn[i],self.stride_cnn[i],self.padding_cnn[i],
                                     self.kernel_size_pool[i],self.stride_pool[i],self.padding_pool[i])
-
-        print(strideF)
 
         self.lstm = nn.LSTM(self.out_channels[-1]*strideF, self.hidden_dim_lstm, self.num_layers, batch_first=True,
                            dropout=self.dropout_rate, bidirectional=self.bidirectional).to(self.device)
@@ -114,9 +110,7 @@ class SpectrogramModel(nn.Module):
         for i in range(self.num_layers_cnn):
             name = 'lflb_cell{}'.format(i)
             x = getattr(self, name)(x)
-        pdb.set_trace()
         out = torch.flatten(x,start_dim=1,end_dim=2).permute(0,2,1)
-        pdb.set_trace()
         out, hn = self.lstm(out)
         out = out.permute(0,2,1)
         return out
@@ -152,7 +146,7 @@ class MultiSpectrogramModel(nn.Module):
             name = 'spec_cell{}'.format(i)
             cell = SpectrogramModel(self.in_channels, self.out_channels, self.kernel_size_cnn, self.stride_cnn, self.kernel_size_pool, self.stride_pool,
                                 self.hidden_dim, self.num_layers, self.dropout_rate, self.num_labels, self.batch_size,
-                                self.hidden_dim_lstm, self.num_layers_lstm, self.device, self.bidirectional, nfft[i])
+                                self.hidden_dim_lstm, self.num_layers_lstm, self.device, nfft[i], self.bidirectional)
             setattr(self, name, cell)
             self._all_layers.append(cell)
 
