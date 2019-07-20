@@ -174,13 +174,13 @@ class MultiSpectrogramModel(nn.Module):
 
         self.LSTM_Audio=LSTM_Audio(self.hidden_dim_lstm,self.num_layers,self.device,bidirectional=False)
         self.classification_hand = nn.Linear(self.hidden_dim_lstm, self.num_labels).to(self.device)
-
+        '''
         self.classification_raw = nn.Sequential(
-                                nn.Linear(self.hidden_dim_lstm*self.num_directions*self.num_branches, self.hidden_dim_lstm*self.num_directions*self.num_branches//2),
+                                nn.Linear(self.hidden_dim_lstm*self.num_directions, self.hidden_dim_lstm*self.num_directions*self.num_branches//2),
                                 nn.ReLU(),
-                                nn.Linear(self.hidden_dim_lstm*self.num_directions*self.num_branches//2,self.num_labels)).to(self.device)
-
-        #self.classification_raw=nn.Linear(self.hidden_dim*self.num_directions*self.num_branches,self.num_labels).to(self.device)
+                                nn.Linear(self.hidden_dim_lstm*self.num_directions//2,self.num_labels)).to(self.device)
+        '''
+        self.classification_raw=nn.Linear(self.hidden_dim*self.num_directions,self.num_labels).to(self.device)
         self.weight= nn.Parameter(torch.FloatTensor([0]),requires_grad=False)
         self.lstm=nn.LSTM(3*(self.hidden_dim_lstm//2)+self.hidden_dim_lstm,self.hidden_dim_lstm,self.num_layers, batch_first=True,
                            dropout=self.dropout_rate, bidirectional=self.bidirectional).to(self.device)
@@ -194,8 +194,8 @@ class MultiSpectrogramModel(nn.Module):
         input2 = getattr(self, name.format("1"))(input2)
         input_raw=self.alignment(input1,input2)
         out_raw,_=self.lstm(input_raw.permute(0,2,1))
-        pdb.set_trace()
-        out_raw=out_raw.permute(0,2,1)
+        # out_raw.shape B*T*D
+        out_raw=torch.mean(out_raw,dim=1)
         out_lstm = self.LSTM_Audio(input_lstm).permute(0,2,1)
         temp = [torch.unsqueeze(torch.mean(out_lstm[k,:,:int(s.item())],dim=1),dim=0) for k,s in enumerate(seq_length)]
         out_lstm = torch.cat(temp,dim=0)
