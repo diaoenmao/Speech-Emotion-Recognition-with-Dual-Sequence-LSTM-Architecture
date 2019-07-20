@@ -84,10 +84,15 @@ class SpectrogramModel(nn.Module):
         self.bidirectional = bidirectional
         self.num_directions = 1 + self.bidirectional
         self.hidden_dim_lstm=hidden_dim_lstm
-
 # data shape
         self.nfft = nfft
         strideF = self.nfft//4
+        if self.nfft==512: 
+            strideT=230
+            fc1dim=self.hidden_dim_lstm//2
+        if self.nfft==1024: 
+            strideT=120
+            fc1dim=self.hidden_dim_lstm
         #strideF = 128
 
 # for putting all cells together
@@ -101,19 +106,24 @@ class SpectrogramModel(nn.Module):
             self._all_layers.append(cell)
             strideF=self.cnn_shape(strideF,self.kernel_size_cnn[0],self.stride_cnn[0],self.padding_cnn[i][0],
                                     self.kernel_size_pool[0],self.stride_pool,self.padding_pool[i][0])
+            strideT=self.cnn_shape(strideT,self.kernel_size_cnn[1],self.stride_cnn[1],self.padding_cnn[i][1],
+                                    self.kernel_size_pool[1],self.stride_pool,self.padding_pool[i][1])
 
-        self.lstm = nn.LSTM(self.out_channels[-1]*strideF, self.hidden_dim, self.num_layers, batch_first=True,
-                           dropout=self.dropout_rate, bidirectional=self.bidirectional).to(self.device)
-
+        #self.lstm = nn.LSTM(self.out_channels[-1]*strideF, self.hidden_dim, self.num_layers, batch_first=True,
+                           #dropout=self.dropout_rate, bidirectional=self.bidirectional).to(self.device)
+        self.fc1=nn.Sequential(
+                                nn.Linear(strideF*out_channels[-1],fc1dim),
+                                nn.ReLU())
     def forward(self, input):
-        #pdb.set_trace()
         x = input.to(self.device)
         for i in range(self.num_layers_cnn):
             name = 'lflb_cell{}'.format(i)
             x = getattr(self, name)(x)
-        out = torch.flatten(x,start_dim=1,end_dim=2).permute(0,2,1)
-        out, hn = self.lstm(out)
-        out = out.permute(0,2,1)
+        #out = torch.flatten(x,start_dim=1,end_dim=2).permute(0,2,1)
+        #out, hn = self.lstm(out)
+        #out = out.permute(0,2,1)
+        out=torch.flatten(x,start_dim=1,end_dim=2)
+        out=self.fc1(out)
         return out
 
 class MultiSpectrogramModel(nn.Module):
@@ -161,34 +171,23 @@ class MultiSpectrogramModel(nn.Module):
 
         #self.classification_raw=nn.Linear(self.hidden_dim*self.num_directions*self.num_branches,self.num_labels).to(self.device)
         self.weight= nn.Parameter(torch.FloatTensor([0]),requires_grad=False)
+        self.lstm=nn.LSTM()
 
     def forward(self, input_lstm, input1, input2, target, seq_length):
         input1 = input1.to(self.device)
         input2 = input2.to(self.device)
-        #input3 = input3.to(self.device)
         target = target.to(self.device)
-        #for i in range(self.num_branches):
         name = 'spec_cell{}'
         input1 = getattr(self, name.format("0"))(input1)
-        #print("DONE WITH 1")
         input2 = getattr(self, name.format("1"))(input2)
-        #print("DONE WITH 2")
-        #input3 = getattr(self, name.format("2"))(input3)
-        #print("DONE WITH 3")
-        #pdb.set_trace()
         out_lstm = self.LSTM_Audio(input_lstm).permute(0,2,1)
         temp = [torch.unsqueeze(torch.mean(out_lstm[k,:,:int(s.item())],dim=1),dim=0) for k,s in enumerate(seq_length)]
         out_lstm = torch.cat(temp,dim=0)
         out1 = torch.mean(input1, dim=2)
         out2 = torch.mean(input2, dim=2)
-        #out3 = torch.mean(input3, dim=2)
-        #out1 = self.classification_raw(out1)
-        #out2 = self.classification_raw(out2)
-        #out3 = self.classification_raw(out3)
         out = [out1, out2]
         out = torch.cat(out, dim=1)
         p = torch.exp(10*self.weight)/(1+torch.exp(10*self.weight))
-        #p = 0.25
         out = self.classification_raw(out)
         out_lstm = self.classification_hand(out_lstm)
         out_final = p*out + (1-p)*out_lstm
