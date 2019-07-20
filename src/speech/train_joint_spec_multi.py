@@ -13,9 +13,9 @@ import argparse
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 device_ids=[0,1,2,3]
-batch_size=100
+batch_size=256
 input_channels = 1
-out_channels = [16,64]
+out_channels = [128,32]
 kernel_size_cnn = [2]*2
 stride_size_cnn = [1]*2
 kernel_size_pool = [2]*2
@@ -25,9 +25,9 @@ num_layers=2
 dropout=0
 num_labels=4
 hidden_dim_lstm=200
-epoch_num=40
+epoch_num=70
 num_layers_lstm=2
-nfft=[256,512]
+nfft=[512,1024]
 model = MultiSpectrogramModel(input_channels,out_channels, kernel_size_cnn, stride_size_cnn, kernel_size_pool,
                             stride_size_pool, hidden_dim,num_layers,dropout,num_labels, batch_size,
                             hidden_dim_lstm,num_layers_lstm,device, nfft, False)
@@ -52,9 +52,9 @@ scheduler = ReduceLROnPlateau(optimizer=optimizer,factor=0.5, patience=2, thresh
 scheduler3 =MultiStepLR(optimizer, [5,10,15],gamma=0.1)
 
 # Load the training data
-training_data = IEMOCAP(name='linear', nfft=nfft, train=True)
+training_data = IEMOCAP(name='mel', nfft=nfft, train=True)
 train_loader = DataLoader(dataset=training_data, batch_size=batch_size, shuffle=True, collate_fn=my_collate, num_workers=0,drop_last=True)
-testing_data = IEMOCAP(name='linear', nfft=nfft, train=False)
+testing_data = IEMOCAP(name='mel', nfft=nfft, train=False)
 test_loader = DataLoader(dataset=testing_data, batch_size=batch_size, shuffle=True, collate_fn=my_collate, num_workers=0,drop_last=True)
 
 print("=================")
