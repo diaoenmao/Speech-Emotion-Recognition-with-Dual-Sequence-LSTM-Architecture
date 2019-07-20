@@ -17,9 +17,12 @@ def init_parser():
     parser.add_argument('--batch_size', '-b', default=128, type=int, dest='batch_size')
     parser.add_argument('--out_channels_1', '-out1', default=64, type=int, dest='out_channels1')
     parser.add_argument('--out_channels_2', '-out2', default=16, type=int, dest='out_channels2')
-    parser.add_argument('--kernel_size_cnn', '-kc', default=2, type=int, dest='kernel_size_cnn')
-    parser.add_argument('--stride_size_cnn', '-sc', default=1, type=int, dest='stride_size_cnn')
-    parser.add_argument('--kernel_size_pool', '-kp', default=2, type=int, dest='kernel_size_pool')
+    parser.add_argument('--kernel_size_cnn_1', '-kc1', default=2, type=int, dest='kernel_size_cnn1')
+    parser.add_argument('--kernel_size_cnn_2','-kc2',default=2,type=int,dest='kernel_size_cnn2')
+    parser.add_argument('--stride_size_cnn_1', '-sc1', default=1, type=int, dest='stride_size_cnn1')
+    parser.add_argument('--stride_size_cnn_2', '-sc2', default=1, type=int, dest='stride_size_cnn2')
+    parser.add_argument('--kernel_size_pool_1', '-kp1', default=2, type=int, dest='kernel_size_pool1')
+    parser.add_argument('--kernel_size_pool_2','-kp2',default=2,type=int,dest='kernel_size_pool2')
     parser.add_argument('--stride_size_pool', '-sp', default=2, type=int, dest='stride_size_pool')
     return parser.parse_args()
 def train_model(args):
@@ -28,9 +31,9 @@ def train_model(args):
     batch_size=args.batch_size
     input_channels=1
     out_channels = [args.out_channels1,args.out_channels2]
-    kernel_size_cnn = [args.kernel_size_cnn]*2
-    stride_size_cnn = [args.stride_size_cnn]*2
-    kernel_size_pool = [args.kernel_size_pool]*2
+    kernel_size_cnn = [[args.kernel_size_cnn1,args.kernel_size_cnn2]]*2
+    stride_size_cnn = [[args.stride_size_cnn1,args.stride_size_cnn2]]*2
+    kernel_size_pool = [[args.kernel_size_pool1,args.kernel_size_pool2]]*2
     stride_size_pool = [args.stride_size_pool]*2
     hidden_dim=200
     num_layers=2
@@ -50,7 +53,7 @@ def train_model(args):
     path="name:{};nfft:{};batch_size:{};out_channels:{};kernel_size_cnn:{};stride_size_cnn:{};kernel_size_pool:{};stride_size_pool:{}".format(args.name,args.nfft,args.batch_size,out_channels,kernel_size_cnn,stride_size_cnn,kernel_size_pool,stride_size_pool)
     with open("/scratch/speech/models/classification/spec_full_joint_stats_2.txt","a+") as f:
         f.write("\n"+"============ model starts ===========")
-        f.write("\n"+"model_parameters"+"\n"+path+"\n")
+        f.write("\n"+"model_parameters: "+str(sum(p.numel() for p in model.parameters() if p.requires_grad))+"\n"+path+"\n")
     model.cuda()
     model=DataParallel(model,device_ids=device_ids)
     model.train()
