@@ -140,7 +140,7 @@ class MultiSpectrogramModel(nn.Module):
         self.num_directions = 1 + self.bidirectional
 
         self._all_layers = []
-        self.num_branches = 3
+        self.num_branches = 2
 
         for i in range(self.num_branches):
             name = 'spec_cell{}'.format(i)
@@ -155,10 +155,10 @@ class MultiSpectrogramModel(nn.Module):
         self.classification_raw = nn.Linear(self.hidden_dim_lstm*self.num_directions*self.num_branches, self.num_labels).to(self.device)
         self.weight= nn.Parameter(torch.FloatTensor([0]),requires_grad=False)
 
-    def forward(self, input_lstm, input1, input2, input3, target, seq_length):
+    def forward(self, input_lstm, input1, input2, target, seq_length):
         input1 = input1.to(self.device)
         input2 = input2.to(self.device)
-        input3 = input3.to(self.device)
+        #input3 = input3.to(self.device)
         target = target.to(self.device)
         #for i in range(self.num_branches):
         name = 'spec_cell{}'
@@ -166,7 +166,7 @@ class MultiSpectrogramModel(nn.Module):
         #print("DONE WITH 1")
         input2 = getattr(self, name.format("1"))(input2)
         #print("DONE WITH 2")
-        input3 = getattr(self, name.format("2"))(input3)
+        #input3 = getattr(self, name.format("2"))(input3)
         #print("DONE WITH 3")
         #pdb.set_trace()
         out_lstm = self.LSTM_Audio(input_lstm).permute(0,2,1)
@@ -174,11 +174,11 @@ class MultiSpectrogramModel(nn.Module):
         out_lstm = torch.cat(temp,dim=0)
         out1 = torch.mean(input1, dim=2)
         out2 = torch.mean(input2, dim=2)
-        out3 = torch.mean(input3, dim=2)
+        #out3 = torch.mean(input3, dim=2)
         #out1 = self.classification_raw(out1)
         #out2 = self.classification_raw(out2)
         #out3 = self.classification_raw(out3)
-        out = [out1, out2, out3]
+        out = [out1, out2]
         out = torch.cat(out, dim=1)
         p = torch.exp(10*self.weight)/(1+torch.exp(10*self.weight))
         #p = 0.25

@@ -27,7 +27,7 @@ num_labels=4
 hidden_dim_lstm=200
 epoch_num=40
 num_layers_lstm=2
-nfft=[256,512,1024]
+nfft=[256,512]
 model = MultiSpectrogramModel(input_channels,out_channels, kernel_size_cnn, stride_size_cnn, kernel_size_pool,
                             stride_size_pool, hidden_dim,num_layers,dropout,num_labels, batch_size,
                             hidden_dim_lstm,num_layers_lstm,device, nfft, False)
@@ -70,11 +70,11 @@ for epoch in range(epoch_num):  # again, normally you would NOT do 300 epochs, i
     losses = 0
     correct=0
     model.train()
-    for j, (input_lstm, input1, input2, input3, target, seq_length) in enumerate(train_loader):
+    for j, (input_lstm, input1, input2, target, seq_length) in enumerate(train_loader):
         if (j+1)%20==0:
             print("=================================Train Batch"+ str(j+1)+str(weight)+"===================================================")
         model.zero_grad()
-        losses_batch,correct_batch= model(input_lstm, input1, input2, input3, target, seq_length)
+        losses_batch,correct_batch= model(input_lstm, input1, input2, target, seq_length)
         loss = torch.mean(losses_batch,dim=0)
         correct_batch=torch.sum(correct_batch,dim=0)
         losses += loss.item() * batch_size
@@ -91,10 +91,10 @@ for epoch in range(epoch_num):  # again, normally you would NOT do 300 epochs, i
     #torch.save(model.module.state_dict(), "/scratch/speech/models/classification/spec_full_joint_checkpoint_epoch_{}.pt".format(epoch+1))
     model.eval()
     with torch.no_grad():
-        for j,(input_lstm, input1, input2, input3, target, seq_length) in enumerate(test_loader):
+        for j,(input_lstm, input1, input2, target, seq_length) in enumerate(test_loader):
             if (j+1)%10==0: print("=================================Test Batch"+ str(j+1)+ "===================================================")
             #input_lstm = pad_sequence(sequences=input_lstm,batch_first=True)
-            losses_batch,correct_batch= model(input_lstm,input1, input2, input3, target, seq_length)
+            losses_batch,correct_batch= model(input_lstm,input1, input2, target, seq_length)
             loss = torch.mean(losses_batch,dim=0)
             correct_batch=torch.sum(correct_batch,dim=0)
             losses_test += loss.item() * batch_size
