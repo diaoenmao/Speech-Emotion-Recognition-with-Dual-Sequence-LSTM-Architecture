@@ -131,7 +131,7 @@ def train_model(args):
         #print("Epoch: {}-----------Training Loss: {} -------- Testing Loss: {} -------- Training Acc: {} -------- Testing Acc: {}".format(epoch+1,losses,losses_test, accuracy, accuracy_test)+"\n")
         
         with open("/scratch/speech/models/classification/spec_multi_joint_stats_variant.txt","a+") as f:
-            f.write("Epoch: {}-----------Training Loss: {} -------- Testing Loss: {} -------- Training Acc: {} -------- Testing Acc: {}".format(epoch+1,losses,losses_test, accuracy, accuracy_test)+"\n")
+            #f.write("Epoch: {}-----------Training Loss: {} -------- Testing Loss: {} -------- Training Acc: {} -------- Testing Acc: {}".format(epoch+1,losses,losses_test, accuracy, accuracy_test)+"\n")
             if epoch==epoch_num-1: 
                 f.write("Best Accuracy:{}".format(max(test_acc))+"\n")
                 f.write("Average Top 10 Accuracy:{}".format(np.mean(np.sort(np.array(test_acc))[-10:]))+"\n")
