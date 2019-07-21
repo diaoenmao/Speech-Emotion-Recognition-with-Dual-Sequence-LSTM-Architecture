@@ -54,7 +54,7 @@ def train_model(args):
     
     with open("/scratch/speech/models/classification/spec_multi_joint_stats_variant.txt","a+") as f:
         f.write("\n"+"============ model starts ===========")
-        f.write("\n"+"model_parameters: "+str(sum(p.numel() for p in model.parameters() if p.requires_grad))+"\n"+path+"\n")
+        f.write("\n"+"mnodel_parameters: "+str(sum(p.numel() for p in model.parameters() if p.requires_grad))+"\n"+path+"\n")
     
     model.cuda()
     model=DataParallel(model,device_ids=device_ids)
