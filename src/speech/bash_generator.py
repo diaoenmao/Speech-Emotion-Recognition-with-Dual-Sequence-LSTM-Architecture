@@ -15,13 +15,13 @@ def generate_bash(batch_size,out_channels, kernel_size_cnn, stride_size_cnn, ker
                         kp2=kp[1]
                         for sp in stride_size_pool:
                             commands.append("python train_joint_spec_multi.py -b {} -out1 {} -out2 {} -kc1 {} -kc2 {} -sc1 {} -sc2 {} -kp1 {} -kp2 {} -sp {}".format(b,out1,out2,kc1,kc2,sc1,sc1,kp1,kp2,sp))
-    with open('gpu_variant_full_autogen_bash.sh','w+') as f:
+    with open('gpu_full_autogen_bash.sh','w+') as f:
         f.write('#!/bin/bash\n')
         for j in commands:
             f.write(j+"\n")
 
 if __name__ == '__main__':
-    batch_size = [200]
+    batch_size = [100]
     out_channels=[[16,64],[64,16],[32,64],[64,32],[128,16],[16,128]]
     kernel_size_cnn=[[4,2],[3,2],[5,3],[2,2],[3,3],[4,4],[2,1],[3,1],[4,1]]
     stride_size_cnn=[[1,1]]
