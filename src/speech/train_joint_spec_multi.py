@@ -23,6 +23,7 @@ def init_parser():
     parser.add_argument('--kernel_size_pool_1', '-kp1', default=2, type=int, dest='kernel_size_pool1')
     parser.add_argument('--kernel_size_pool_2','-kp2',default=2,type=int,dest='kernel_size_pool2')
     parser.add_argument('--stride_size_pool', '-sp', default=2, type=int, dest='stride_size_pool')
+    parser.add_argument('--weight', '-w', default=0, type=float, dest='weight')
     return parser.parse_args()
 
 def train_model(args):
@@ -43,15 +44,16 @@ def train_model(args):
     epoch_num=50
     num_layers_lstm=2
     nfft=[512,1024]
+    weight = args.weight
     model = MultiSpectrogramModel(input_channels,out_channels, kernel_size_cnn, stride_size_cnn, kernel_size_pool,
                                 stride_size_pool, hidden_dim,num_layers,dropout,num_labels, batch_size,
-                                hidden_dim_lstm,num_layers_lstm,device, nfft, False)
+                                hidden_dim_lstm,num_layers_lstm,device, nfft, weight, False)
 
     #print("============================ Number of parameters ====================================")
     #print(str(sum(p.numel() for p in model.parameters() if p.requires_grad)))
 
-    path="batch_size:{};out_channels:{};kernel_size_cnn:{};stride_size_cnn:{};kernel_size_pool:{};stride_size_pool:{}".format(args.batch_size,out_channels,kernel_size_cnn,stride_size_cnn,kernel_size_pool,stride_size_pool)
-    with open("/scratch/speech/models/classification/spec_multi_joint_stats_recent.txt","a+") as f:
+    path="batch_size:{};out_channels:{};kernel_size_cnn:{};stride_size_cnn:{};kernel_size_pool:{};stride_size_pool:{}; weight:{}".format(args.batch_size,out_channels,kernel_size_cnn,stride_size_cnn,kernel_size_pool,stride_size_pool, weight)
+    with open("/scratch/speech/models/classification/spec_multi_joint_stats_weight.txt","a+") as f:
         f.write("\n"+"============ model starts ===========")
         f.write("\n"+"model_parameters: "+str(sum(p.numel() for p in model.parameters() if p.requires_grad))+"\n"+path+"\n")
     model.cuda()
@@ -124,10 +126,10 @@ def train_model(args):
         train_acc.append(accuracy)
         test_loss.append(losses_test)
         train_loss.append(losses)
-        #print("Epoch: {}-----------Training Loss: {} -------- Testing Loss: {} -------- Training Acc: {} -------- Testing Acc: {}".format(epoch+1,losses,losses_test, accuracy, accuracy_test)+"\n")
-        with open("/scratch/speech/models/classification/spec_multi_joint_stats_recent.txt","a+") as f:
-            #f.write("Epoch: {}-----------Training Loss: {} -------- Testing Loss: {} -------- Training Acc: {} -------- Testing Acc: {}".format(epoch+1,losses,losses_test, accuracy, accuracy_test)+"\n")
-            if epoch==epoch_num-1: 
+        print("Epoch: {}-----------Training Loss: {} -------- Testing Loss: {} -------- Training Acc: {} -------- Testing Acc: {}".format(epoch+1,losses,losses_test, accuracy, accuracy_test)+"\n")
+        with open("/scratch/speech/models/classification/spec_multi_joint_stats_weight.txt","a+") as f:
+            f.write("Epoch: {}-----------Training Loss: {} -------- Testing Loss: {} -------- Training Acc: {} -------- Testing Acc: {}".format(epoch+1,losses,losses_test, accuracy, accuracy_test)+"\n")
+            if epoch==epoch_num-1:
                 f.write("Best Accuracy:{:06.5f}".format(max(test_acc))+"\n")
                 f.write("Average Top 10 Accuracy:{:06.5f}".format(np.mean(np.sort(np.array(test_acc))[-10:]))+"\n")
                 f.write("=============== model ends ==================="+"\n")
