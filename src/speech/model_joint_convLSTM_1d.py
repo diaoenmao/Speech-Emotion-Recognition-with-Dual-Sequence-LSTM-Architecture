@@ -91,16 +91,15 @@ class ConvLSTM(nn.Module):
         temp = int((x+2*pc-kc)/sc+1)
         temp=int((temp+2*pm-km)/sm+1)
         return temp
-    def __init__(self, input_channels, hidden_channels, kernel_size, kernel_size_pool,kernel_stride_pool,step,device,num_devices,hidden_dim_lstm,num_layers_lstm,attention_flag=False):
+    def __init__(self, input_channels, hidden_channels, kernel_size, stride, kernel_size_pool,kernel_stride_pool,hidden_dim_lstm,num_layers_lstm,device):
         super(ConvLSTM, self).__init__()
         self.device= device
-        self.num_devices=num_devices
         self.input_channels = [input_channels] + hidden_channels
         self.hidden_channels = hidden_channels
         self.kernel_size = kernel_size
+        self.stride=stride
         self.padding = [int((k-1) / 2) for k in self.kernel_size]
         self.num_layers = len(hidden_channels)
-        self.step = step
         self._all_layers = []
         self.num_labels=4
         self.hidden_dim_lstm = hidden_dim_lstm
@@ -115,38 +114,28 @@ class ConvLSTM(nn.Module):
                 cell = ConvLSTMCell(self.input_channels[i], self.hidden_channels[i], self.kernel_size[i],self.kernel_size_pool[i],self.kernel_stride_pool[i],self.padding[i],self.padding_pool[i],self.device)
                 setattr(self, name, cell)
                 self._all_layers.append(cell)
-                strideF=self.cnn_shape(strideF, self.kernel_size[i],1, self.padding[i],self.kernel_size_pool[i],self.kernel_stride_pool[i],self.padding_pool[i])
+                strideF=self.cnn_shape(strideF, self.kernel_size[i],self.stride[i], self.padding[i],self.kernel_size_pool[i],self.kernel_stride_pool[i],self.padding_pool[i])
             else:
                 name="lstm"
                 cell=LSTM_Audio(self.hidden_dim_lstm,self.num_layers_lstm,device=self.device,bidirectional=False)
                 setattr(self,name,cell)
                 self._all_layers.append(cell)
-
-
-
         self.linear_dim=int(self.hidden_channels[-1]*strideF)
         self.classification_convlstm = nn.Linear(self.linear_dim, self.num_labels)
         self.classification_lstm=nn.Linear(self.hidden_dim_lstm,self.num_labels)
-
-        self.attention=nn.Parameter(torch.zeros(self.linear_dim))
-        self.attention_flag=attention_flag
-
         self.weight= nn.Parameter(torch.tensor(0).float(),requires_grad=False)
-
-
-
-    def forward(self, input_lstm,input,target,seq_length, train=True):
+    def forward(self, input_lstm,input,target,seq_length):
         # input should be a list of inputs, like a time stamp, maybe 1280 for 100 times.
         ##data process here
+        step=input.shape[2]
         internal_state = []
         outputs = []
-        for step in range(self.step):
-            x=input[:,:,:,:,step]
+        for s in range(step):
+            x=input[:,:,s]
             for i in range(self.num_layers):
                 name = 'cell{}'.format(i)
-                if step == 0:
-                    bsize, _, shapeF,shapeT = x.size()
-                    shape=(shapeF,shapeT)
+                if s == 0:
+                    bsize, shape = x.size()
                     (h, c) = getattr(self, name).init_hidden(batch_size=bsize, hidden=self.hidden_channels[i],
                                                              shape=shape)
                     internal_state.append((h, c))
@@ -155,32 +144,27 @@ class ConvLSTM(nn.Module):
                 (h, c) = internal_state[i]
                 x, new_h, new_c = getattr(self, name)(x, h, c)
                 internal_state[i] = (new_h, new_c)
-            outputs.append(x)
-        out=[torch.unsqueeze(o, dim=4) for o in outputs]
-        out=torch.flatten(torch.cat(out,dim=4),start_dim=1,end_dim=3)
-
+            outputs.append(torch.flatten(x,start_dim=1, end_dim=2))
+        out=torch.stack(outputs,dim=2)
+        # B*dF*T
         input_lstm=input_lstm.to(self.device)
         seq_length=seq_length.to(self.device)
         out_lstm=getattr(self,"lstm")(input_lstm)
         out_lstm=out_lstm.permute(0,2,1)
-        # out.shape batch*kf1f2*T
-        else:
-            out=torch.mean(out,dim=2)
-            temp=[torch.unsqueeze(torch.mean(out_lstm[k,:,:s],dim=1),dim=0) for k,s in enumerate(seq_length)]
-            out_lstm=torch.cat(temp,dim=0)
+        out=torch.mean(out,dim=2)
+        temp=[torch.unsqueeze(torch.mean(out_lstm[k,:,:s],dim=1),dim=0) for k,s in enumerate(seq_length)]
+        out_lstm=torch.cat(temp,dim=0)
         p=torch.exp(10*self.weight)/(1+torch.exp(10*self.weight))
-        #out=torch.cat([p*out,(1-p)*out_lstm],dim=1)
         out=self.classification_convlstm(out)
         out_lstm=self.classification_lstm(out_lstm)
-        out_final=p*out_lstm+(1-p)*out
+        out_final=p*out+(1-p)*out_lstm
         target_index = torch.argmax(target, dim=1).to(self.device)
-        pred_index = torch.argmax(out_final, dim=1)
-        correct_batch=torch.sum(target_index==pred_index)
-        losses_batch=F.cross_entropy(out_final,torch.max(target,1)[1])
+        correct_batch=torch.sum(target_index==torch.argmax(out_final,dim=1))
+        losses_batch_raw=F.cross_entropy(out,torch.max(target,1)[1])
+        losses_batch_hand=F.cross_entropy(out_lstm,torch.max(target,1)[1])
+        losses_batch=p*losses_batch_raw+(1-p)*losses_batch_hand
 
         correct_batch=torch.unsqueeze(correct_batch,dim=0)
         losses_batch=torch.unsqueeze(losses_batch, dim=0)
 
-        if train:
-            return  losses_batch,correct_batch
-        return losses_batch,correct_batch, (target_index, pred_index)
+        return  losses_batch,correct_batch
