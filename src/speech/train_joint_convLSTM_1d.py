@@ -32,24 +32,20 @@ def train_model(args):
     stride_size_cnn = [args.stride_size_cnn1]*2
     kernel_size_pool = [args.kernel_size_pool1]*2
     stride_size_pool = [args.stride_size_pool]*2
-    hidden_dim=200
     num_layers=2
     dropout=0
     num_labels=4
     hidden_dim_lstm=200
     epoch_num=50
     num_layers_lstm=2
-    nfft=[512,1024]
-    model = MultiSpectrogramModel(input_channels,out_channels, kernel_size_cnn, stride_size_cnn, kernel_size_pool,
-                                stride_size_pool, hidden_dim,num_layers,dropout,num_labels, batch_size,
-                                hidden_dim_lstm,num_layers_lstm,device, nfft, False)
+    model = ConvLSTM(input_channels,hidden_channels,kernel_size_cnn,stride_size_cnn,kernel_size_pool,stride_size_pool,hidden_dim_lstm,num_layers_lstm,device)
     
     print("============================ Number of parameters ====================================")
     print(str(sum(p.numel() for p in model.parameters() if p.requires_grad)))
     
     path="batch_size:{};out_channels:{};kernel_size_cnn:{};stride_size_cnn:{};kernel_size_pool:{};stride_size_pool:{}".format(args.batch_size,out_channels,kernel_size_cnn,stride_size_cnn,kernel_size_pool,stride_size_pool)
     
-    with open("/scratch/speech/models/classification/spec_multi_joint_stats_variant.txt","a+") as f:
+    with open("/scratch/speech/models/classification/joint_convLSTM_1d.txt","a+") as f:
         f.write("\n"+"============ model starts ===========")
         f.write("\n"+"mnodel_parameters: "+str(sum(p.numel() for p in model.parameters() if p.requires_grad))+"\n"+path+"\n")
     
@@ -86,11 +82,11 @@ def train_model(args):
         losses = 0
         correct=0
         model.train()
-        for j, (input_lstm, input1, input2, target, seq_length) in enumerate(train_loader):
+        for j, (input_lstm, input, target, seq_length) in enumerate(train_loader):
             if (j+1)%20==0:
                 print("=================================Train Batch"+ str(j+1)+str(weight)+"===================================================")
             model.zero_grad()
-            losses_batch,correct_batch= model(input_lstm, input1, input2, target, seq_length)
+            losses_batch,correct_batch= model(input_lstm, input, target, seq_length)
             loss = torch.mean(losses_batch,dim=0)
             correct_batch=torch.sum(correct_batch,dim=0)
             losses += loss.item() * batch_size
@@ -107,10 +103,10 @@ def train_model(args):
         #torch.save(model.module.state_dict(), "/scratch/speech/models/classification/spec_full_joint_checkpoint_epoch_{}.pt".format(epoch+1))
         model.eval()
         with torch.no_grad():
-            for j,(input_lstm, input1, input2, target, seq_length) in enumerate(test_loader):
+            for j,(input_lstm, input, target, seq_length) in enumerate(test_loader):
                 if (j+1)%10==0: print("=================================Test Batch"+ str(j+1)+ "===================================================")
                 #input_lstm = pad_sequence(sequences=input_lstm,batch_first=True)
-                losses_batch,correct_batch= model(input_lstm,input1, input2, target, seq_length)
+                losses_batch,correct_batch= model(input_lstm,input, target, seq_length)
                 loss = torch.mean(losses_batch,dim=0)
                 correct_batch=torch.sum(correct_batch,dim=0)
                 losses_test += loss.item() * batch_size
@@ -127,7 +123,7 @@ def train_model(args):
         train_loss.append(losses)
         print("Epoch: {}-----------Training Loss: {} -------- Testing Loss: {} -------- Training Acc: {} -------- Testing Acc: {}".format(epoch+1,losses,losses_test, accuracy, accuracy_test)+"\n")
         
-        with open("/scratch/speech/models/classification/spec_multi_joint_stats_variant.txt","a+") as f:
+        with open("/scratch/speech/models/classification/joint_convLSTM_1d.txt","a+") as f:
             #f.write("Epoch: {}-----------Training Loss: {} -------- Testing Loss: {} -------- Training Acc: {} -------- Testing Acc: {}".format(epoch+1,losses,losses_test, accuracy, accuracy_test)+"\n")
             if epoch==epoch_num-1: 
                 f.write("Best Accuracy:{:06.5f}".format(max(test_acc))+"\n")
