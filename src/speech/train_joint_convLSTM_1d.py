@@ -43,7 +43,7 @@ def train_model(args):
     print("============================ Number of parameters ====================================")
     print(str(sum(p.numel() for p in model.parameters() if p.requires_grad)))
     
-    path="batch_size:{};out_channels:{};kernel_size_cnn:{};stride_size_cnn:{};kernel_size_pool:{};stride_size_pool:{}".format(args.batch_size,out_channels,kernel_size_cnn,stride_size_cnn,kernel_size_pool,stride_size_pool)
+    path="batch_size:{};out_channels:{};kernel_size_cnn:{};stride_size_cnn:{};kernel_size_pool:{};stride_size_pool:{}".format(args.batch_size,hidden_channels,kernel_size_cnn,stride_size_cnn,kernel_size_pool,stride_size_pool)
     
     with open("/scratch/speech/models/classification/joint_convLSTM_1d.txt","a+") as f:
         f.write("\n"+"============ model starts ===========")
