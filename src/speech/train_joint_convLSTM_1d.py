@@ -84,7 +84,7 @@ def train_model(args):
         model.train()
         for j, (input_lstm, input, target, seq_length) in enumerate(train_loader):
             if (j+1)%5==0:
-                print("=================================Train Batch"+ str(j+1)+str(weight)+"===================================================")
+                print("=================================Train Batch "+ str(j+1)+": "+str(weight.item())+"===================================================")
             model.zero_grad()
             losses_batch,correct_batch= model(input_lstm, input, target, seq_length)
             loss = torch.mean(losses_batch,dim=0)
@@ -112,7 +112,7 @@ def train_model(args):
                 losses_test += loss.item() * batch_size
                 correct_test += correct_batch.item()
 
-        #print("how many correct:", correct_test)
+        print("how many correct:", correct_test)
         accuracy_test = correct_test * 1.0 / ((j+1)*batch_size)
         losses_test = losses_test / ((j+1)*batch_size)
 
