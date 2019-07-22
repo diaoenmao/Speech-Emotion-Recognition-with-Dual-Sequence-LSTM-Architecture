@@ -127,6 +127,7 @@ class SpectrogramModel(nn.Module):
         return out
 
 class MultiSpectrogramModel(nn.Module):
+    '''
     def alignment(self,input1,input2):
         # input2 has less time steps
         temp=[]
@@ -138,6 +139,7 @@ class MultiSpectrogramModel(nn.Module):
             temp.append(temp2)
         input_final=torch.stack(temp,dim=2)
         return input_final
+    '''
     def __init__(self, in_channels, out_channels, kernel_size_cnn, stride_cnn, kernel_size_pool, stride_pool,
                     hidden_dim, num_layers, dropout_rate, num_labels, batch_size,
                     hidden_dim_lstm,num_layers_lstm, device, nfft, bidirectional=False):
@@ -191,8 +193,11 @@ class MultiSpectrogramModel(nn.Module):
         target = target.to(self.device)
         name = 'spec_cell{}'
         input1 = getattr(self, name.format("0"))(input1)
+        print(input1.shape)
         input2 = getattr(self, name.format("1"))(input2)
-        input_raw=self.alignment(input1,input2)
+        print(input2.shape)
+        input_raw=torch.cat([input1,input2],dim=2)
+        print(input_raw.shape)
         out_raw,_=self.lstm(input_raw.permute(0,2,1))
         # out_raw.shape B*T*D
         out_raw=torch.mean(out_raw,dim=1)
