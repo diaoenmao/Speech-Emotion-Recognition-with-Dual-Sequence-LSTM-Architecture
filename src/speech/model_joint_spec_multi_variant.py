@@ -89,7 +89,7 @@ class SpectrogramModel(nn.Module):
         strideF = self.nfft//4
         if self.nfft==512: 
             strideT=230
-            fc1dim=self.hidden_dim_lstm
+            fc1dim=self.hidden_dim_lstm//2
         if self.nfft==1024: 
             strideT=120
             fc1dim=self.hidden_dim_lstm
@@ -184,7 +184,7 @@ class MultiSpectrogramModel(nn.Module):
         '''
         self.classification_raw=nn.Linear(self.hidden_dim*self.num_directions,self.num_labels).to(self.device)
         self.weight= nn.Parameter(torch.FloatTensor([0]),requires_grad=False)
-        self.lstm=nn.LSTM(2*self.hidden_dim_lstm,self.hidden_dim_lstm,self.num_layers, batch_first=True,
+        self.lstm=nn.LSTM(int(1.5*self.hidden_dim_lstm),self.hidden_dim_lstm,self.num_layers, batch_first=True,
                            dropout=self.dropout_rate, bidirectional=self.bidirectional).to(self.device)
 
     def forward(self, input_lstm, input1, input2, target, seq_length):
