@@ -119,7 +119,7 @@ class SpectrogramModel(nn.Module):
 class MultiSpectrogramModel(nn.Module):
     def __init__(self, in_channels, out_channels, kernel_size_cnn, stride_cnn, kernel_size_pool, stride_pool,
                     hidden_dim, num_layers, dropout_rate, num_labels, batch_size,
-                    hidden_dim_lstm,num_layers_lstm, device, nfft, bidirectional=False):
+                    hidden_dim_lstm,num_layers_lstm, device, nfft, weight, bidirectional=False):
         super(MultiSpectrogramModel, self).__init__()
         self.in_channels = in_channels
         self.out_channels = out_channels
@@ -160,7 +160,7 @@ class MultiSpectrogramModel(nn.Module):
                                 nn.Linear(self.hidden_dim_lstm*self.num_directions*self.num_branches//2,self.num_labels)).to(self.device)
 
         #self.classification_raw=nn.Linear(self.hidden_dim*self.num_directions*self.num_branches,self.num_labels).to(self.device)
-        self.weight= nn.Parameter(torch.FloatTensor([0]),requires_grad=False)
+        self.weight= nn.Parameter(torch.FloatTensor([weight]),requires_grad=False)
 
     def forward(self, input_lstm, input1, input2, target, seq_length):
         input1 = input1.to(self.device)
@@ -187,7 +187,7 @@ class MultiSpectrogramModel(nn.Module):
         #out3 = self.classification_raw(out3)
         out = [out1, out2]
         out = torch.cat(out, dim=1)
-        p = torch.exp(10*self.weight)/(1+torch.exp(10*self.weight))
+        p = self.weight
         #p = 0.25
         out = self.classification_raw(out)
         out_lstm = self.classification_hand(out_lstm)
