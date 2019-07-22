@@ -91,7 +91,7 @@ class ConvLSTM(nn.Module):
         temp = int((x+2*pc-kc)/sc+1)
         temp=int((temp+2*pm-km)/sm+1)
         return temp
-    def __init__(self, input_channels, hidden_channels, kernel_size, stride, kernel_size_pool,kernel_stride_pool,hidden_dim_lstm,num_layers_lstm,device):
+    def __init__(self, input_channels, hidden_channels, kernel_size, stride, kernel_size_pool,stride_pool,hidden_dim_lstm,num_layers_lstm,device):
         super(ConvLSTM, self).__init__()
         self.device= device
         self.input_channels = [input_channels] + hidden_channels
@@ -105,16 +105,16 @@ class ConvLSTM(nn.Module):
         self.hidden_dim_lstm = hidden_dim_lstm
         self.num_layers_lstm = num_layers_lstm
         self.kernel_size_pool=kernel_size_pool
-        self.kernel_stride_pool=kernel_stride_pool
+        self.stride_pool=stride_pool
         self.padding_pool=[int((kp-1)/2) for kp in self.kernel_size_pool]
         strideF=128
         for i in range(self.num_layers+1):
             if i<self.num_layers:
                 name = 'cell{}'.format(i)
-                cell = ConvLSTMCell(self.input_channels[i], self.hidden_channels[i], self.kernel_size[i],self.kernel_size_pool[i],self.kernel_stride_pool[i],self.padding[i],self.padding_pool[i],self.device)
+                cell = ConvLSTMCell(self.input_channels[i], self.hidden_channels[i], self.kernel_size[i],self.kernel_size_pool[i],self.stride_pool[i],self.padding[i],self.padding_pool[i],self.device)
                 setattr(self, name, cell)
                 self._all_layers.append(cell)
-                strideF=self.cnn_shape(strideF, self.kernel_size[i],self.stride[i], self.padding[i],self.kernel_size_pool[i],self.kernel_stride_pool[i],self.padding_pool[i])
+                strideF=self.cnn_shape(strideF, self.kernel_size[i],self.stride[i], self.padding[i],self.kernel_size_pool[i],self.stride_pool[i],self.padding_pool[i])
             else:
                 name="lstm"
                 cell=LSTM_Audio(self.hidden_dim_lstm,self.num_layers_lstm,device=self.device,bidirectional=False)
@@ -152,7 +152,7 @@ class ConvLSTM(nn.Module):
         out_lstm=getattr(self,"lstm")(input_lstm)
         out_lstm=out_lstm.permute(0,2,1)
         out=torch.mean(out,dim=2)
-        temp=[torch.unsqueeze(torch.mean(out_lstm[k,:,:s],dim=1),dim=0) for k,s in enumerate(seq_length)]
+        temp=[torch.unsqueeze(torch.mean(out_lstm[k,:,:int(s.item())],dim=1),dim=0) for k,s in enumerate(seq_length)]
         out_lstm=torch.cat(temp,dim=0)
         p=torch.exp(10*self.weight)/(1+torch.exp(10*self.weight))
         out=self.classification_convlstm(out)
