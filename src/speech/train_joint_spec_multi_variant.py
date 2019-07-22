@@ -1,7 +1,7 @@
 import torch
 from torch import optim
 from model_joint_spec_multi_variant import MultiSpectrogramModel
-from process_joint_spec_multi import IEMOCAP, my_collate
+from process_joint_spec_multi_variant import IEMOCAP, my_collate
 from torch.utils.data import DataLoader
 from torch.optim.lr_scheduler import ReduceLROnPlateau, CosineAnnealingLR, MultiStepLR
 import pdb
