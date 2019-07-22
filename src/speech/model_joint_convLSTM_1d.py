@@ -131,12 +131,11 @@ class ConvLSTM(nn.Module):
         internal_state = []
         outputs = []
         for s in range(step):
-            x=input[:,:,s]
+            x=input[:,:,:,s]
             for i in range(self.num_layers):
                 name = 'cell{}'.format(i)
                 if s == 0:
-                    print(x.shape)
-                    bsize, shape = x.size()
+                    bsize, _,shape = x.size()
                     (h, c) = getattr(self, name).init_hidden(batch_size=bsize, hidden=self.hidden_channels[i],
                                                              shape=shape)
                     internal_state.append((h, c))
