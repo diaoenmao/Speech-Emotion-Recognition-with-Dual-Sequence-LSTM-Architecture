@@ -83,8 +83,8 @@ def train_model(args):
         correct=0
         model.train()
         for j, (input_lstm, input, target, seq_length) in enumerate(train_loader):
-            if (j+1)%5==0:
-                print("=================================Train Batch "+ str(j+1)+": "+str(weight.item())+"===================================================")
+            #if (j+1)%5==0:
+                #print("=================================Train Batch "+ str(j+1)+": "+str(weight.item())+"===================================================")
             model.zero_grad()
             losses_batch,correct_batch= model(input_lstm, input, target, seq_length)
             loss = torch.mean(losses_batch,dim=0)
@@ -104,7 +104,7 @@ def train_model(args):
         model.eval()
         with torch.no_grad():
             for j,(input_lstm, input, target, seq_length) in enumerate(test_loader):
-                if (j+1)%10==0: print("=================================Test Batch"+ str(j+1)+ "===================================================")
+                #if (j+1)%10==0: print("=================================Test Batch"+ str(j+1)+ "===================================================")
                 #input_lstm = pad_sequence(sequences=input_lstm,batch_first=True)
                 losses_batch,correct_batch= model(input_lstm,input, target, seq_length)
                 loss = torch.mean(losses_batch,dim=0)
@@ -121,7 +121,7 @@ def train_model(args):
         train_acc.append(accuracy)
         test_loss.append(losses_test)
         train_loss.append(losses)
-        print("Epoch: {}-----------Training Loss: {} -------- Testing Loss: {} -------- Training Acc: {} -------- Testing Acc: {}".format(epoch+1,losses,losses_test, accuracy, accuracy_test)+"\n")
+        print("Epoch: {}-----------Training Loss: {:06.5f} -------- Testing Loss: {:06.5f} -------- Training Acc: {:06.5f} -------- Testing Acc: {:06.5f}".format(epoch+1,losses,losses_test, accuracy, accuracy_test)+"\n")
         
         with open("/scratch/speech/models/classification/joint_convLSTM_1d.txt","a+") as f:
             #f.write("Epoch: {}-----------Training Loss: {} -------- Testing Loss: {} -------- Training Acc: {} -------- Testing Acc: {}".format(epoch+1,losses,losses_test, accuracy, accuracy_test)+"\n")
