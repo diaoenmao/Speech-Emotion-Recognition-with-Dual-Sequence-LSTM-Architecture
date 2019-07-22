@@ -8,7 +8,8 @@ from sklearn.model_selection import train_test_split
 import torch.nn.functional as F
 
 class IEMOCAP(Dataset):
-    def __init__(self, name, nfft, train=True):
+    def __init__(self, train=True):
+        name="mel"
         if train:
             f = open('/scratch/speech/hand_raw_dataset/EMO39_'+name+'_spectrogram_nfft{}_updated_train.pkl'.format(512), 'rb')
         else:
