@@ -62,9 +62,9 @@ def train_model(args):
     scheduler3 =MultiStepLR(optimizer, [5,10,15,20,25,30,35,40,45],gamma=0.5)
 
     # Load the training data
-    training_data = IEMOCAP(name='mel', nfft=nfft, train=True)
+    training_data = IEMOCAP(train=True)
     train_loader = DataLoader(dataset=training_data, batch_size=batch_size, shuffle=True, collate_fn=my_collate, num_workers=0, drop_last=True)
-    testing_data = IEMOCAP(name='mel', nfft=nfft, train=False)
+    testing_data = IEMOCAP(train=False)
     test_loader = DataLoader(dataset=testing_data, batch_size=batch_size, shuffle=True, collate_fn=my_collate, num_workers=0,drop_last=True)
     
     print("=================")
