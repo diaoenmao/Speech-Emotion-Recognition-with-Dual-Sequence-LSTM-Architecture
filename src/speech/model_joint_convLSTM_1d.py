@@ -62,7 +62,6 @@ class ConvLSTMCell(nn.Module):
         self.device=device
 
     def forward(self, x, h, c):
-        pdb.set_trace()
         ci = torch.sigmoid(self.Wxi(x) + self.Whi(h) + c * self.Wci)
         cf = torch.sigmoid(self.Wxf(x) + self.Whf(h) + c * self.Wcf)
         cc = cf * c + ci * torch.tanh(self.Wxc(x) + self.Whc(h))
@@ -139,7 +138,6 @@ class ConvLSTM(nn.Module):
                     (h, c) = getattr(self, name).init_hidden(batch_size=bsize, hidden=self.hidden_channels[i],
                                                              shape=shape)
                     internal_state.append((h, c))
-                    pdb.set_trace()
 
                 # do forward
                 (h, c) = internal_state[i]
