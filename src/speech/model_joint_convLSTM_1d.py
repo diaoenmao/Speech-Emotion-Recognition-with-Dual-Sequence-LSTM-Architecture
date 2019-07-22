@@ -139,7 +139,7 @@ class ConvLSTM(nn.Module):
                     (h, c) = getattr(self, name).init_hidden(batch_size=bsize, hidden=self.hidden_channels[i],
                                                              shape=shape)
                     internal_state.append((h, c))
-                    print(c.shape)
+                    pdb.set_trace()
 
                 # do forward
                 (h, c) = internal_state[i]
