@@ -22,8 +22,7 @@ def init_parser():
     parser.add_argument('--stride_size_cnn_2', '-sc2', default=1, type=int, dest='stride_size_cnn2')
     parser.add_argument('--kernel_size_pool_1', '-kp1', default=2, type=int, dest='kernel_size_pool1')
     parser.add_argument('--kernel_size_pool_2','-kp2',default=2,type=int,dest='kernel_size_pool2')
-    parser.add_argument('--stride_size_pool_1', '-sp1', default=2, type=int, dest='stride_size_pool1')
-    parser.add_argument('--stride_size_pool_2', '-sp2', default=1, type=int, dest='stride_size_pool2')
+    parser.add_argument('--stride_size_pool', '-sp', default=2, type=int, dest='stride_size_pool')
     parser.add_argument('--weight', '-w', default=0.5, type=float, dest='weight')
     return parser.parse_args()
 
@@ -36,7 +35,7 @@ def train_model(args):
     kernel_size_cnn = [[args.kernel_size_cnn1, args.kernel_size_cnn2],[args.kernel_size_cnn2, args.kernel_size_cnn1]]
     stride_size_cnn = [[args.stride_size_cnn1, args.stride_size_cnn2],[args.stride_size_cnn2, args.stride_size_cnn1]]
     kernel_size_pool = [[args.kernel_size_pool1, args.kernel_size_pool2],[args.kernel_size_pool2, args.kernel_size_pool1]]
-    stride_size_pool = [[args.stride_size_pool1, args.stride_size_pool2],[args.stride_size_pool1, args.stride_size_pool2]]
+    stride_size_pool = [args.stride_size_pool]*2
     hidden_dim=200
     num_layers_ftlstm=2
     hidden_dim_lstm=200
