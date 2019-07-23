@@ -251,7 +251,7 @@ class CNN_FTLSTM(nn.Module):
         elif self.special=="attention":
             self.classification_raw=nn.Linear(hidden_dim*2,self.num_labels).to(self.device)
             self.attention=nn.Sequential(nn.Linear(hidden_dim*2,hidden_dim),
-                                        nn.sigmoid()).to(self.device)
+                                        nn.Sigmoid()).to(self.device)
         else:
             assert self.special=="add" ,"invalid special command"
             self.classification_raw=nn.Linear(hidden_dim,self.num_labels).to(self.device)
