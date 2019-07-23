@@ -198,7 +198,7 @@ class FTLSTM(nn.Module):
 class CNN_FTLSTM(nn.Module):
     def __init__(self,in_channels, out_channels, kernel_size_cnn, 
                     stride_cnn, kernel_size_pool, stride_pool,nfft,
-                    time,inputx_dim,inputy_dim,hidden_dim,num_layers_ftlstm,
+                    time,inputx_dim,inputy_dim,hidden_dim,num_layers_ftlstm,weight,
                     device):
         super(CNN_FTLSTM,self).__init__()
         self._all_layers=[]
@@ -211,7 +211,7 @@ class CNN_FTLSTM(nn.Module):
         self.hidden_dim_lstm=200
         self.num_layers=2
         self.num_labels=4
-        self.weight=nn.Parameter(0.5,requires_grad=False)
+        self.weight=nn.Parameter(torch.FloatTensor([weight]),requires_grad=False)
         self.LSTM_Audio=LSTM_Audio(self.hidden_dim_lstm,self.num_layers,self.device,bidirectional=False)
         self.classification_hand = nn.Linear(self.hidden_dim_lstm, self.num_labels).to(self.device)
         self.classification_raw=nn.Linear(hidden_dim*2,self.num_labels).to(self.device)
