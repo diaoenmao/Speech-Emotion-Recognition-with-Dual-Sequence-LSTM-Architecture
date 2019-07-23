@@ -245,7 +245,7 @@ class CNN_FTLSTM(nn.Module):
         self.weight=nn.Parameter(torch.FloatTensor([weight]),requires_grad=False)
         self.LSTM_Audio=LSTM_Audio(self.hidden_dim_lstm,self.num_layers,self.device,bidirectional=False)
         self.classification_hand = nn.Linear(self.hidden_dim_lstm, self.num_labels).to(self.device)
-        self.classification_raw=nn.Linear(hidden_dim*2,self.num_labels).to(self.device)
+        self.classification_raw=nn.Linear(hidden_dim,self.num_labels).to(self.device)
     def forward(self,input_lstm,input1,input2,target,seq_length):
         input1=input1.to(self.device)
         input2=input2.to(self.device)
