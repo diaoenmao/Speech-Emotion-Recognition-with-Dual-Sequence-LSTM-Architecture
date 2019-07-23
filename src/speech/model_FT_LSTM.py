@@ -192,7 +192,7 @@ class FTLSTM(nn.Module):
             outputF.append(outF)
         return torch.stack(outputT,dim=2),torch.stack(outputF,dim=2)
 class CNN_FTLSTM(nn.Module):
-    def __init__(in_channels, out_channels, kernel_size_cnn, 
+    def __init__(self,in_channels, out_channels, kernel_size_cnn, 
                     stride_cnn, kernel_size_pool, stride_pool,nfft,
                     time,inputx_dim,inputy_dim,hidden_dim,num_layers_ftlstm,
                     device):
