@@ -123,7 +123,7 @@ class SpectrogramModel(nn.Module):
             strideF=self.cnn_shape(strideF,self.kernel_size_cnn[0],self.stride_cnn[0],self.padding_cnn[i][0],
                                     self.kernel_size_pool[0],self.stride_pool[0],self.padding_pool[i][0])
             time=self.cnn_shape(time,self.kernel_size_cnn[1],self.stride_cnn[1],self.padding_cnn[i][1],
-                                    self.kernel_size_pool[1],self.stride_pool[0],self.padding_pool[i][1])
+                                    self.kernel_size_pool[1],self.stride_pool[1],self.padding_pool[i][1])
         self.strideF=strideF
         self.time=time
     def forward(self, input):
