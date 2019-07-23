@@ -145,7 +145,7 @@ class MultiSpectrogramModel(nn.Module):
             self._all_layers.append(cell)
     def alignment(self,inputx, inputy, RNN=False):
         temp=[]
-        for i in range(inputy.shape[1].item()):
+        for i in range(inputy.shape[1]):
             temp1=torch.mean(inputx[:,(2*i):(2*i+3)],dim=1)
             temp.append(temp1)
         inputx=temp
