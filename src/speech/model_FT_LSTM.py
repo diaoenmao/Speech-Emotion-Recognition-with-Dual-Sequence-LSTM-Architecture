@@ -232,7 +232,6 @@ class CNN_FTLSTM(nn.Module):
         setattr(self,"cnn_multi",cell)
         inputx_dim,inputy_dim=getattr(self,"cnn_multi").dimension()
         time=getattr(self,"cnn_multi").dimension_time()
-        print(time)
         cell=FTLSTM(time,inputx_dim,inputy_dim,hidden_dim,num_layers_ftlstm,device)
         setattr(self,"ftlstm",cell)
         self.device=device
