@@ -118,9 +118,9 @@ class SpectrogramModel(nn.Module):
             setattr(self, name, cell)
             self._all_layers.append(cell)
             strideF=self.cnn_shape(strideF,self.kernel_size_cnn[0],self.stride_cnn[0],self.padding_cnn[i][0],
-                                    self.kernel_size_pool[0],self.stride_pool,self.padding_pool[i][0])
+                                    self.kernel_size_pool[0],self.stride_pool[0],self.padding_pool[i][0])
             time=self.cnn_shape(time,self.kernel_size_cnn[1],self.stride_cnn[1],self.padding_cnn[i][1],
-                                    self.kernel_size_pool[1],self.stride_pool,self.padding_pool[i][1])
+                                    self.kernel_size_pool[1],self.stride_pool[0],self.padding_pool[i][1])
         self.strideF=strideF
         self.time=time
     def forward(self, input):
@@ -156,12 +156,11 @@ class MultiSpectrogramModel(nn.Module):
             self.input_dims.append(getattr(self,name).dimension())
             self.time_dims.append(getattr(self,name).dimension_time())
             self._all_layers.append(cell)
-    '''
+    
     def alignment(self,input1,input2):
         # input2 has less time steps
         temp=[]
-        if (input1.shape[2]-1)<(input2.shape[2])*2:
-            input2=input2[:,:,:(input1.shape[2]-1)//2]
+        input2=input2[:,:,:(input1.shape[2]-1)//2]
         for i in range(input2.shape[2]):
             temp1=torch.mean(input1[:,:,(2*i):(2*i+3)],dim=2)
             temp.append(temp1)
@@ -173,6 +172,7 @@ class MultiSpectrogramModel(nn.Module):
         input1=input1[:,:,:min(self.time_dims)]
         input2=input2[:,:,:min(self.time_dims)]
         return input1, input2
+    '''
     def forward(self, input1, input2):
         input1 = input1.to(self.device)
         input2 = input2.to(self.device)
@@ -184,7 +184,8 @@ class MultiSpectrogramModel(nn.Module):
     def dimension(self):
         return self.input_dims[0],self.input_dims[1]
     def dimension_time(self):
-        return min(self.time_dims)
+        temp=(self.time_dims[0]-1)//2
+        return temp
 class FTLSTM(nn.Module):
     def __init__(self,time,inputx_dim,inputy_dim,hidden_dim,num_layers_ftlstm,device):
         super(FTLSTM,self).__init__()
