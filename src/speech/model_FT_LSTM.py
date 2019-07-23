@@ -211,7 +211,7 @@ class CNN_FTLSTM(nn.Module):
         self.hidden_dim_lstm=200
         self.num_layers=2
         self.num_labels=4
-        self.weight=0.5
+        self.weight=nn.Parameter(0.5,requires_grad=False)
         self.LSTM_Audio=LSTM_Audio(self.hidden_dim_lstm,self.num_layers,self.device,bidirectional=False)
         self.classification_hand = nn.Linear(self.hidden_dim_lstm, self.num_labels).to(self.device)
         self.classification_raw=nn.Linear(hidden_dim*2,self.num_labels).to(self.device)
