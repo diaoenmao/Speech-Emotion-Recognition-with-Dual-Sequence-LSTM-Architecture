@@ -67,13 +67,12 @@ class FTLSTMCell(nn.Module):
         self.device=torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
     def forward(self, x,y,hT,hF,CT,CF):
-        xyh=torch.cat([x,y,h],dim=1)
         fT=torch.sigmoid(self.WTf(torch.cat([x,y,hT],dim=1)))
         fF=torch.sigmoid(self.WFf(torch.cat([x,y,hF],dim=1)))
         iT=torch.sigmoid(self.WTi(torch.cat([x,y,hT],dim=1)))
         iF=torch.sigmoid(self.WFi(torch.cat([x,y,hF],dim=1)))
-        C_T=torch.tanh(self.WTc(torch.cat([x,h],dim=1)))
-        C_F=torch.tanh(self.WFc(torch.cat([y,h],dim=1)))
+        C_T=torch.tanh(self.WTc(torch.cat([x,hT],dim=1)))
+        C_F=torch.tanh(self.WFc(torch.cat([y,hF],dim=1)))
         oT=torch.sigmoid(self.WTo(torch.cat([x,y,hT],dim=1)))
         oF=torch.sigmoid(self.WFo(torch.cat([x,y,hF],dim=1)))
         CT=fT*CT+iT*C_T
