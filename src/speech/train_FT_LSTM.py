@@ -98,7 +98,7 @@ def train_model(args):
             correct += correct_batch.item()
         accuracy=correct*1.0/((j+1)*batch_size)
         losses=losses / ((j+1)*batch_size)
-        #scheduler3.step()
+        scheduler3.step()
         losses_test = 0
         correct_test = 0
         model.eval()
