@@ -47,24 +47,26 @@ def train_model(args):
     train_loader = DataLoader(dataset=training_data, batch_size=batch_size, shuffle=True, collate_fn=my_collate, num_workers=0, drop_last=True)
     testing_data = IEMOCAP(name='mel', nfft=nfft, train=False)
     test_loader = DataLoader(dataset=testing_data, batch_size=batch_size, shuffle=True, collate_fn=my_collate, num_workers=0,drop_last=True)
-    pdb.set_trace()
+    inputx_dim,time=training_data[0]["input1"].size()
+    inputy_dim,_=training_data[0]['input2'].size()
+    print("input1 frequency bins: {}".format(inputx_dim))
+    print("input2 frequency bins: {}".format(inputy_dim))
+    print("time step: {}".format(time))
     model = CNN_FTLSTM(input_channels, out_channels, kernel_size_cnn, 
                     stride_size_cnn, kernel_size_pool, stride_size_pool,nfft,
                     time,inputx_dim,inputy_dim,hidden_dim,num_layers_ftlstm,
                     device)
 
-    #print("============================ Number of parameters ====================================")
-    #print(str(sum(p.numel() for p in model.parameters() if p.requires_grad)))
+    print("============================ Number of parameters ====================================")
+    print(str(sum(p.numel() for p in model.parameters() if p.requires_grad)))
 
     path="batch_size:{};out_channels:{};kernel_size_cnn:{};stride_size_cnn:{};kernel_size_pool:{};stride_size_pool:{}; weight:{}".format(args.batch_size,out_channels,kernel_size_cnn,stride_size_cnn,kernel_size_pool,stride_size_pool, weight)
-    with open("/scratch/speech/models/classification/spec_multi_joint_stats_weight.txt","a+") as f:
+    with open("/scratch/speech/models/classification/FT_LSTM.txt","a+") as f:
         f.write("\n"+"============ model starts ===========")
         f.write("\n"+"model_parameters: "+str(sum(p.numel() for p in model.parameters() if p.requires_grad))+"\n"+path+"\n")
     model.cuda()
     model=DataParallel(model,device_ids=device_ids)
     model.train()
-
-
     ## optimizer
     # Use Adam as the optimizer with learning rate 0.01 to make it fast for testing purposes
     optimizer = optim.Adam(model.parameters(),lr=0.001)
@@ -74,22 +76,23 @@ def train_model(args):
     #scheduler2 =CosineAnnealingLR(optimizer2, T_max=300, eta_min=0.0001)
     scheduler3 =MultiStepLR(optimizer, [5,10,15],gamma=0.1)
 
-    #print("=================")
-    #print(len(training_data))
-    #print("===================")
+    print("=================")
+    print(len(training_data))
+    print("===================")
 
     test_acc=[]
     train_acc=[]
     test_loss=[]
     train_loss=[]
+    print("Model Initialized: {}".format(path)+"\n")
     for epoch in range(epoch_num):  # again, normally you would NOT do 300 epochs, it is toy data
-        #print("===================================" + str(epoch+1) + "==============================================")
+        print("===================================" + str(epoch+1) + "==============================================")
         losses = 0
         correct=0
         model.train()
         for j, (input_lstm, input1, input2, target, seq_length) in enumerate(train_loader):
-            #if (j+1)%20==0:
-                #print("=================================Train Batch"+ str(j+1)+str(weight)+"===================================================")
+            if (j+1)%20==0:
+                print("=================================Train Batch"+ str(j+1)+str(weight)+"===================================================")
             model.zero_grad()
             losses_batch,correct_batch= model(input_lstm, input1, input2, target, seq_length)
             loss = torch.mean(losses_batch,dim=0)
@@ -105,19 +108,17 @@ def train_model(args):
         #scheduler3.step()
         losses_test = 0
         correct_test = 0
-        #torch.save(model.module.state_dict(), "/scratch/speech/models/classification/spec_full_joint_checkpoint_epoch_{}.pt".format(epoch+1))
         model.eval()
         with torch.no_grad():
             for j,(input_lstm, input1, input2, target, seq_length) in enumerate(test_loader):
-                #if (j+1)%10==0: print("=================================Test Batch"+ str(j+1)+ "===================================================")
-                #input_lstm = pad_sequence(sequences=input_lstm,batch_first=True)
+                if (j+1)%10==0: print("=================================Test Batch"+ str(j+1)+ "===================================================")
                 losses_batch,correct_batch= model(input_lstm,input1, input2, target, seq_length)
                 loss = torch.mean(losses_batch,dim=0)
                 correct_batch=torch.sum(correct_batch,dim=0)
                 losses_test += loss.item() * batch_size
                 correct_test += correct_batch.item()
 
-        #print("how many correct:", correct_test)
+        print("how many correct:", correct_test)
         accuracy_test = correct_test * 1.0 / ((j+1)*batch_size)
         losses_test = losses_test / ((j+1)*batch_size)
 
@@ -127,21 +128,13 @@ def train_model(args):
         test_loss.append(losses_test)
         train_loss.append(losses)
         print("Epoch: {}-----------Training Loss: {} -------- Testing Loss: {} -------- Training Acc: {} -------- Testing Acc: {}".format(epoch+1,losses,losses_test, accuracy, accuracy_test)+"\n")
-        with open("/scratch/speech/models/classification/spec_multi_joint_stats_weight.txt","a+") as f:
-            #f.write("Epoch: {}-----------Training Loss: {} -------- Testing Loss: {} -------- Training Acc: {} -------- Testing Acc: {}".format(epoch+1,losses,losses_test, accuracy, accuracy_test)+"\n")
+        with open("/scratch/speech/models/classification/FT_LSTM.txt","a+") as f:
+            f.write("Epoch: {}-----------Training Loss: {} -------- Testing Loss: {} -------- Training Acc: {} -------- Testing Acc: {}".format(epoch+1,losses,losses_test, accuracy, accuracy_test)+"\n")
             if epoch==epoch_num-1:
                 f.write("Best Accuracy:{:06.5f}".format(max(test_acc))+"\n")
                 f.write("Average Top 10 Accuracy:{:06.5f}".format(np.mean(np.sort(np.array(test_acc))[-10:]))+"\n")
                 f.write("=============== model ends ==================="+"\n")
     print("success:{}, Best Accuracy:{}".format(path,max(test_acc)))
-
-
-
-'''
-    pickle_out=open("/scratch/speech/models/classification/multi_spec_joint_checkpoint_stats_"+path+".pkl","wb")
-    pickle.dump({"test_acc":test_acc, "train_acc": train_acc, "train_loss": train_loss,"test_loss":test_loss},pickle_out)
-    pickle_out.close()
-'''
 
 if __name__ == '__main__':
     args = init_parser()
