@@ -16,26 +16,27 @@ def init_parser():
     parser.add_argument('--batch_size', '-b', default=128, type=int, dest='batch_size')
     parser.add_argument('--out_channels_1', '-out1', default=64, type=int, dest='out_channels1')
     parser.add_argument('--out_channels_2', '-out2', default=16, type=int, dest='out_channels2')
-    parser.add_argument('--kernel_size_cnn_1', '-kc1', default=2, type=int, dest='kernel_size_cnn1')
+    parser.add_argument('--kernel_size_cnn_1', '-kc1', default=4, type=int, dest='kernel_size_cnn1')
     parser.add_argument('--kernel_size_cnn_2','-kc2',default=2,type=int,dest='kernel_size_cnn2')
     parser.add_argument('--stride_size_cnn_1', '-sc1', default=1, type=int, dest='stride_size_cnn1')
     parser.add_argument('--stride_size_cnn_2', '-sc2', default=1, type=int, dest='stride_size_cnn2')
     parser.add_argument('--kernel_size_pool_1', '-kp1', default=2, type=int, dest='kernel_size_pool1')
     parser.add_argument('--kernel_size_pool_2','-kp2',default=2,type=int,dest='kernel_size_pool2')
-    parser.add_argument('--stride_size_pool', '-sp', default=2, type=int, dest='stride_size_pool')
+    parser.add_argument('--stride_size_pool_1', '-sp1', default=1, type=int, dest='stride_size_pool1')
+    parser.add_argument('--stride_size_pool_2', '-sp2', default=1, type=int, dest='stride_size_pool2')
     parser.add_argument('--weight', '-w', default=0, type=float, dest='weight')
     return parser.parse_args()
 
 def train_model(args):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     device_ids=[0,1,2,3]
-    batch_size=200
+    batch_size=args.batch_size
     input_channels = 1
     out_channels = [args.out_channels1, args.out_channels2]
     kernel_size_cnn = [[args.kernel_size_cnn1, args.kernel_size_cnn2],[args.kernel_size_cnn2, args.kernel_size_cnn1]]
     stride_size_cnn = [[args.stride_size_cnn1, args.stride_size_cnn2],[args.stride_size_cnn2, args.stride_size_cnn1]]
     kernel_size_pool = [[args.kernel_size_pool1, args.kernel_size_pool2],[args.kernel_size_pool2, args.kernel_size_pool1]]
-    stride_size_pool = [args.stride_size_pool]*2
+    stride_size_pool = [[args.stride_size_pool1, args.stride_size_pool2],[args.stride_size_pool2, args.stride_size_pool1]]
     hidden_dim=200
     num_layers=2
     dropout=0
