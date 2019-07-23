@@ -24,6 +24,7 @@ def init_parser():
     parser.add_argument('--kernel_size_pool_2','-kp2',default=2,type=int,dest='kernel_size_pool2')
     parser.add_argument('--stride_size_pool', '-sp', default=2, type=int, dest='stride_size_pool')
     parser.add_argument('--weight', '-w', default=0.5, type=float, dest='weight')
+    parser.add_argument('--special', '-special', default="concat", type=str, dest='special')
     return parser.parse_args()
 
 def train_model(args):
@@ -49,12 +50,12 @@ def train_model(args):
     test_loader = DataLoader(dataset=testing_data, batch_size=batch_size, shuffle=True, collate_fn=my_collate, num_workers=0,drop_last=True)
     model = CNN_FTLSTM(input_channels, out_channels, kernel_size_cnn,
                     stride_size_cnn, kernel_size_pool, stride_size_pool,nfft,
-                    hidden_dim,num_layers_ftlstm,weight,device)
+                    hidden_dim,num_layers_ftlstm,weight,args.special,device)
 
     print("============================ Number of parameters ====================================")
     print(str(sum(p.numel() for p in model.parameters() if p.requires_grad)))
 
-    path="batch_size:{};out_channels:{};kernel_size_cnn:{};stride_size_cnn:{};kernel_size_pool:{};stride_size_pool:{}; weight:{}".format(args.batch_size,out_channels,kernel_size_cnn,stride_size_cnn,kernel_size_pool,stride_size_pool, weight)
+    path="batch_size:{};out_channels:{};kernel_size_cnn:{};stride_size_cnn:{};kernel_size_pool:{};stride_size_pool:{}; weight:{}; special:{}".format(args.batch_size,out_channels,kernel_size_cnn,stride_size_cnn,kernel_size_pool,stride_size_pool, weight,args.special)
     with open("/scratch/speech/models/classification/FT_LSTM.txt","a+") as f:
         f.write("\n"+"============ model starts ===========")
         f.write("\n"+"model_parameters: "+str(sum(p.numel() for p in model.parameters() if p.requires_grad))+"\n"+path+"\n")
