@@ -177,6 +177,7 @@ class FTLSTM(nn.Module):
         internal_state = []
         outputT = []
         outputF=[]
+        pdb.set_trace()
         for t in range(self.time):
             x=inputx[:,:,t]
             y=inputy[:,:,t]
