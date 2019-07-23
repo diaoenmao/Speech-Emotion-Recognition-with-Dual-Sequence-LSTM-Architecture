@@ -248,7 +248,7 @@ class CNN_FTLSTM(nn.Module):
         self.special=special
         if self.special=="concat":
             self.classification_raw=nn.Linear(hidden_dim*2,self.num_labels).to(self.device)
-        elif self.special=="attention"
+        elif self.special=="attention":
             self.classification_raw=nn.Linear(hidden_dim*2,self.num_labels).to(self.device)
             self.attention=nn.Sequential(nn.Linear(hidden_dim*2,hidden_dim),
                                         nn.sigmoid()).to(self.device)
