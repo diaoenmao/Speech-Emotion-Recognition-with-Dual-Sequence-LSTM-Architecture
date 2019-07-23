@@ -107,7 +107,10 @@ class SpectrogramModel(nn.Module):
 # data shape
         self.nfft = nfft
         strideF = self.nfft//4
-        time=230
+        if self.nfft==512:
+            time=230
+        if self.nfft==1024:
+            time=120
 # for putting all cells together
         self._all_layers = []
         self.num_layers_cnn=len(out_channels)
@@ -156,7 +159,7 @@ class MultiSpectrogramModel(nn.Module):
             self.input_dims.append(getattr(self,name).dimension())
             self.time_dims.append(getattr(self,name).dimension_time())
             self._all_layers.append(cell)
-    
+        print(self.time_dims)
     def alignment(self,input1,input2):
         # input2 has less time steps
         temp=[]
