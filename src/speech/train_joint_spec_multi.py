@@ -50,8 +50,8 @@ def train_model(args):
                                 stride_size_pool, hidden_dim,num_layers,dropout,num_labels, batch_size,
                                 hidden_dim_lstm,num_layers_lstm,device, nfft, weight, False)
 
-    #print("============================ Number of parameters ====================================")
-    #print(str(sum(p.numel() for p in model.parameters() if p.requires_grad)))
+    print("============================ Number of parameters ====================================")
+    print(str(sum(p.numel() for p in model.parameters() if p.requires_grad)))
 
     path="batch_size:{};out_channels:{};kernel_size_cnn:{};stride_size_cnn:{};kernel_size_pool:{};stride_size_pool:{}; weight:{}".format(args.batch_size,out_channels,kernel_size_cnn,stride_size_cnn,kernel_size_pool,stride_size_pool, weight)
     with open("/scratch/speech/models/classification/spec_multi_joint_stats_weight.txt","a+") as f:
