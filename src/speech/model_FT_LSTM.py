@@ -107,6 +107,7 @@ class SpectrogramModel(nn.Module):
 # data shape
         self.nfft = nfft
         strideF = self.nfft//4
+        time=230
 # for putting all cells together
         self._all_layers = []
         self.num_layers_cnn=len(out_channels)
@@ -118,7 +119,10 @@ class SpectrogramModel(nn.Module):
             self._all_layers.append(cell)
             strideF=self.cnn_shape(strideF,self.kernel_size_cnn[0],self.stride_cnn[0],self.padding_cnn[i][0],
                                     self.kernel_size_pool[0],self.stride_pool,self.padding_pool[i][0])
+            time=self.cnn_shape(time,self.kernel_size_cnn[1],self.stride_cnn[1],self.padding_cnn[i][1],
+                                    self.kernel_size_pool[1],self.stride_pool,self.padding_pool[i][1])
         self.strideF=strideF
+        self.time=time
     def forward(self, input):
         x = input.to(self.device)
         for i in range(self.num_layers_cnn):
@@ -128,6 +132,8 @@ class SpectrogramModel(nn.Module):
         return out
     def dimension(self):
         return self.strideF*self.out_channels[-1]
+    def dimension_time(self):
+        return self.time
 
 class MultiSpectrogramModel(nn.Module):
     def __init__(self, in_channels, out_channels, kernel_size_cnn, stride_cnn, kernel_size_pool, stride_pool, device, nfft):
@@ -142,12 +148,15 @@ class MultiSpectrogramModel(nn.Module):
         self._all_layers = []
         self.num_branches = 2
         self.input_dims=[]
+        self.time_dims=[]
         for i in range(self.num_branches):
             name = 'spec_cell{}'.format(i)
             cell = SpectrogramModel(self.in_channels, self.out_channels, self.kernel_size_cnn[i], self.stride_cnn[i], self.kernel_size_pool[i], self.stride_pool[i], self.device, nfft[i])
             setattr(self, name, cell)
             self.input_dim.append(getattr(self,name).dimension())
+            self.time_dims.append(getattr(self,name).dimension_time())
             self._all_layers.append(cell)
+    '''
     def alignment(self,input1,input2):
         # input2 has less time steps
         temp=[]
@@ -159,16 +168,23 @@ class MultiSpectrogramModel(nn.Module):
         inputx=torch.stack(temp,dim=2)
         inputy=input2
         return inputx,inputy
+    '''
+    def alignment(self, input1,input2):
+        input1=input1[:,:,:min(self.time_dims)]
+        input2=input2[:,:,:min(self.time_dims)]
+        return input1, input2
     def forward(self, input1, input2):
         input1 = input1.to(self.device)
         input2 = input2.to(self.device)
         name = 'spec_cell{}'
         input1 = getattr(self, name.format("0"))(input1)
         input2 = getattr(self, name.format("1"))(input2)
-        inputx,inputy=self.alignment(input1,input2)
-        return inputx,inputy
+        input1,input2=self.alignment(input1,input2)
+        return input1,input2
     def dimension():
         return self.input_dim[0],self.input_dim[1]
+    def dimension_time():
+        return min(self.time_dims)
 class FTLSTM(nn.Module):
     def __init__(self,time,inputx_dim,inputy_dim,hidden_dim,num_layers_ftlstm,device):
         super(FTLSTM,self).__init__()
@@ -206,7 +222,7 @@ class FTLSTM(nn.Module):
 class CNN_FTLSTM(nn.Module):
     def __init__(self,in_channels, out_channels, kernel_size_cnn, 
                     stride_cnn, kernel_size_pool, stride_pool,nfft,
-                    time,hidden_dim,num_layers_ftlstm,weight,
+                    hidden_dim,num_layers_ftlstm,weight,
                     device):
         super(CNN_FTLSTM,self).__init__()
         self._all_layers=[]
@@ -214,6 +230,8 @@ class CNN_FTLSTM(nn.Module):
                                      kernel_size_pool, stride_pool, device, nfft)
         setattr(self,"cnn_multi",cell)
         inputx_dim,inputy_dim=getattr(self,"cnn_multi").dimension()
+        time=getattr(self,"cnn_multi").dimension_time()
+        print(time)
         cell=FTLSTM(time,inputx_dim,inputy_dim,hidden_dim,num_layers_ftlstm,device)
         setattr(self,"ftlstm",cell)
         self.device=device
