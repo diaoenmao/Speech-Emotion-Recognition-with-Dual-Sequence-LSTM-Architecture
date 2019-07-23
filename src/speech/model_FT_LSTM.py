@@ -159,7 +159,7 @@ class MultiSpectrogramModel(nn.Module):
             self.input_dims.append(getattr(self,name).dimension())
             self.time_dims.append(getattr(self,name).dimension_time())
             self._all_layers.append(cell)
-        print(self.time_dims)
+        print("time scales after CNN:", self.time_dims)
     def alignment(self,input1,input2):
         # input2 has less time steps
         temp=[]
@@ -235,6 +235,7 @@ class CNN_FTLSTM(nn.Module):
         setattr(self,"cnn_multi",cell)
         inputx_dim,inputy_dim=getattr(self,"cnn_multi").dimension()
         time=getattr(self,"cnn_multi").dimension_time()
+        print("time step after alignment:",time)
         cell=FTLSTM(time,inputx_dim,inputy_dim,hidden_dim,num_layers_ftlstm,device)
         setattr(self,"ftlstm",cell)
         self.device=device
