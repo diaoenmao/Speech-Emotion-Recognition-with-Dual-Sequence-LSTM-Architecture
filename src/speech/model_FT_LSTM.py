@@ -181,9 +181,9 @@ class MultiSpectrogramModel(nn.Module):
         input2 = getattr(self, name.format("1"))(input2)
         input1,input2=self.alignment(input1,input2)
         return input1,input2
-    def dimension():
+    def dimension(self):
         return self.input_dims[0],self.input_dims[1]
-    def dimension_time():
+    def dimension_time(self):
         return min(self.time_dims)
 class FTLSTM(nn.Module):
     def __init__(self,time,inputx_dim,inputy_dim,hidden_dim,num_layers_ftlstm,device):
