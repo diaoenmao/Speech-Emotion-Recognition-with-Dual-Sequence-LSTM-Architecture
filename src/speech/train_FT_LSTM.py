@@ -13,7 +13,7 @@ import argparse
 
 def init_parser():
     parser = argparse.ArgumentParser(description='Train and test your model as specified by the parameters you enter')
-    parser.add_argument('--batch_size', '-b', default=4, type=int, dest='batch_size')
+    parser.add_argument('--batch_size', '-b', default=128, type=int, dest='batch_size')
     parser.add_argument('--out_channels_1', '-out1', default=64, type=int, dest='out_channels1')
     parser.add_argument('--out_channels_2', '-out2', default=16, type=int, dest='out_channels2')
     parser.add_argument('--kernel_size_cnn_1', '-kc1', default=4, type=int, dest='kernel_size_cnn1')
@@ -28,7 +28,7 @@ def init_parser():
 
 def train_model(args):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    device_ids=[0]
+    device_ids=[0,1,2,3]
     batch_size=args.batch_size
     input_channels = 1
     out_channels = [args.out_channels1, args.out_channels2]
