@@ -121,9 +121,9 @@ class SpectrogramModel(nn.Module):
             setattr(self, name, cell)
             self._all_layers.append(cell)
             strideF=self.cnn_shape(strideF,self.kernel_size_cnn[0],self.stride_cnn[0],self.padding_cnn[i][0],
-                                    self.kernel_size_pool[0],self.stride_pool[0],self.padding_pool[i][0])
+                                    self.kernel_size_pool[0],self.stride_pool,self.padding_pool[i][0])
             time=self.cnn_shape(time,self.kernel_size_cnn[1],self.stride_cnn[1],self.padding_cnn[i][1],
-                                    self.kernel_size_pool[1],self.stride_pool[1],self.padding_pool[i][1])
+                                    self.kernel_size_pool[1],self.stride_pool,self.padding_pool[i][1])
         self.strideF=strideF
         self.time=time
     def forward(self, input):
@@ -257,7 +257,7 @@ class CNN_FTLSTM(nn.Module):
         out_lstm = self.LSTM_Audio(input_lstm).permute(0,2,1)
         temp = [torch.unsqueeze(torch.mean(out_lstm[k,:,:int(s.item())],dim=1),dim=0) for k,s in enumerate(seq_length)]
         out_lstm = torch.cat(temp,dim=0)
-        out=torch.mean(torch.cat([outT,outF],dim=1),dim=2)
+        out=torch.mean(0.5*outT+0.5*outF,dim=2)
         p = self.weight
         out = self.classification_raw(out)
         out_lstm = self.classification_hand(out_lstm)
