@@ -47,14 +47,14 @@ def train_model(args):
     train_loader = DataLoader(dataset=training_data, batch_size=batch_size, shuffle=True, collate_fn=my_collate, num_workers=0, drop_last=True)
     testing_data = IEMOCAP(name='mel', nfft=nfft, train=False)
     test_loader = DataLoader(dataset=testing_data, batch_size=batch_size, shuffle=True, collate_fn=my_collate, num_workers=0,drop_last=True)
-    inputx_dim,time=training_data[0]["input1"].size()
-    inputy_dim,_=training_data[0]['input2'].size()
+    inputx_dim,time1=training_data[0]["input1"].size()
+    inputy_dim,time2=training_data[0]['input2'].size()
     print("input1 frequency bins: {}".format(inputx_dim))
     print("input2 frequency bins: {}".format(inputy_dim))
-    print("time step: {}".format(time))
+    print("input1 time step: {}, input2 time step: {}".format(time1,time2))
     model = CNN_FTLSTM(input_channels, out_channels, kernel_size_cnn, 
                     stride_size_cnn, kernel_size_pool, stride_size_pool,nfft,
-                    time,inputx_dim,inputy_dim,hidden_dim,num_layers_ftlstm,device)
+                    time2,inputx_dim,inputy_dim,hidden_dim,num_layers_ftlstm,device)
 
     print("============================ Number of parameters ====================================")
     print(str(sum(p.numel() for p in model.parameters() if p.requires_grad)))
