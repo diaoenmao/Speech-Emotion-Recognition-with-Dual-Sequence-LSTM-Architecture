@@ -57,7 +57,7 @@ def train_model(args):
     time2=27
     model = CNN_FTLSTM(input_channels, out_channels, kernel_size_cnn, 
                     stride_size_cnn, kernel_size_pool, stride_size_pool,nfft,
-                    time2,inputx_dim,inputy_dim,hidden_dim,num_layers_ftlstm,device)
+                    time2,inputx_dim,inputy_dim,hidden_dim,num_layers_ftlstm,weight,device)
 
     print("============================ Number of parameters ====================================")
     print(str(sum(p.numel() for p in model.parameters() if p.requires_grad)))
