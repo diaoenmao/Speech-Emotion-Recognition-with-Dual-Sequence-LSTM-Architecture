@@ -22,7 +22,7 @@ def init_parser():
     parser.add_argument('--stride_size_cnn_2', '-sc2', default=1, type=int, dest='stride_size_cnn2')
     parser.add_argument('--kernel_size_pool_1', '-kp1', default=2, type=int, dest='kernel_size_pool1')
     parser.add_argument('--kernel_size_pool_2','-kp2',default=2,type=int,dest='kernel_size_pool2')
-    parser.add_argument('--stride_size_pool_1', '-sp1', default=1, type=int, dest='stride_size_pool1')
+    parser.add_argument('--stride_size_pool_1', '-sp1', default=2, type=int, dest='stride_size_pool1')
     parser.add_argument('--stride_size_pool_2', '-sp2', default=1, type=int, dest='stride_size_pool2')
     parser.add_argument('--weight', '-w', default=0.5, type=float, dest='weight')
     return parser.parse_args()
@@ -48,7 +48,7 @@ def train_model(args):
     train_loader = DataLoader(dataset=training_data, batch_size=batch_size, shuffle=True, collate_fn=my_collate, num_workers=0, drop_last=True)
     testing_data = IEMOCAP(name='mel', nfft=nfft, train=False)
     test_loader = DataLoader(dataset=testing_data, batch_size=batch_size, shuffle=True, collate_fn=my_collate, num_workers=0,drop_last=True)
-    model = CNN_FTLSTM(input_channels, out_channels, kernel_size_cnn, 
+    model = CNN_FTLSTM(input_channels, out_channels, kernel_size_cnn,
                     stride_size_cnn, kernel_size_pool, stride_size_pool,nfft,
                     hidden_dim,num_layers_ftlstm,weight,device)
 
