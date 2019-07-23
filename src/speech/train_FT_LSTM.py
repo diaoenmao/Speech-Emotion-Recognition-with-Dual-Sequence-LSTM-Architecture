@@ -52,12 +52,10 @@ def train_model(args):
     print("input1 frequency bins: {}".format(inputx_dim))
     print("input2 frequency bins: {}".format(inputy_dim))
     print("input1 time step: {}, input2 time step: {}".format(time1,time2))
-    inputx_dim=496
-    inputy_dim=1008
     time2=27
     model = CNN_FTLSTM(input_channels, out_channels, kernel_size_cnn, 
                     stride_size_cnn, kernel_size_pool, stride_size_pool,nfft,
-                    time2,inputx_dim,inputy_dim,hidden_dim,num_layers_ftlstm,weight,device)
+                    time2,hidden_dim,num_layers_ftlstm,weight,device)
 
     print("============================ Number of parameters ====================================")
     print(str(sum(p.numel() for p in model.parameters() if p.requires_grad)))
