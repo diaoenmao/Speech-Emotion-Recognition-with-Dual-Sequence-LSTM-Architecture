@@ -143,13 +143,17 @@ class MultiSpectrogramModel(nn.Module):
             cell = SpectrogramModel(self.in_channels, self.out_channels, self.kernel_size_cnn[i], self.stride_cnn[i], self.kernel_size_pool[i], self.stride_pool[i], self.device, nfft[i])
             setattr(self, name, cell)
             self._all_layers.append(cell)
-    def alignment(self,inputx, inputy, RNN=False):
+    def alignment(self,input1,input2):
+        # input2 has less time steps
         temp=[]
-        for i in range(inputy.shape[1]):
-            temp1=torch.mean(inputx[:,(2*i):(2*i+3)],dim=1)
+        if (input1.shape[2]-1)<(input2.shape[2])*2:
+            input2=input2[:,:,:(input1.shape[2]-1)//2]
+        for i in range(input2.shape[2]):
+            temp1=torch.mean(input1[:,:,(2*i):(2*i+3)],dim=2)
             temp.append(temp1)
-        inputx=temp
-        return inputx, inputy
+        inputx=torch.stack(temp,dim=2)
+        inputy=input2
+        return inputx,inputy
     def forward(self, input1, input2):
         input1 = input1.to(self.device)
         input2 = input2.to(self.device)
