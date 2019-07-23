@@ -37,7 +37,7 @@ def train_model(args):
     kernel_size_pool = [[args.kernel_size_pool1, args.kernel_size_pool2],[args.kernel_size_pool2, args.kernel_size_pool1]]
     stride_size_pool = [args.stride_size_pool]*2
     hidden_dim=200
-    num_layers_ftlstm
+    num_layers_ftlstm=2
     hidden_dim_lstm=200
     epoch_num=50
     nfft=[512,1024]
