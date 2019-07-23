@@ -55,6 +55,7 @@ def train_model(args):
     print("============================ Number of parameters ====================================")
     print(str(sum(p.numel() for p in model.parameters() if p.requires_grad)))
 
+
     path="batch_size:{};out_channels:{};kernel_size_cnn:{};stride_size_cnn:{};kernel_size_pool:{};stride_size_pool:{}; weight:{}; special:{}".format(args.batch_size,out_channels,kernel_size_cnn,stride_size_cnn,kernel_size_pool,stride_size_pool, weight,args.special)
     with open("/scratch/speech/models/classification/FT_LSTM.txt","a+") as f:
         f.write("\n"+"============ model starts ===========")
@@ -99,7 +100,7 @@ def train_model(args):
             correct += correct_batch.item()
         accuracy=correct*1.0/((j+1)*batch_size)
         losses=losses / ((j+1)*batch_size)
-        #scheduler3.step()
+        scheduler3.step()
         losses_test = 0
         correct_test = 0
         model.eval()
@@ -122,7 +123,7 @@ def train_model(args):
         test_loss.append(losses_test)
         train_loss.append(losses)
         print("Epoch: {}-----------Training Loss: {} -------- Testing Loss: {} -------- Training Acc: {} -------- Testing Acc: {}".format(epoch+1,losses,losses_test, accuracy, accuracy_test)+"\n")
-        with open("/scratch/speech/models/classification/FT_LSTM.txt","a+") as f:
+        with open("/scratch/speech/models/classification/FT_LSTM_add.txt","a+") as f:
             f.write("Epoch: {}-----------Training Loss: {} -------- Testing Loss: {} -------- Training Acc: {} -------- Testing Acc: {}".format(epoch+1,losses,losses_test, accuracy, accuracy_test)+"\n")
             if epoch==epoch_num-1:
                 f.write("Best Accuracy:{:06.5f}".format(max(test_acc))+"\n")
