@@ -24,7 +24,7 @@ def init_parser():
     parser.add_argument('--kernel_size_pool_2','-kp2',default=2,type=int,dest='kernel_size_pool2')
     parser.add_argument('--stride_size_pool_1', '-sp1', default=1, type=int, dest='stride_size_pool1')
     parser.add_argument('--stride_size_pool_2', '-sp2', default=1, type=int, dest='stride_size_pool2')
-    parser.add_argument('--weight', '-w', default=0, type=float, dest='weight')
+    parser.add_argument('--weight', '-w', default=0.5, type=float, dest='weight')
     return parser.parse_args()
 
 def train_model(args):
