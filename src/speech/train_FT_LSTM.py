@@ -71,7 +71,7 @@ def train_model(args):
     scheduler = ReduceLROnPlateau(optimizer=optimizer,factor=0.5, patience=2, threshold=1e-3)
     #scheduler2=ReduceLROnPlateau(optimizer=optimizer2, factor=0.5, patience=2, threshold=1e-3)
     #scheduler2 =CosineAnnealingLR(optimizer2, T_max=300, eta_min=0.0001)
-    #scheduler3 =MultiStepLR(optimizer, [5,10,15],gamma=0.1)
+    scheduler3 =MultiStepLR(optimizer, [10,15,20,25],gamma=0.5)
 
     print("=================")
     print(len(training_data))
@@ -89,26 +89,33 @@ def train_model(args):
         correct=0
         model.train()
         for j, (input_lstm, input1, input2, target, seq_length) in enumerate(train_loader):
-            if (j+1)%20==0:
-                print("=================================Train Batch"+ str(j+1)+str(weight)+"===================================================")
+            #if (j+1)%20==0:
+                #print("=================================Train Batch"+ str(j+1)+str(weight)+"===================================================")
+            num=input_lstm.shape[0]
+            if num%num_devices!=0:
+                input_lstm=input_lstm[:int(num-num%num_devices)]
+                input1=input1[:int(num-num%num_devices)]
+                input2=input2[:int(num-num%num_devices)]
+                target=target[:int(num-num%num_devices)]
+                seq_length=seq_length[:int(num-num%num_devices)]
             model.zero_grad()
             losses_batch,correct_batch= model(input_lstm, input1, input2, target, seq_length)
             loss = torch.mean(losses_batch,dim=0)
             correct_batch=torch.sum(correct_batch,dim=0)
-            losses += loss.item() * batch_size
+            losses += loss.item() * (int(num-num%num_devices))
             loss.backward()
             weight=model.module.state_dict()["weight"]
             optimizer.step()
             correct += correct_batch.item()
-        accuracy=correct*1.0/((j+1)*batch_size)
-        losses=losses / ((j+1)*batch_size)
-        #scheduler3.step()
+        accuracy=correct*1.0/(j*batch_size+int(num-num%num_devices))
+        losses=losses / (j*batch_size+int(num-num%num_devices))
+        scheduler3.step()
         losses_test = 0
         correct_test = 0
         model.eval()
         with torch.no_grad():
             for j,(input_lstm, input1, input2, target, seq_length) in enumerate(test_loader):
-                if (j+1)%10==0: print("=================================Test Batch"+ str(j+1)+ "===================================================")
+                #if (j+1)%10==0: print("=================================Test Batch"+ str(j+1)+ "===================================================")
                 num=input_lstm.shape[0]
                 if num%num_devices!=0:
                     input_lstm=input_lstm[:int(num-num%num_devices)]
@@ -122,10 +129,9 @@ def train_model(args):
                 losses_test += loss.item() * (int(num-num%num_devices))
                 correct_test += correct_batch.item()
 
-        print("how many correct:", correct_test)
+        #print("how many correct:", correct_test)
         accuracy_test = correct_test * 1.0 / (j*batch_size+int(num-num%num_devices))
         losses_test = losses_test / (j*batch_size+int(num-num%num_devices))
-        print(j*batch_size+int(num-num%num_devices))
         # data gathering
         test_acc.append(accuracy_test)
         train_acc.append(accuracy)
