@@ -163,9 +163,9 @@ class MultiSpectrogramModel(nn.Module):
     def alignment(self,input1,input2):
         # input2 has less time steps
         temp=[]
-        input2=input2[:,:,:(input1.shape[2]-1)//2]
+        input2=input2[:,:,:(input1.shape[2])//2]
         for i in range(input2.shape[2]):
-            temp1=torch.mean(input1[:,:,(2*i):(2*i+3)],dim=2)
+            temp1=torch.max(input1[:,:,(2*i):(2*i+2)],dim=2)
             temp.append(temp1)
         inputx=torch.stack(temp,dim=2)
         inputy=input2
