@@ -75,6 +75,7 @@ def train_model(args):
 
     print("=================")
     print(len(training_data))
+    print(len(testing_data))
     print("===================")
 
     test_acc=[]
@@ -118,13 +119,13 @@ def train_model(args):
                 losses_batch,correct_batch= model(input_lstm,input1, input2, target, seq_length)
                 loss = torch.mean(losses_batch,dim=0)
                 correct_batch=torch.sum(correct_batch,dim=0)
-                losses_test += loss.item() * (batch_size-num%num_devices)
+                losses_test += loss.item() * (int(num-num%num_devices))
                 correct_test += correct_batch.item()
 
         print("how many correct:", correct_test)
-        accuracy_test = correct_test * 1.0 / ((j+1)*batch_size-num%num_devices)
-        losses_test = losses_test / ((j+1)*batch_size-num%num_devices)
-
+        accuracy_test = correct_test * 1.0 / (j*batch_size+int(num-num%num_devices))
+        losses_test = losses_test / (j*batch_size+int(num-num%num_devices))
+        print(j*batch_size+int(num-num%num_devices))
         # data gathering
         test_acc.append(accuracy_test)
         train_acc.append(accuracy)
