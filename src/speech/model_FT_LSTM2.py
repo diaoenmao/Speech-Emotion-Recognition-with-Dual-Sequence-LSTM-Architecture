@@ -95,10 +95,10 @@ class FTLSTMCell(nn.Module):
             else:
                 nn.init.constant_(p.data,0.0)
     def init_hidden(self, batch_size):
-        return (torch.zeros(batch_size, self.hidden_dim).to(self.device),
-                torch.zeros(batch_size, self.hidden_dim).to(self.device),
-                torch.zeros(batch_size, self.hidden_dim).to(self.device),
-                torch.zeros(batch_size, self.hidden_dim).to(self.device))
+        return (torch.zeros(batch_size, self.hidden_dim),
+                torch.zeros(batch_size, self.hidden_dim),
+                torch.zeros(batch_size, self.hidden_dim),
+                torch.zeros(batch_size, self.hidden_dim))
 class SpectrogramModel(nn.Module):
     def cnn_shape(self,x,kc,sc,pc,km,sm,pm):
         temp = int((x+2*pc-kc)/sc+1)
