@@ -13,7 +13,7 @@ import argparse
 
 def init_parser():
     parser = argparse.ArgumentParser(description='Train and test your model as specified by the parameters you enter')
-    parser.add_argument('--batch_size', '-b', default=128, type=int, dest='batch_size')
+    parser.add_argument('--batch_size', '-b', default=256, type=int, dest='batch_size')
     parser.add_argument('--out_channels_1', '-out1', default=64, type=int, dest='out_channels1')
     parser.add_argument('--out_channels_2', '-out2', default=16, type=int, dest='out_channels2')
     parser.add_argument('--kernel_size_cnn_1', '-kc1', default=4, type=int, dest='kernel_size_cnn1')
@@ -30,6 +30,7 @@ def init_parser():
 def train_model(args):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     device_ids=[0,1,2,3]
+    num_devices=len(device_ids)
     batch_size=args.batch_size
     input_channels = 1
     out_channels = [args.out_channels1, args.out_channels2]
@@ -47,7 +48,7 @@ def train_model(args):
     training_data = IEMOCAP(name='mel', nfft=nfft, train=True)
     train_loader = DataLoader(dataset=training_data, batch_size=batch_size, shuffle=True, collate_fn=my_collate, num_workers=0, drop_last=True)
     testing_data = IEMOCAP(name='mel', nfft=nfft, train=False)
-    test_loader = DataLoader(dataset=testing_data, batch_size=batch_size, shuffle=True, collate_fn=my_collate, num_workers=0,drop_last=True)
+    test_loader = DataLoader(dataset=testing_data, batch_size=batch_size, shuffle=True, collate_fn=my_collate, num_workers=0,drop_last=False)
     model = CNN_FTLSTM(input_channels, out_channels, kernel_size_cnn,
                     stride_size_cnn, kernel_size_pool, stride_size_pool,nfft,
                     hidden_dim,num_layers_ftlstm,weight,args.special,device)
@@ -57,7 +58,7 @@ def train_model(args):
 
 
     path="batch_size:{};out_channels:{};kernel_size_cnn:{};stride_size_cnn:{};kernel_size_pool:{};stride_size_pool:{}; weight:{}; special:{}".format(args.batch_size,out_channels,kernel_size_cnn,stride_size_cnn,kernel_size_pool,stride_size_pool, weight,args.special)
-    with open("/scratch/speech/models/classification/FT_LSTM_recent.txt","a+") as f:
+    with open("/scratch/speech/models/classification/FT_LSTM_recent2.txt","a+") as f:
         f.write("\n"+"============ model starts ===========")
         f.write("\n"+"model_parameters: "+str(sum(p.numel() for p in model.parameters() if p.requires_grad))+"\n"+path+"\n")
     model.cuda()
@@ -107,24 +108,31 @@ def train_model(args):
         with torch.no_grad():
             for j,(input_lstm, input1, input2, target, seq_length) in enumerate(test_loader):
                 if (j+1)%10==0: print("=================================Test Batch"+ str(j+1)+ "===================================================")
+                num=input_lstm.shape[0]
+                if num%num_devices!=0:
+                    input_lstm=input_lstm[:int(num-num%num_devices)]
+                    input1=input1[:int(num-num%num_devices)]
+                    input2=input2[:int(num-num%num_devices)]
+                    target=target[:int(num-num%num_devices)]
+                    seq_length=seq_length[:int(num-num%num_devices)]
                 losses_batch,correct_batch= model(input_lstm,input1, input2, target, seq_length)
                 loss = torch.mean(losses_batch,dim=0)
                 correct_batch=torch.sum(correct_batch,dim=0)
-                losses_test += loss.item() * batch_size
+                losses_test += loss.item() * (batch_size-num%num_devices)
                 correct_test += correct_batch.item()
 
         print("how many correct:", correct_test)
-        accuracy_test = correct_test * 1.0 / ((j+1)*batch_size)
-        losses_test = losses_test / ((j+1)*batch_size)
+        accuracy_test = correct_test * 1.0 / ((j+1)*batch_size-num%num_devices)
+        losses_test = losses_test / ((j+1)*batch_size-num%num_devices)
 
         # data gathering
         test_acc.append(accuracy_test)
         train_acc.append(accuracy)
         test_loss.append(losses_test)
         train_loss.append(losses)
-        print("Epoch: {}-----------Training Loss: {} -------- Testing Loss: {} -------- Training Acc: {} -------- Testing Acc: {}".format(epoch+1,losses,losses_test, accuracy, accuracy_test)+"\n")
-        with open("/scratch/speech/models/classification/FT_LSTM_recent.txt","a+") as f:
-            f.write("Epoch: {}-----------Training Loss: {} -------- Testing Loss: {} -------- Training Acc: {} -------- Testing Acc: {}".format(epoch+1,losses,losses_test, accuracy, accuracy_test)+"\n")
+        print("Epoch: {}-----------Training Loss: {:06.5f} -------- Testing Loss: {:06.5f} -------- Training Acc: {:06.5f} -------- Testing Acc: {:06.5f}".format(epoch+1,losses,losses_test, accuracy, accuracy_test)+"\n")
+        with open("/scratch/speech/models/classification/FT_LSTM_recent2.txt","a+") as f:
+            f.write("Epoch: {}-----------Training Loss: {:06.5f} -------- Testing Loss: {:06.5f} -------- Training Acc: {:06.5f} -------- Testing Acc: {:06.5f}".format(epoch+1,losses,losses_test, accuracy, accuracy_test)+"\n")
             if epoch==epoch_num-1:
                 f.write("Best Accuracy:{:06.5f}".format(max(test_acc))+"\n")
                 f.write("Average Top 10 Accuracy:{:06.5f}".format(np.mean(np.sort(np.array(test_acc))[-10:]))+"\n")
