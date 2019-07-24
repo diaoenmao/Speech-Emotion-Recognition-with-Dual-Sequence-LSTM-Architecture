@@ -25,6 +25,7 @@ def init_parser():
     parser.add_argument('--stride_size_pool', '-sp', default=2, type=int, dest='stride_size_pool')
     parser.add_argument('--weight', '-w', default=0.5, type=float, dest='weight')
     parser.add_argument('--special', '-special', default="concat", type=str, dest='special')
+    parser.add_argument('--file','-f',default="recent2",type=str,dest='file_path')
     return parser.parse_args()
 
 def train_model(args):
@@ -58,7 +59,8 @@ def train_model(args):
 
 
     path="batch_size:{};out_channels:{};kernel_size_cnn:{};stride_size_cnn:{};kernel_size_pool:{};stride_size_pool:{}; weight:{}; special:{}".format(args.batch_size,out_channels,kernel_size_cnn,stride_size_cnn,kernel_size_pool,stride_size_pool, weight,args.special)
-    with open("/scratch/speech/models/classification/FT_LSTM_recent3.txt","a+") as f:
+    file_path="/scratch/speech/models/classification/FT_LSTM_"+args.file_path+".txt"
+    with open(file_path,"a+") as f:
         f.write("\n"+"============ model starts ===========")
         f.write("\n"+"model_parameters: "+str(sum(p.numel() for p in model.parameters() if p.requires_grad))+"\n"+path+"\n")
     model.cuda()
@@ -138,7 +140,7 @@ def train_model(args):
         test_loss.append(losses_test)
         train_loss.append(losses)
         print("Epoch: {}-----------Training Loss: {:06.5f} -------- Testing Loss: {:06.5f} -------- Training Acc: {:06.5f} -------- Testing Acc: {:06.5f}".format(epoch+1,losses,losses_test, accuracy, accuracy_test)+"\n")
-        with open("/scratch/speech/models/classification/FT_LSTM_recent3.txt","a+") as f:
+        with open(file_path,"a+") as f:
             f.write("Epoch: {}-----------Training Loss: {:06.5f} -------- Testing Loss: {:06.5f} -------- Training Acc: {:06.5f} -------- Testing Acc: {:06.5f}".format(epoch+1,losses,losses_test, accuracy, accuracy_test)+"\n")
             if epoch==epoch_num-1:
                 f.write("Best Accuracy:{:06.5f}".format(max(test_acc))+"\n")
