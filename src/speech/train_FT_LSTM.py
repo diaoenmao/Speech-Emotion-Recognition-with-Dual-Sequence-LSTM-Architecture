@@ -1,6 +1,6 @@
 import torch
 from torch import optim
-from model_FT_LSTM import CNN_FTLSTM
+from model_FT_LSTM2 import CNN_FTLSTM
 from process_FT_LSTM import IEMOCAP, my_collate
 from torch.utils.data import DataLoader
 from torch.optim.lr_scheduler import ReduceLROnPlateau, CosineAnnealingLR, MultiStepLR
@@ -13,7 +13,7 @@ import argparse
 
 def init_parser():
     parser = argparse.ArgumentParser(description='Train and test your model as specified by the parameters you enter')
-    parser.add_argument('--batch_size', '-b', default=256, type=int, dest='batch_size')
+    parser.add_argument('--batch_size', '-b', default=128, type=int, dest='batch_size')
     parser.add_argument('--out_channels_1', '-out1', default=64, type=int, dest='out_channels1')
     parser.add_argument('--out_channels_2', '-out2', default=16, type=int, dest='out_channels2')
     parser.add_argument('--kernel_size_cnn_1', '-kc1', default=4, type=int, dest='kernel_size_cnn1')
