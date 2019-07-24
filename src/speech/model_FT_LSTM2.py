@@ -68,6 +68,11 @@ class FTLSTMCell(nn.Module):
         self.WFCh=nn.Parameter(torch.Tensor(self.hidden_dim,self.hidden_dim))
         self.biasCT=nn.Parameter(torch.Tensor(self.hidden_dim))
         self.biasCF=nn.Parameter(torch.Tensor(self.hidden_dim))
+
+        self.batchF=nn.BatchNorm1d(num_features=self.hidden_dim)
+        self.batchT=nn.BatchNorm1d(num_features=self.hidden_dim)
+        self.dropout=nn.Dropout(p=dropout, inplace=False)
+        
         self.init_weights()
     def forward(self, x,y,hT,hF,CT,CF):
         sz=hT.shape[1]
