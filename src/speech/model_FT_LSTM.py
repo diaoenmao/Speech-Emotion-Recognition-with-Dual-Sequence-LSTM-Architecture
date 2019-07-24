@@ -280,9 +280,10 @@ class CNN_FTLSTM(nn.Module):
         out_final = p*out + (1-p)*out_lstm
         target_index = torch.argmax(target, dim=1).to(self.device)
         correct_batch=torch.sum(target_index==torch.argmax(out_final,dim=1))
-        losses_batch_raw=F.cross_entropy(out,torch.max(target,1)[1])
-        losses_batch_hand=F.cross_entropy(out_lstm,torch.max(target,1)[1])
-        losses_batch=p*losses_batch_raw+(1-p)*losses_batch_hand
+        #losses_batch_raw=F.cross_entropy(out,torch.max(target,1)[1])
+        #losses_batch_hand=F.cross_entropy(out_lstm,torch.max(target,1)[1])
+        #losses_batch=p*losses_batch_raw+(1-p)*losses_batch_hand
+        losses_batch=F.cross_entropy(out_final,torch.max(target,1)[1])
         correct_batch=torch.unsqueeze(correct_batch,dim=0)
         losses_batch=torch.unsqueeze(losses_batch, dim=0)
         return losses_batch, correct_batch
