@@ -93,7 +93,7 @@ class FTLSTMCell(nn.Module):
             if p.data.ndimension()>=2:
                 nn.init.xavier_uniform_(p.data)
             else:
-                nn.init_zeros_(p.data)
+                nn.init_constant_(p.data,0.0)
     def init_hidden(self, batch_size):
         return (torch.zeros(batch_size, self.hidden_dim).to(self.device),
                 torch.zeros(batch_size, self.hidden_dim).to(self.device),
