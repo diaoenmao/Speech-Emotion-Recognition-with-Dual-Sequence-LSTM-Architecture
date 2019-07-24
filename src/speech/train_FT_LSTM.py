@@ -1,6 +1,6 @@
 import torch
 from torch import optim
-from model_FT_LSTM2 import CNN_FTLSTM
+from model_FT_LSTM import CNN_FTLSTM
 from process_FT_LSTM import IEMOCAP, my_collate
 from torch.utils.data import DataLoader
 from torch.optim.lr_scheduler import ReduceLROnPlateau, CosineAnnealingLR, MultiStepLR
