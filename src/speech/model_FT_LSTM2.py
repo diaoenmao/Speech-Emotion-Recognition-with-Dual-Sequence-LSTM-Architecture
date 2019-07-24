@@ -46,9 +46,10 @@ class LFLB(nn.Module):
         out=self.max_pool(out)
         return out
 class FTLSTMCell(nn.Module):
-    def __init__(self,  inputx_dim,inputy_dim,hidden_dim, dropout=0):
+    def __init__(self,  inputx_dim,inputy_dim,hidden_dim, device,dropout=0):
         # inputx, inputy should be one single time step, B*D
         super(FTLSTMCell, self).__init__()
+        self.device=device
         self.hidden_dim=hidden_dim
         self.inputx_dim=inputx_dim
         self.inputy_dim=inputy_dim
@@ -95,10 +96,10 @@ class FTLSTMCell(nn.Module):
             else:
                 nn.init.constant_(p.data,0.0)
     def init_hidden(self, batch_size):
-        return (torch.zeros(batch_size, self.hidden_dim),
-                torch.zeros(batch_size, self.hidden_dim),
-                torch.zeros(batch_size, self.hidden_dim),
-                torch.zeros(batch_size, self.hidden_dim))
+        return (torch.zeros(batch_size, self.hidden_dim).to(self.device),
+                torch.zeros(batch_size, self.hidden_dim).to(self.device),
+                torch.zeros(batch_size, self.hidden_dim).to(self.device),
+                torch.zeros(batch_size, self.hidden_dim).to(self.device))
 class SpectrogramModel(nn.Module):
     def cnn_shape(self,x,kc,sc,pc,km,sm,pm):
         temp = int((x+2*pc-kc)/sc+1)
@@ -212,7 +213,7 @@ class FTLSTM(nn.Module):
         self.num_layers_ftlstm=num_layers_ftlstm
         for i in range(num_layers_ftlstm):
             name = 'ftlstm_cell{}'.format(i)
-            cell = FTLSTMCell(inputx_dim,inputy_dim,hidden_dim)
+            cell = FTLSTMCell(inputx_dim,inputy_dim,hidden_dim,device)
             setattr(self, name, cell)
             self._all_layers.append(cell)
     def forward(self,inputx,inputy):
