@@ -224,13 +224,17 @@ class HelixLstm(nn.Module):
         outputx = []
         outputy = []
         output =[]
+        timex=0
+        timey=0
         for t,flag in enumerate(sequence):
             if flag=="x":
-                x=inputx[:,:,t]
-                y=inputy[:,:,min(t//2,inputx.shape[2])]
+                x=inputx[:,:,timex]
+                y=inputy[:,:,timey]
+                timex+=1
             if flag=="y":
-                y=inputy[:,:,t]
-                x=inputx[:,:,max(0,min(2*t-1,inputx.shape[2]))]
+                y=inputy[:,:,timey]
+                x=inputx[:,:,timex]
+                timey+=1
             for i in range(self.num_layers_helix):
                 name = 'helixlstm_cell{}'.format(i)
                 if t==0:
