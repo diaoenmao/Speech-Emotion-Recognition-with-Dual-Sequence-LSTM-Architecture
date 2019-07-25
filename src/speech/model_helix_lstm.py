@@ -281,11 +281,15 @@ class CNN_HelixLstm(nn.Module):
         self.weight=nn.Parameter(torch.FloatTensor([weight]),requires_grad=False)
         self.LSTM_Audio=LSTM_Audio(self.hidden_dim_lstm,self.num_layers,self.device,bidirectional=False)
         self.classification_hand = nn.Linear(self.hidden_dim_lstm, self.num_labels).to(self.device)
-        self.classification_raw=nn.Linear(self.hidden_dim_x+hidden_dim_y,self.num_labels).to(self.device)
         self.special=special
         if self.special=="attention":
             self.attn_x=nn.Linear(self.hidden_dim_x,1).to(self.device)
             self.attn_y=nn.Linear(self.hidden_dim_y,1).to(self.device)
+            self.classification_raw=nn.Linear(self.hidden_dim_x+hidden_dim_y,self.num_labels).to(self.device)
+        elif self.special=="concat":
+            self.classification_raw=nn.Linear(self.hidden_dim_x+hidden_dim_y,self.num_labels).to(self.device)
+        else:
+            self.classification_raw=nn.Linear(self.hidden_dim_x,self.num_labels).to(self.device)
     def forward(self,input_lstm,input1,input2,target,seq_length):
         input1=input1.to(self.device)
         input2=input2.to(self.device)
@@ -302,8 +306,10 @@ class CNN_HelixLstm(nn.Module):
             alpha_x=torch.unsqueeze(F.softmax(torch.squeeze(self.attn_x(outx.permute(0,2,1)),dim=2),dim=1),dim=2)
             alpha_y=torch.unsqueeze(F.softmax(torch.squeeze(self.attn_y(outy.permute(0,2,1)),dim=2),dim=1),dim=2)
             out=torch.cat([torch.squeeze(torch.bmm(outx,alpha_x),dim=2),torch.squeeze(torch.bmm(outy,alpha_y),dim=2)],dim=1)
-        else:
+        elif self.special=="concat":
             out=torch.cat([torch.mean(outx,dim=2),torch.mean(outy,dim=2)],dim=1)
+        else:
+            out=torch.mean(outx,dim=2)+torch.mean(outy,dim=2)
         out=self.classification_raw(out)
         p = self.weight
         out_final = p*out + (1-p)*out_lstm
