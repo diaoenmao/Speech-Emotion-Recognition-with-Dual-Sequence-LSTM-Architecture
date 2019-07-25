@@ -103,7 +103,7 @@ def train_model(args):
             correct_batch=torch.unsqueeze(correct_batch,dim=0)
             losses_batch=torch.unsqueeze(losses_batch, dim=0)
             loss = torch.mean(losses_batch,dim=0)
-            print(loss)
+            #print(loss)
             correct_batch=torch.sum(correct_batch,dim=0)
             losses += loss.item() * batch_size
             loss.backward()
