@@ -83,6 +83,7 @@ def train_model(args):
     train_acc=[]
     test_loss=[]
     train_loss=[]
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     for epoch in range(epoch_num):  # again, normally you would NOT do 300 epochs, it is toy data
         print("===================================" + str(epoch+1) + "==============================================")
         losses = 0
@@ -93,7 +94,7 @@ def train_model(args):
                 print("=================================Train Batch"+ str(j+1)+str(weight)+"===================================================")
             model.zero_grad()
             x = model(input1)
-            target_index = torch.argmax(target, dim=1)
+            target_index = torch.argmax(target, dim=1).to(device)
             correct_batch=torch.sum(target_index==torch.argmax(x,dim=1))
             losses_batch=F.cross_entropy(x,torch.max(target,1)[1])
             correct_batch=torch.unsqueeze(correct_batch,dim=0)
