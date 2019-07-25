@@ -24,7 +24,7 @@ def init_parser():
     parser.add_argument('--kernel_size_pool_2','-kp2',default=2,type=int,dest='kernel_size_pool2')
     parser.add_argument('--stride_size_pool', '-sp', default=2, type=int, dest='stride_size_pool')
     parser.add_argument('--weight', '-w', default=0.5, type=float, dest='weight')
-    parser.add_argument('--special', '-special', default="concat", type=float, dest='special')
+    parser.add_argument('--special', '-special', default="concat", type=str, dest='special')
     parser.add_argument('--file','-f',default="recent2",type=str,dest='file_path')
     return parser.parse_args()
 
