@@ -53,7 +53,7 @@ def train_model(args):
     test_loader = DataLoader(dataset=testing_data, batch_size=batch_size, shuffle=True, collate_fn=my_collate, num_workers=0,drop_last=False)
     model = CNN_HelixLstm(input_channels, out_channels, kernel_size_cnn,
                     stride_size_cnn, kernel_size_pool, stride_size_pool,nfft,
-                    hidden_dim_x,hidden_dim_y,num_layers_helix,weight,device)
+                    hidden_dim_x,hidden_dim_y,num_layers_helix,weight,args.special,device)
 
     print("============================ Number of parameters ====================================")
     print(str(sum(p.numel() for p in model.parameters() if p.requires_grad)))
