@@ -93,7 +93,7 @@ def train_model(args):
         model.train()
         for j, (input_lstm, input1, input2, target, seq_length) in enumerate(train_loader):
             if (j+1)%20==0:
-                print("=================================Train Batch"+ str(j+1)+str(weight)+"===================================================")
+                print("=================================Train Batch"+ str(j+1)+"===================================================")
             model.zero_grad()
             x = model(input1)
             target = target.to(device)
@@ -120,9 +120,14 @@ def train_model(args):
         model.eval()
         with torch.no_grad():
             for j,(input_lstm, input1, input2, target, seq_length) in enumerate(test_loader):
-                #if (j+1)%10==0: print("=================================Test Batch"+ str(j+1)+ "===================================================")
-                #input_lstm = pad_sequence(sequences=input_lstm,batch_first=True)
-                losses_batch,correct_batch= model(input_lstm,input1, input2, target, seq_length)
+                if (j+1)%10==0: print("=================================Test Batch"+ str(j+1)+ "===================================================")
+                x = model(input1)
+                target = target.to(device)
+                target_index = torch.argmax(target, dim=1).to(device)
+                correct_batch=torch.sum(target_index==torch.argmax(x,dim=1))
+                losses_batch=F.cross_entropy(x,torch.max(target,1)[1])
+                correct_batch=torch.unsqueeze(correct_batch,dim=0)
+                losses_batch=torch.unsqueeze(losses_batch, dim=0)
                 loss = torch.mean(losses_batch,dim=0)
                 correct_batch=torch.sum(correct_batch,dim=0)
                 losses_test += loss.item() * batch_size
