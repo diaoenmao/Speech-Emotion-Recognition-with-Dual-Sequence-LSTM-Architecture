@@ -84,15 +84,20 @@ def train_model(args):
     test_loss=[]
     train_loss=[]
     for epoch in range(epoch_num):  # again, normally you would NOT do 300 epochs, it is toy data
-        #print("===================================" + str(epoch+1) + "==============================================")
+        print("===================================" + str(epoch+1) + "==============================================")
         losses = 0
         correct=0
         model.train()
         for j, (input_lstm, input1, input2, target, seq_length) in enumerate(train_loader):
-            #if (j+1)%20==0:
-                #print("=================================Train Batch"+ str(j+1)+str(weight)+"===================================================")
+            if (j+1)%20==0:
+                print("=================================Train Batch"+ str(j+1)+str(weight)+"===================================================")
             model.zero_grad()
-            losses_batch,correct_batch= model(input1)
+            x = model(input1)
+            target_index = torch.argmax(target, dim=1).to(self.device)
+            correct_batch=torch.sum(target_index==torch.argmax(x,dim=1))
+            losses_batch=F.cross_entropy(x,torch.max(target,1)[1])
+            correct_batch=torch.unsqueeze(correct_batch,dim=0)
+            losses_batch=torch.unsqueeze(losses_batch, dim=0)
             loss = torch.mean(losses_batch,dim=0)
             correct_batch=torch.sum(correct_batch,dim=0)
             losses += loss.item() * batch_size
