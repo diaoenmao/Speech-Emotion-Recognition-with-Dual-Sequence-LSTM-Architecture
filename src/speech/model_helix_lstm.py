@@ -294,8 +294,8 @@ class CNN_HelixLstm(nn.Module):
         #temp = [torch.unsqueeze(torch.mean(out_lstm[k,:,:int(s.item())],dim=1),dim=0) for k,s in enumerate(seq_length)]
         #out_lstm = torch.cat(temp,dim=0)
         #out_lstm = self.classification_hand(out_lstm)
-        outx=outx[:,:,-1]
-        outy=outy[:,:,-1]
+        outx=torch.mean(outx,dim=2)
+        outy=torch.mean(outy,dim=2)
         out=torch.cat([outx,outy],dim=1)
         out=self.classification_raw(out)
         p = self.weight
