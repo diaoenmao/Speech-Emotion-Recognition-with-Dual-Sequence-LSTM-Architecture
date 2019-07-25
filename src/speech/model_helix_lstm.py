@@ -58,9 +58,9 @@ class HelixLstmCell(nn.Module):
         self.Wix=nn.Linear(self.inputx_dim+self.hidden_dim_x,self.hidden_dim_x,bias=True)
         self.Wiy=nn.Linear(self.inputy_dim+self.hidden_dim_y,self.hidden_dim_y,bias=True)
         self.Wox=nn.Linear(self.inputx_dim+self.hidden_dim_x,self.hidden_dim_x,bias=True)
-        self.Woy=nn.Linear(self.inputy_dim+self.inputx_dim+self.hidden_dim_y,self.hidden_dim_y,bias=True)
+        self.Woy=nn.Linear(self.inputy_dim+self.hidden_dim_y,self.hidden_dim_y,bias=True)
         self.Wcx=nn.Linear(self.inputx_dim+self.inputy_dim+self.hidden_dim_x,self.hidden_dim_x,bias=True)
-        self.Wcy=nn.Linear(self.inputy_dim+self.hidden_dim_y,self.hidden_dim_y,bias=True)
+        self.Wcy=nn.Linear(self.inputy_dim+self.inputx_dim+self.hidden_dim_y,self.hidden_dim_y,bias=True)
         self.Wax=nn.Linear(self.inputx_dim+self.inputy_dim+self.hidden_dim_x,self.hidden_dim_x,bias=True)
         self.Way=nn.Linear(self.inputx_dim+self.inputy_dim+self.hidden_dim_y,self.hidden_dim_y,bias=True)
 
