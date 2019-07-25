@@ -42,7 +42,7 @@ def train_model(args):
     hidden_dim_y=200
     num_layers_helix=2
     hidden_dim_lstm=200
-    epoch_num=50
+    epoch_num=100
     nfft=[512,1024]
     weight = args.weight
     # Load the training data
