@@ -46,15 +46,17 @@ class LFLB(nn.Module):
         out=self.max_pool(out)
         return out
 class HelixLstmCell(nn.Module):
-    def __init__(self,  inputx_dim,inputy_dim,hidden_dim_x,hidden_dim_y,dropout=0):
+    def __init__(self,  inputx_dim,inputy_dim,hidden_dim_x,hidden_dim_y,special2,dropout=0):
         # inputx, inputy should be one single time step, B*D
         super(HelixLstmCell, self).__init__()
         self.inputx_dim=inputx_dim
         self.inputy_dim=inputy_dim
         self.hidden_dim_x=hidden_dim_x
         self.hidden_dim_y=hidden_dim_y
-        #self.Wfx=nn.Linear(self.inputx_dim+self.hidden_dim_x,self.hidden_dim_x,bias=True)
-        #self.Wfy=nn.Linear(self.inputy_dim+self.hidden_dim_y,self.hidden_dim_y,bias=True)
+        self.special2=special2
+        if self.special2:
+            self.Wfx=nn.Linear(self.inputx_dim+self.hidden_dim_x,self.hidden_dim_x,bias=True)
+            self.Wfy=nn.Linear(self.inputy_dim+self.hidden_dim_y,self.hidden_dim_y,bias=True)
         self.Wix=nn.Linear(self.inputx_dim+self.hidden_dim_x,self.hidden_dim_x,bias=True)
         self.Wiy=nn.Linear(self.inputy_dim+self.hidden_dim_y,self.hidden_dim_y,bias=True)
         self.Wox=nn.Linear(self.inputx_dim+self.hidden_dim_x,self.hidden_dim_x,bias=True)
@@ -76,7 +78,11 @@ class HelixLstmCell(nn.Module):
             C_x=torch.tanh(self.Wcx(torch.cat([x,h],dim=1)))
             ox=torch.sigmoid(self.Wox(torch.cat([x,h],dim=1)))
             ax=torch.sigmoid(self.Wax(torch.cat([x,y,h],dim=1)))
-            C=ix*C_x+ax*Cy
+            if self.special2:
+                fx=torch.sigmoid(self.Wfx(torch.cat([x,h],dim=1)))
+                C=fx*Cx+ix*C_x+ax*Cy
+            else:
+                C=ix*C_x+ax*Cy
             h=ox*torch.tanh(C)
             #out=self.batchx(h)
         if flag=="y":
@@ -85,7 +91,11 @@ class HelixLstmCell(nn.Module):
             C_y=torch.tanh(self.Wcy(torch.cat([y,h],dim=1)))
             oy=torch.sigmoid(self.Woy(torch.cat([y,h],dim=1)))
             ay=torch.sigmoid(self.Way(torch.cat([y,x,h],dim=1)))
-            C=iy*C_y+ay*Cx
+            if self.special2:
+                fy=torch.sigmoid(self.Wfx(torch.cat([y,h],dim=1)))
+                C=fy*Cy+iy*C_y+ay*Cx
+            else:
+                C=iy*C_x+ay*Cx
             h=oy*torch.tanh(C)
             #out=self.batchy(h)
 
@@ -201,7 +211,7 @@ class MultiSpectrogramModel(nn.Module):
         temp=sum(self.time_dims)
         return temp
 class HelixLstm(nn.Module):
-    def __init__(self,time,inputx_dim,inputy_dim,hidden_dim_x,hidden_dim_y,num_layers_helix,device):
+    def __init__(self,time,inputx_dim,inputy_dim,hidden_dim_x,hidden_dim_y,num_layers_helix,special2,device):
         super(HelixLstm,self).__init__()
         self._all_layers=[]
         self.device=device
@@ -211,9 +221,10 @@ class HelixLstm(nn.Module):
         self.hidden_dim_x=hidden_dim_x
         self.hidden_dim_y=hidden_dim_y
         self.num_layers_helix=num_layers_helix
+        self.special2=special2
         for i in range(num_layers_helix):
             name = 'helixlstm_cell{}'.format(i)
-            cell = HelixLstmCell(inputx_dim,inputy_dim,hidden_dim_x,hidden_dim_y)
+            cell = HelixLstmCell(inputx_dim,inputy_dim,hidden_dim_x,hidden_dim_y,self.special2)
             setattr(self, name, cell)
             self._all_layers.append(cell)
     def forward(self,inputx,inputy,sequence):
@@ -260,7 +271,7 @@ class HelixLstm(nn.Module):
 class CNN_HelixLstm(nn.Module):
     def __init__(self,in_channels, out_channels, kernel_size_cnn, 
                     stride_cnn, kernel_size_pool, stride_pool,nfft,
-                    hidden_dim_x,hidden_dim_y,num_layers_helix,weight,special,
+                    hidden_dim_x,hidden_dim_y,num_layers_helix,weight,special,special2,
                     device):
         super(CNN_HelixLstm,self).__init__()
         self._all_layers=[]
@@ -282,6 +293,7 @@ class CNN_HelixLstm(nn.Module):
         self.LSTM_Audio=LSTM_Audio(self.hidden_dim_lstm,self.num_layers,self.device,bidirectional=False)
         self.classification_hand = nn.Linear(self.hidden_dim_lstm, self.num_labels).to(self.device)
         self.special=special
+        self.special2=special2
         if self.special=="attention":
             self.attn_x=nn.Linear(self.hidden_dim_x,1).to(self.device)
             self.attn_y=nn.Linear(self.hidden_dim_y,1).to(self.device)
