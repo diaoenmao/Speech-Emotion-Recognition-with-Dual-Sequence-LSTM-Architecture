@@ -256,7 +256,7 @@ class HelixLstm(nn.Module):
 class CNN_HelixLstm(nn.Module):
     def __init__(self,in_channels, out_channels, kernel_size_cnn, 
                     stride_cnn, kernel_size_pool, stride_pool,nfft,
-                    hidden_dim_x,hidden_dim_y,num_layers_helix,weight, special,
+                    hidden_dim_x,hidden_dim_y,num_layers_helix,weight,
                     device):
         super(CNN_HelixLstm,self).__init__()
         self._all_layers=[]
@@ -275,16 +275,7 @@ class CNN_HelixLstm(nn.Module):
         self.weight=nn.Parameter(torch.FloatTensor([weight]),requires_grad=False)
         self.LSTM_Audio=LSTM_Audio(self.hidden_dim_lstm,self.num_layers,self.device,bidirectional=False)
         self.classification_hand = nn.Linear(self.hidden_dim_lstm, self.num_labels).to(self.device)
-        self.special=special
-        if self.special=="concat":
-            self.classification_raw=nn.Linear(hidden_dim*2,self.num_labels).to(self.device)
-        elif self.special=="attention":
-            self.classification_raw=nn.Linear(hidden_dim,self.num_labels).to(self.device)
-            self.attention=nn.Sequential(nn.Linear(hidden_dim*2,hidden_dim),
-                                        nn.Sigmoid()).to(self.device)
-        else:
-            assert self.special=="add" ,"invalid special command"
-            self.classification_raw=nn.Linear(hidden_dim,self.num_labels).to(self.device)
+        self.classification_raw=nn.Linear(self.hidden_dim_x+hidden_dim_y,self.num_labels).to(self.device)
     def forward(self,input_lstm,input1,input2,target,seq_length):
         input1=input1.to(self.device)
         input2=input2.to(self.device)
@@ -292,20 +283,16 @@ class CNN_HelixLstm(nn.Module):
         target=target.to(self.device)
         seq_length=seq_length.to(self.device)
         inputx,inputy,sequence=getattr(self,"cnn_multi")(input1,input2)
+        print(sequence)
         outx,outy,outxy=getattr(self,"helix")(inputx,inputy,sequence)
         out_lstm = self.LSTM_Audio(input_lstm).permute(0,2,1)
         temp = [torch.unsqueeze(torch.mean(out_lstm[k,:,:int(s.item())],dim=1),dim=0) for k,s in enumerate(seq_length)]
         out_lstm = torch.cat(temp,dim=0)
-        if self.special=="concat":
-            out=torch.mean(torch.cat([outT,outF],dim=1),dim=2)
-            out = self.classification_raw(out)
-        elif self.special=="attention":
-            alpha=self.attention(torch.cat([outT,outF],dim=1).permute(0,2,1)).permute(0,2,1)
-            out=self.classification_raw(torch.mean(alpha*outT+(1-alpha)*outF,dim=2))
-        else:
-            assert self.special=="add" ,"invalid special command"
-            out=self.classification_raw(torch.mean(outT+outF,dim=2))
         out_lstm = self.classification_hand(out_lstm)
+        outx=torch.mean(outx,dim=2)
+        outy=torch.mean(outy,dim=2)
+        out=torch.cat([outx,outy],dim=1)
+        out=self.classification_raw(out)
         p = self.weight
         out_final = p*out + (1-p)*out_lstm
         target_index = torch.argmax(target, dim=1).to(self.device)
