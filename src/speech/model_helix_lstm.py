@@ -53,8 +53,8 @@ class HelixLstmCell(nn.Module):
         self.inputy_dim=inputy_dim
         self.hidden_dim_x=hidden_dim_x
         self.hidden_dim_y=hidden_dim_y
-        self.Wfx=nn.Linear(self.inputx_dim+self.hidden_dim_x,self.hidden_dim_x,bias=True)
-        self.Wfy=nn.Linear(self.inputy_dim+self.hidden_dim_y,self.hidden_dim_y,bias=True)
+        #self.Wfx=nn.Linear(self.inputx_dim+self.hidden_dim_x,self.hidden_dim_x,bias=True)
+        #self.Wfy=nn.Linear(self.inputy_dim+self.hidden_dim_y,self.hidden_dim_y,bias=True)
         self.Wix=nn.Linear(self.inputx_dim+self.hidden_dim_x,self.hidden_dim_x,bias=True)
         self.Wiy=nn.Linear(self.inputy_dim+self.hidden_dim_y,self.hidden_dim_y,bias=True)
         self.Wox=nn.Linear(self.inputx_dim+self.hidden_dim_x,self.hidden_dim_x,bias=True)
@@ -71,21 +71,21 @@ class HelixLstmCell(nn.Module):
 
     def forward(self, x,y,h,Cx,Cy,flag):
         if flag=="x":
-            fx=torch.sigmoid(self.Wfx(torch.cat([x,h],dim=1)))
+            #fx=torch.sigmoid(self.Wfx(torch.cat([x,h],dim=1)))
             ix=torch.sigmoid(self.Wix(torch.cat([x,h],dim=1)))
             C_x=torch.tanh(self.Wcx(torch.cat([x,h],dim=1)))
             ox=torch.sigmoid(self.Wox(torch.cat([x,h],dim=1)))
             ax=torch.sigmoid(self.Wax(torch.cat([x,y,h],dim=1)))
-            C=fx*Cx+ix*C_x+ax*Cy
+            C=ix*C_x+ax*Cy
             h=ox*torch.tanh(C)
             #out=self.batchx(h)
         if flag=="y":
-            fy=torch.sigmoid(self.Wfy(torch.cat([y,h],dim=1)))
+            #fy=torch.sigmoid(self.Wfy(torch.cat([y,h],dim=1)))
             iy=torch.sigmoid(self.Wiy(torch.cat([y,h],dim=1)))
             C_y=torch.tanh(self.Wcy(torch.cat([y,h],dim=1)))
             oy=torch.sigmoid(self.Woy(torch.cat([y,h],dim=1)))
             ay=torch.sigmoid(self.Way(torch.cat([y,x,h],dim=1)))
-            C=fy*Cy+iy*C_y+ay*Cx
+            C=iy*C_y+ay*Cx
             h=oy*torch.tanh(C)
             #out=self.batchy(h)
 
