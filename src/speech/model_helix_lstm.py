@@ -253,9 +253,9 @@ class HelixLstm(nn.Module):
                     hy,Cy=getattr(self,name)(x,y,hy,Cx,Cy,flag)
                     internal_state_y[i]=hy,Cy
             if flag=="x":
-                outputx.append(hx)
+                outputx.append(Cx)
             if flag=="y":
-                outputy.append(hy)
+                outputy.append(Cy)
         return torch.stack(outputx,dim=2),torch.stack(outputy,dim=2)
 class CNN_HelixLstm(nn.Module):
     def __init__(self,in_channels, out_channels, kernel_size_cnn, 
