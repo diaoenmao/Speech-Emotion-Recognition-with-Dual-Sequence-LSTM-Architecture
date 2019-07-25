@@ -63,7 +63,7 @@ class HelixLstmCell(nn.Module):
         self.Wcy=nn.Linear(self.inputy_dim+self.hidden_dim_y,self.hidden_dim_y,bias=True)
         self.Wax=nn.Linear(self.inputx_dim+self.inputy_dim+self.hidden_dim_x,self.hidden_dim_x,bias=True)
         self.Way=nn.Linear(self.inputx_dim+self.inputy_dim+self.hidden_dim_y,self.hidden_dim_y,bias=True)
-
+        pdb.set_trace()
         self.batchx=nn.BatchNorm1d(num_features=self.hidden_dim_x)
         self.batchy=nn.BatchNorm1d(num_features=self.hidden_dim_y)
 
@@ -246,10 +246,12 @@ class HelixLstm(nn.Module):
                     internal_state_y.append((hy,Cy))
                 if flag=="x":
                     (hx,Cx)=internal_state_x[i]
+                    (hy,Cy)=internal_state_y[i]
                     out,hx,Cx=getattr(self,name)(x,y,hx,Cx,Cy,flag)
                     internal_state_x[i]=hx,Cx
                 if flag=="y":
                     (hy,Cy)=internal_state_y[i]
+                    (hx,Cx)=internal_state_x[i]
                     out,hy,Cy=getattr(self,name)(x,y,hy,Cx,Cy,flag)
                     internal_state_y[i]=hy,Cy
             if flag=="x":
