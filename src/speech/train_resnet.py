@@ -96,6 +96,7 @@ def train_model(args):
                 print("=================================Train Batch"+ str(j+1)+str(weight)+"===================================================")
             model.zero_grad()
             x = model(input1)
+            target = target.to(device)
             target_index = torch.argmax(target, dim=1).to(device)
             correct_batch=torch.sum(target_index==torch.argmax(x,dim=1))
             losses_batch=F.cross_entropy(x,torch.max(target,1)[1])
