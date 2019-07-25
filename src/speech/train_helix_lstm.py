@@ -40,9 +40,9 @@ def train_model(args):
     stride_size_pool = [args.stride_size_pool]*2
     hidden_dim_x=200
     hidden_dim_y=200
-    num_layers_helix=1
+    num_layers_helix=2
     hidden_dim_lstm=200
-    epoch_num=100
+    epoch_num=40
     nfft=[512,1024]
     weight = args.weight
     # Load the training data
