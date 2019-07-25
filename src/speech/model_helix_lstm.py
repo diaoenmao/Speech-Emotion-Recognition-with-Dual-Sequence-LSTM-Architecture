@@ -221,7 +221,7 @@ class HelixLstm(nn.Module):
     def forward(self,inputx,inputy,sequence):
         internal_state_x = []
         internal_state_y = []
-        assert self.time=len(sequence)
+        assert self.time==len(sequence)
         outputx = []
         outputy = []
         output =[]
