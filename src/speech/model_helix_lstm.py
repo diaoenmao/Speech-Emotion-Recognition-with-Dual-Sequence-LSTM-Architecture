@@ -282,6 +282,8 @@ class CNN_HelixLstm(nn.Module):
         #self.LSTM_Audio=LSTM_Audio(self.hidden_dim_lstm,self.num_layers,self.device,bidirectional=False)
         #self.classification_hand = nn.Linear(self.hidden_dim_lstm, self.num_labels).to(self.device)
         self.classification_raw=nn.Linear(self.hidden_dim_x+hidden_dim_y,self.num_labels).to(self.device)
+        self.attn_x=nn.Linear(self.hidden_dim_x,1).to(self.device)
+        self.attn_y=nn.Linear(self.hidden_dim_y,1).to(self.device)
     def forward(self,input_lstm,input1,input2,target,seq_length):
         input1=input1.to(self.device)
         input2=input2.to(self.device)
@@ -294,9 +296,10 @@ class CNN_HelixLstm(nn.Module):
         #temp = [torch.unsqueeze(torch.mean(out_lstm[k,:,:int(s.item())],dim=1),dim=0) for k,s in enumerate(seq_length)]
         #out_lstm = torch.cat(temp,dim=0)
         #out_lstm = self.classification_hand(out_lstm)
-        outx=torch.mean(outx,dim=2)
-        outy=torch.mean(outy,dim=2)
-        out=torch.cat([outx,outy],dim=1)
+        alpha_x=torch.unsqueeze(F.softmax(torch.squeeze(self.attn_x(outx.permute(0,2,1)),dim=2),dim=1),dim=2)
+        assert torch.sum(alpha[0,:]).item()==1.0, "{}".format(torch.sum(alpha[0,:]).item())
+        alpha_y=torch.unsqueeze(F.softmax(torch.squeeze(self.attn_y(outy.permute(0,2,1)),dim=2),dim=1),dim=2)
+        out=torch.cat([torch.squeeze(outx*alpha_x,dim=2),torch.squeeze(outy*alpha_y,dim=2)],dim=1)
         out=self.classification_raw(out)
         p = self.weight
         #out_final = p*out + (1-p)*out_lstm
