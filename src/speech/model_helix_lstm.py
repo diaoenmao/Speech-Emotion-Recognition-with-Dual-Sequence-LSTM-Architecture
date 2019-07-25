@@ -92,7 +92,7 @@ class HelixLstmCell(nn.Module):
             oy=torch.sigmoid(self.Woy(torch.cat([y,h],dim=1)))
             ay=torch.sigmoid(self.Way(torch.cat([y,x,h],dim=1)))
             if self.special2:
-                fy=torch.sigmoid(self.Wfx(torch.cat([y,h],dim=1)))
+                fy=torch.sigmoid(self.Wfy(torch.cat([y,h],dim=1)))
                 C=fy*Cy+iy*C_y+ay*Cx
             else:
                 C=iy*C_x+ay*Cx
