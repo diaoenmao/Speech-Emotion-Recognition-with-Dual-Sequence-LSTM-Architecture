@@ -230,11 +230,13 @@ class HelixLstm(nn.Module):
             if flag=="x":
                 x=inputx[:,:,timex]
                 y=inputy[:,:,timey]
-                timex+=1
+                if timex<inputx.shape[2]-1:
+                    timex+=1
             if flag=="y":
                 y=inputy[:,:,timey]
                 x=inputx[:,:,timex]
-                timey+=1
+                if timey<inputy.shape[2]-1:
+                    timey+=1
             for i in range(self.num_layers_helix):
                 name = 'helixlstm_cell{}'.format(i)
                 if t==0:
