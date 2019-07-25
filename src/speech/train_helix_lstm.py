@@ -23,7 +23,8 @@ def init_parser():
     parser.add_argument('--kernel_size_pool_1', '-kp1', default=2, type=int, dest='kernel_size_pool1')
     parser.add_argument('--kernel_size_pool_2','-kp2',default=2,type=int,dest='kernel_size_pool2')
     parser.add_argument('--stride_size_pool', '-sp', default=2, type=int, dest='stride_size_pool')
-    parser.add_argument('--weight', '-w', default=1, type=float, dest='weight')
+    parser.add_argument('--weight', '-w', default=0.5, type=float, dest='weight')
+    parser.add_argument('--special', '-special', default="concat", type=float, dest='special')
     parser.add_argument('--file','-f',default="recent2",type=str,dest='file_path')
     return parser.parse_args()
 
@@ -58,7 +59,7 @@ def train_model(args):
     print(str(sum(p.numel() for p in model.parameters() if p.requires_grad)))
 
 
-    path="batch_size:{};out_channels:{};kernel_size_cnn:{};stride_size_cnn:{};kernel_size_pool:{};stride_size_pool:{}; weight:{};".format(args.batch_size,out_channels,kernel_size_cnn,stride_size_cnn,kernel_size_pool,stride_size_pool, weight)
+    path="batch_size:{};out_channels:{};kernel_size_cnn:{};stride_size_cnn:{};kernel_size_pool:{};stride_size_pool:{}; weight:{}; special:{}".format(args.batch_size,out_channels,kernel_size_cnn,stride_size_cnn,kernel_size_pool,stride_size_pool, weight,args.special)
     file_path="/scratch/speech/models/classification/Helix_"+args.file_path+".txt"
     with open(file_path,"a+") as f:
         f.write("\n"+"============ model starts ===========")
