@@ -297,7 +297,6 @@ class CNN_HelixLstm(nn.Module):
         #out_lstm = torch.cat(temp,dim=0)
         #out_lstm = self.classification_hand(out_lstm)
         alpha_x=torch.unsqueeze(F.softmax(torch.squeeze(self.attn_x(outx.permute(0,2,1)),dim=2),dim=1),dim=2)
-        print(torch.sum(alpha_x[0,:]))
         alpha_y=torch.unsqueeze(F.softmax(torch.squeeze(self.attn_y(outy.permute(0,2,1)),dim=2),dim=1),dim=2)
         out=torch.cat([torch.squeeze(torch.bmm(outx,alpha_x),dim=2),torch.squeeze(torch.bmm(outy,alpha_y),dim=2)],dim=1)
         out=self.classification_raw(out)
