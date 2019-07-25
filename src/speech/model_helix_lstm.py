@@ -230,7 +230,7 @@ class HelixLstm(nn.Module):
                 y=inputy[:,:,min(t//2,inputx.shape[2])]
             if flag=="y":
                 y=inputy[:,:,t]
-                x=inputx[:,:,max(0,min(2*t-1,inputx.shpae[2]))]
+                x=inputx[:,:,max(0,min(2*t-1,inputx.shape[2]))]
             for i in range(self.num_layers_helix):
                 name = 'helixlstm_cell{}'.format(i)
                 if t==0:
@@ -284,7 +284,6 @@ class CNN_HelixLstm(nn.Module):
         target=target.to(self.device)
         seq_length=seq_length.to(self.device)
         inputx,inputy,sequence=getattr(self,"cnn_multi")(input1,input2)
-        print(sequence)
         outx,outy,outxy=getattr(self,"helix")(inputx,inputy,sequence)
         out_lstm = self.LSTM_Audio(input_lstm).permute(0,2,1)
         temp = [torch.unsqueeze(torch.mean(out_lstm[k,:,:int(s.item())],dim=1),dim=0) for k,s in enumerate(seq_length)]
