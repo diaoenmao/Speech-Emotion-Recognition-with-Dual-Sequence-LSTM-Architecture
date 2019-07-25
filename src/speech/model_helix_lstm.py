@@ -200,7 +200,7 @@ class MultiSpectrogramModel(nn.Module):
     def dimension(self):
         return self.input_dims[0],self.input_dims[1]
     def dimension_time(self):
-        temp=torch.sum(self.time_dims)
+        temp=sum(self.time_dims)
         return temp
 class HelixLstm(nn.Module):
     def __init__(self,time,inputx_dim,inputy_dim,hidden_dim_x,hidden_dim_y,num_layers_helix,device):
