@@ -269,6 +269,8 @@ class CNN_HelixLstm(nn.Module):
         setattr(self,"helix",cell)
         self.device=device
         self.hidden_dim_lstm=200
+        self.hidden_dim_x=hidden_dim_x
+        self.hidden_dim_y=hidden_dim_y
         self.num_layers=2
         self.num_labels=4
         self.weight=nn.Parameter(torch.FloatTensor([weight]),requires_grad=False)
