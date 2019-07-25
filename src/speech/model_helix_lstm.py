@@ -281,7 +281,7 @@ class CNN_HelixLstm(nn.Module):
         inputx_dim,inputy_dim=getattr(self,"cnn_multi").dimension()
         time=getattr(self,"cnn_multi").dimension_time()
         print("time step after sequencing:",time)
-        cell=HelixLstm(time,inputx_dim,inputy_dim,hidden_dim_x,hidden_dim_y,num_layers_helix,device)
+        cell=HelixLstm(time,inputx_dim,inputy_dim,hidden_dim_x,hidden_dim_y,num_layers_helix,special2,device)
         setattr(self,"helix",cell)
         self.device=device
         self.hidden_dim_lstm=200
@@ -293,7 +293,6 @@ class CNN_HelixLstm(nn.Module):
         self.LSTM_Audio=LSTM_Audio(self.hidden_dim_lstm,self.num_layers,self.device,bidirectional=False)
         self.classification_hand = nn.Linear(self.hidden_dim_lstm, self.num_labels).to(self.device)
         self.special=special
-        self.special2=special2
         if self.special=="attention":
             self.attn_x=nn.Linear(self.hidden_dim_x,1).to(self.device)
             self.attn_y=nn.Linear(self.hidden_dim_y,1).to(self.device)
