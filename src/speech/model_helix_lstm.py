@@ -63,8 +63,8 @@ class HelixLstmCell(nn.Module):
         self.Wcy=nn.Linear(self.inputy_dim+self.hidden_dim_y,self.hidden_dim_y,bias=True)
         self.Wax=nn.Linear(self.inputx_dim+self.inputy_dim+self.hidden_dim_x,self.hidden_dim_x,bias=True)
         self.Way=nn.Linear(self.inputx_dim+self.inputy_dim+self.hidden_dim_y,self.hidden_dim_y,bias=True)
-        self.batchx=nn.BatchNorm1d(num_features=self.hidden_dim_x)
-        self.batchy=nn.BatchNorm1d(num_features=self.hidden_dim_y)
+        #self.batchx=nn.BatchNorm1d(num_features=self.hidden_dim_x)
+        #self.batchy=nn.BatchNorm1d(num_features=self.hidden_dim_y)
 
         self.dropout=nn.Dropout(p=dropout, inplace=False)
         self.device=torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -78,7 +78,7 @@ class HelixLstmCell(nn.Module):
             ax=torch.sigmoid(self.Wax(torch.cat([x,y,h],dim=1)))
             C=fx*Cx+ix*C_x+ax*Cy
             h=ox*torch.tanh(C)
-            out=self.batchx(h)
+            #out=self.batchx(h)
         if flag=="y":
             fy=torch.sigmoid(self.Wfy(torch.cat([y,h],dim=1)))
             iy=torch.sigmoid(self.Wiy(torch.cat([y,h],dim=1)))
@@ -87,9 +87,9 @@ class HelixLstmCell(nn.Module):
             ay=torch.sigmoid(self.Way(torch.cat([y,x,h],dim=1)))
             C=fy*Cy+iy*C_y+ay*Cx
             h=oy*torch.tanh(C)
-            out=self.batchy(h)
+            #out=self.batchy(h)
 
-        return out,C,h
+        return C,h
 
     def init_hidden(self, batch_size):
         return (torch.zeros(batch_size, self.hidden_dim_x).to(self.device),
@@ -222,7 +222,6 @@ class HelixLstm(nn.Module):
         assert self.time==len(sequence)
         outputx = []
         outputy = []
-        output =[]
         timex=0
         timey=0
         for t,flag in enumerate(sequence):
@@ -246,19 +245,18 @@ class HelixLstm(nn.Module):
                 if flag=="x":
                     (hx,Cx)=internal_state_x[i]
                     (hy,Cy)=internal_state_y[i]
-                    out,hx,Cx=getattr(self,name)(x,y,hx,Cx,Cy,flag)
+                    hx,Cx=getattr(self,name)(x,y,hx,Cx,Cy,flag)
                     internal_state_x[i]=hx,Cx
                 if flag=="y":
                     (hy,Cy)=internal_state_y[i]
                     (hx,Cx)=internal_state_x[i]
-                    out,hy,Cy=getattr(self,name)(x,y,hy,Cx,Cy,flag)
+                    hy,Cy=getattr(self,name)(x,y,hy,Cx,Cy,flag)
                     internal_state_y[i]=hy,Cy
             if flag=="x":
-                outputx.append(out)
+                outputx.append(hx)
             if flag=="y":
-                outputy.append(out)
-            output.append(out)
-        return torch.stack(outputx,dim=2),torch.stack(outputy,dim=2),torch.stack(output,dim=2)
+                outputy.append(hy)
+        return torch.stack(outputx,dim=2),torch.stack(outputy,dim=2)
 class CNN_HelixLstm(nn.Module):
     def __init__(self,in_channels, out_channels, kernel_size_cnn, 
                     stride_cnn, kernel_size_pool, stride_pool,nfft,
@@ -291,12 +289,12 @@ class CNN_HelixLstm(nn.Module):
         target=target.to(self.device)
         seq_length=seq_length.to(self.device)
         inputx,inputy,sequence=getattr(self,"cnn_multi")(input1,input2)
-        outx,outy,outxy=getattr(self,"helix")(inputx,inputy,sequence)
+        outx,outy=getattr(self,"helix")(inputx,inputy,sequence)
         out_lstm = self.LSTM_Audio(input_lstm).permute(0,2,1)
         temp = [torch.unsqueeze(torch.mean(out_lstm[k,:,:int(s.item())],dim=1),dim=0) for k,s in enumerate(seq_length)]
         out_lstm = torch.cat(temp,dim=0)
         out_lstm = self.classification_hand(out_lstm)
-        outx=torch.mean(outx,dim=2)
+        outx=outx[:,:,-1]
         outy=torch.mean(outy,dim=2)
         out=torch.cat([outx,outy],dim=1)
         out=self.classification_raw(out)
