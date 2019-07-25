@@ -49,7 +49,6 @@ class HelixLstmCell(nn.Module):
     def __init__(self,  inputx_dim,inputy_dim,hidden_dim_x,hidden_dim_y,dropout=0):
         # inputx, inputy should be one single time step, B*D
         super(HelixLstmCell, self).__init__()
-        self.hidden_dim=hidden_dim
         self.inputx_dim=inputx_dim
         self.inputy_dim=inputy_dim
         self.hidden_dim_x=hidden_dim_x
