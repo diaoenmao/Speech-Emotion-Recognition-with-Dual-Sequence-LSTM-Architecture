@@ -10,6 +10,8 @@ import pickle
 import numpy as np
 from torch.nn.utils.rnn import pad_sequence, pack_padded_sequence
 import argparse
+import torch.nn.functional as F
+
 
 def init_parser():
     parser = argparse.ArgumentParser(description='Train and test your model as specified by the parameters you enter')
@@ -83,22 +85,30 @@ def train_model(args):
     train_acc=[]
     test_loss=[]
     train_loss=[]
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     for epoch in range(epoch_num):  # again, normally you would NOT do 300 epochs, it is toy data
-        #print("===================================" + str(epoch+1) + "==============================================")
+        print("===================================" + str(epoch+1) + "==============================================")
         losses = 0
         correct=0
         model.train()
         for j, (input_lstm, input1, input2, target, seq_length) in enumerate(train_loader):
-            #if (j+1)%20==0:
-                #print("=================================Train Batch"+ str(j+1)+str(weight)+"===================================================")
+            if (j+1)%20==0:
+                print("=================================Train Batch"+ str(j+1)+"===================================================")
             model.zero_grad()
-            losses_batch,correct_batch= model(input1)
+            x = model(input1)
+            target = target.to(device)
+            target_index = torch.argmax(target, dim=1).to(device)
+            correct_batch=torch.sum(target_index==torch.argmax(x,dim=1))
+            losses_batch=F.cross_entropy(x,torch.max(target,1)[1])
+            correct_batch=torch.unsqueeze(correct_batch,dim=0)
+            losses_batch=torch.unsqueeze(losses_batch, dim=0)
             loss = torch.mean(losses_batch,dim=0)
+            #print(loss)
             correct_batch=torch.sum(correct_batch,dim=0)
             losses += loss.item() * batch_size
             loss.backward()
-            weight=model.module.state_dict()["weight"]
-            weight=torch.exp(10*weight)/(1+torch.exp(10*weight)).item()
+            #weight=model.module.state_dict()["weight"]
+            #weight=torch.exp(10*weight)/(1+torch.exp(10*weight)).item()
             optimizer.step()
             correct += correct_batch.item()
         accuracy=correct*1.0/((j+1)*batch_size)
@@ -110,9 +120,14 @@ def train_model(args):
         model.eval()
         with torch.no_grad():
             for j,(input_lstm, input1, input2, target, seq_length) in enumerate(test_loader):
-                #if (j+1)%10==0: print("=================================Test Batch"+ str(j+1)+ "===================================================")
-                #input_lstm = pad_sequence(sequences=input_lstm,batch_first=True)
-                losses_batch,correct_batch= model(input_lstm,input1, input2, target, seq_length)
+                if (j+1)%10==0: print("=================================Test Batch"+ str(j+1)+ "===================================================")
+                x = model(input1)
+                target = target.to(device)
+                target_index = torch.argmax(target, dim=1).to(device)
+                correct_batch=torch.sum(target_index==torch.argmax(x,dim=1))
+                losses_batch=F.cross_entropy(x,torch.max(target,1)[1])
+                correct_batch=torch.unsqueeze(correct_batch,dim=0)
+                losses_batch=torch.unsqueeze(losses_batch, dim=0)
                 loss = torch.mean(losses_batch,dim=0)
                 correct_batch=torch.sum(correct_batch,dim=0)
                 losses_test += loss.item() * batch_size
