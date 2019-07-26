@@ -181,6 +181,7 @@ class MultiSpectrogramModel(nn.Module):
     def sequence(self,input1,input2):
         sequence=[]
         x=input1.shape[2]//2
+        remainder=input1.shape[2]%2
         y=input2.shape[2]
         while x>0 and y>0:
             sequence.append("y")
@@ -191,7 +192,12 @@ class MultiSpectrogramModel(nn.Module):
         if x==0 and y>0:
             for _ in range(y):
                 sequence.append("y")
+                if remainder==1:
+                    sequence.append("x")
+                    remainder=remainder-1
         if x>0 and y==0:
+            if remainder==1:
+                sequence.append("x")
             for _ in range(x):
                 sequence.append("x")
                 sequence.append("x")
