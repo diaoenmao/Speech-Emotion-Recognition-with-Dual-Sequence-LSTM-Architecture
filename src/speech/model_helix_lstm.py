@@ -95,11 +95,11 @@ class HelixLstmCell(nn.Module):
                 fy=torch.sigmoid(self.Wfy(torch.cat([y,h],dim=1)))
                 C=fy*Cy+iy*C_y+ay*Cx
             else:
-                C=iy*C_x+ay*Cx
+                C=iy*C_y+ay*Cx
             h=oy*torch.tanh(C)
             #out=self.batchy(h)
 
-        return C,h
+        return h,C
 
     def init_hidden(self, batch_size):
         return (torch.zeros(batch_size, self.hidden_dim_x).to(self.device),
