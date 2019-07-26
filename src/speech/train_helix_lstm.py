@@ -31,7 +31,7 @@ def init_parser():
 
 def train_model(args):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    device_ids=[0]
+    device_ids=[0,1,2,3]
     num_devices=len(device_ids)
     batch_size=args.batch_size
     input_channels = 1
