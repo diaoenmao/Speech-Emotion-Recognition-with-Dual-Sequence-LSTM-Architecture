@@ -195,8 +195,6 @@ class MultiSpectrogramModel(nn.Module):
             for _ in range(x):
                 sequence.append("x")
                 sequence.append("x")
-        pdb.set_trace()
-        assert len(sequence)== input1.shape[2]+input2.shape[2], "sequence bugs"
         return sequence
     def forward(self, input1, input2):
         input1 = input1.to(self.device)
