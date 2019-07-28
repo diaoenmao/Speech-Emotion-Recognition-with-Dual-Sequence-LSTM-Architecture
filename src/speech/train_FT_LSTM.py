@@ -128,7 +128,7 @@ def train_model(args):
                     input2=input2[:int(num-num%num_devices)]
                     target=target[:int(num-num%num_devices)]
                     seq_length=seq_length[:int(num-num%num_devices)]
-                losses_batch,correct_batch,(target_index, pred_index)= model(input_lstm,input1, input2, target, seq_length)
+                losses_batch,correct_batch,(target_index, pred_index)= model(input_lstm,input1, input2, target, seq_length,train=False)
                 output.append((target_index, pred_index))
                 loss = torch.mean(losses_batch,dim=0)
                 correct_batch=torch.sum(correct_batch,dim=0)
