@@ -61,8 +61,8 @@ class FTLSTMCell(nn.Module):
         self.WTc=nn.Linear(self.inputx_dim+self.hidden_dim,self.hidden_dim,bias=True)
         self.WFc=nn.Linear(self.inputy_dim+self.hidden_dim,self.hidden_dim,bias=True)
 
-        self.batchF=nn.BatchNorm1d(num_features=self.hidden_dim)
-        self.batchT=nn.BatchNorm1d(num_features=self.hidden_dim)
+        #self.batchF=nn.BatchNorm1d(num_features=self.hidden_dim)
+        #self.batchT=nn.BatchNorm1d(num_features=self.hidden_dim)
         self.dropout=nn.Dropout(p=dropout, inplace=False)
         self.device=torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -79,8 +79,8 @@ class FTLSTMCell(nn.Module):
         CF=fF*CF+iF*C_F
         hT=oT*torch.tanh(CT)
         hF=oF*torch.tanh(CF)
-        outT=self.batchT(hT)
-        outF=self.batchF(hF)
+        outT=hT
+        outF=hF
         return outT,outF,hT,hF,CT,CF
 
     def init_hidden(self, batch_size):
