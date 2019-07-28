@@ -116,6 +116,8 @@ def train_model(args):
         correct_test = 0
         class_accuracy_test = 0
         output = []
+        y_true = []
+        y_pred = []
         torch.save(model.module.state_dict(), "/scratch/speech/models/classification/FT_LSTM"+path+"_epoch_{}.pt".format(epoch+1))
         model.eval()
         with torch.no_grad():
