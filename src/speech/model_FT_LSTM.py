@@ -255,7 +255,7 @@ class CNN_FTLSTM(nn.Module):
         else:
             assert self.special=="add" ,"invalid special command"
             self.classification_raw=nn.Linear(hidden_dim,self.num_labels).to(self.device)
-    def forward(self,input_lstm,input1,input2,target,seq_length):
+    def forward(self,input_lstm,input1,input2,target,seq_length,train=True):
         input1=input1.to(self.device)
         input2=input2.to(self.device)
         input_lstm=input_lstm.to(self.device)
@@ -279,6 +279,7 @@ class CNN_FTLSTM(nn.Module):
         p = self.weight
         out_final = p*out + (1-p)*out_lstm
         target_index = torch.argmax(target, dim=1).to(self.device)
+        pred_index = torch.argmax(out_final, dim=1).to(self.device)
         correct_batch=torch.sum(target_index==torch.argmax(out_final,dim=1))
         losses_batch_raw=F.cross_entropy(out,torch.max(target,1)[1])
         losses_batch_hand=F.cross_entropy(out_lstm,torch.max(target,1)[1])
@@ -286,7 +287,9 @@ class CNN_FTLSTM(nn.Module):
         #losses_batch=F.cross_entropy(out_final,torch.max(target,1)[1]) 
         correct_batch=torch.unsqueeze(correct_batch,dim=0)
         losses_batch=torch.unsqueeze(losses_batch, dim=0)
-        return losses_batch, correct_batch
+        if train:
+            return losses_batch,correct_batch
+        return losses_batch, correct_batch, (target_index, pred_index)
 
 
 
