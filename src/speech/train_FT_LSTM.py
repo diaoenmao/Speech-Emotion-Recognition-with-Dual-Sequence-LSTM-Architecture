@@ -119,7 +119,7 @@ def train_model(args):
         output = []
         y_true = []
         y_pred = []
-        torch.save(model.module.state_dict(), "/scratch/speech/models/classification/FT_LSTM"+path+"_epoch_{}.pt".format(epoch+1))
+        torch.save(model.module.state_dict(), "/scratch/speech/models/classification/FT_LSTM_"+path+"_epoch_{}.pt".format(epoch+1))
         model.eval()
         with torch.no_grad():
             for j,(input_lstm, input1, input2, target, seq_length) in enumerate(test_loader):
@@ -162,15 +162,19 @@ def train_model(args):
             f.write("Epoch: {}-----------Training Loss: {:06.5f} -------- Testing Loss: {:06.5f} -------- Training Acc: {:06.5f} -------- Testing Acc: {:06.5f} -------- Class Acc: {:06.5f}".format(epoch+1,losses,losses_test, accuracy, accuracy_test, class_accuracy_test)+"\n")
             f.write("confusion_matrix:"+"\n")
             np.savetxt(f,cm_normalized,delimiter=' ',fmt="%6.5f")
-            f.write("\n")
             if epoch==epoch_num-1:
                 f.write("Best Accuracy:{:06.5f}".format(max(test_acc))+"\n")
                 f.write("Average Top 10 Accuracy:{:06.5f}".format(np.mean(np.sort(np.array(test_acc))[-10:]))+"\n")
                 f.write("Best Class Accuracy:{:06.5f}".format(max(class_acc))+"\n")
                 f.write("Average Top 10 Class Accuracy:{:06.5f}".format(np.mean(np.sort(np.array(class_acc))[-10:]))+"\n")
                 f.write("/scratch/speech/models/classification/FT_LSTM"+path+"_epoch_{}.pt".format(epoch+1)+"\n")
+                f.write("/scratch/speech/models/classification/FT_LSTM_checkpoint_stats"+path+".pkl"+"\n")
                 f.write("============================= model ends ==================================="+"\n")
+    pickle_out=open("/scratch/speech/models/classification/FT_LSTM_checkpoint_stats"+path+".pkl","wb")
+    pickle.dump({"test_acc":test_acc, "class_acc": class_acc, "train_acc": train_acc, "train_loss": train_loss,"test_loss":test_loss},pickle_out)
+    pickle_out.close()
     print(file_path)
+    print()
 
 if __name__ == '__main__':
     args = init_parser()
