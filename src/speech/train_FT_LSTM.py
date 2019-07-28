@@ -10,6 +10,7 @@ import pickle
 import numpy as np
 from torch.nn.utils.rnn import pad_sequence, pack_padded_sequence
 import argparse
+from sklearn.metrics import confusion_matrix
 
 def init_parser():
     parser = argparse.ArgumentParser(description='Train and test your model as specified by the parameters you enter')
