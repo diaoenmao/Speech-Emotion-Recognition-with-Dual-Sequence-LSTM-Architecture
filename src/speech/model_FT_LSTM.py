@@ -31,7 +31,7 @@ class SeparatedBatchNorm1d(nn.Module):
             time = self.max_length - 1
         running_mean = getattr(self, 'running_mean_{}'.format(time))
         running_var = getattr(self, 'running_var_{}'.format(time))
-        return functional.batch_norm(
+        return F.batch_norm(
             input=input_, running_mean=running_mean, running_var=running_var,
             weight=self.weight, bias=self.bias, training=self.training,
             momentum=self.momentum, eps=self.eps)
