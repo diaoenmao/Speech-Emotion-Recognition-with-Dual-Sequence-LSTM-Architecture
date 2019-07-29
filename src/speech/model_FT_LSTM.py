@@ -3,7 +3,39 @@ import torch.nn as nn
 import torch.nn.functional as F
 import pdb
 import numpy as np
-
+class SeparatedBatchNorm1d(nn.Module):
+    def __init__(self, num_features, max_length, eps=1e-5, momentum=0.1):
+        super(SeparatedBatchNorm1d, self).__init__()
+        self.num_features = num_features
+        self.max_length = max_length
+        self.affine = affine
+        self.eps = eps
+        self.momentum = momentum
+        self.weight = nn.Parameter(torch.FloatTensor(num_features))
+        self.bias = nn.Parameter(torch.FloatTensor(num_features))
+        for i in range(max_length):
+            self.register_buffer(
+                'running_mean_{}'.format(i), torch.zeros(num_features))
+            self.register_buffer(
+                'running_var_{}'.format(i), torch.ones(num_features))
+        self.reset_parameters()
+    def reset_parameters(self):
+        for i in range(self.max_length):
+            running_mean_i = getattr(self, 'running_mean_{}'.format(i))
+            running_var_i = getattr(self, 'running_var_{}'.format(i))
+            running_mean_i.zero_()
+            running_var_i.fill_(1)
+        self.weight.data.uniform_()
+        self.bias.data.zero_()
+    def forward(self, input_, time):
+        if time >= self.max_length:
+            time = self.max_length - 1
+        running_mean = getattr(self, 'running_mean_{}'.format(time))
+        running_var = getattr(self, 'running_var_{}'.format(time))
+        return functional.batch_norm(
+            input=input_, running_mean=running_mean, running_var=running_var,
+            weight=self.weight, bias=self.bias, training=self.training,
+            momentum=self.momentum, eps=self.eps)
 class LSTM_Audio(nn.Module):
     def __init__(self, hidden_dim, num_layers, device,dropout_rate=0 ,bidirectional=False):
         super(LSTM_Audio, self).__init__()
@@ -45,25 +77,39 @@ class LFLB(nn.Module):
         out=self.relu(out)
         out=self.max_pool(out)
         return out
+
 class FTLSTMCell(nn.Module):
-    def __init__(self,  inputx_dim,inputy_dim,hidden_dim, dropout=0):
+    def __init__(self,  inputx_dim,inputy_dim,hidden_dim, max_length, dropout=0):
         # inputx, inputy should be one single time step, B*D
         super(FTLSTMCell, self).__init__()
+        self.max_length = max_length
         self.hidden_dim=hidden_dim
         self.inputx_dim=inputx_dim
         self.inputy_dim=inputy_dim
+        # BN parameters
+        self.batch = SeparatedBatchNorm1d(num_features=6 * self.hidden_dim, max_length=max_length)
+        self.batchhT = SeparatedBatchNorm1d(num_features=self.hidden_dim, max_length=max_length)
+        self.batchhF = SeparatedBatchNorm1d(num_features=self.hidden_dim, max_length=max_length)
+
         self.W=nn.Linear(self.inputx_dim+self.inputy_dim+self.hidden_dim,6*self.hidden_dim,bias=True)
         self.WTc=nn.Linear(self.inputx_dim+self.hidden_dim,self.hidden_dim,bias=True)
         self.WFc=nn.Linear(self.inputy_dim+self.hidden_dim,self.hidden_dim,bias=True)
 
-        self.batch=nn.BatchNorm1d(num_features=6*self.hidden_dim)
-        self.batchhT=nn.BatchNorm1d(num_features=self.hidden_dim)
-        self.batchhF=nn.BatchNorm1d(num_features=self.hidden_dim)
         self.dropout=nn.Dropout(p=dropout, inplace=False)
         self.device=torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
-    def forward(self, x,y,hT,hF,CT,CF):
-        gates=self.batch(torch.sigmoid(self.W(torch.cat([x,y,hT],dim=1))))
+        self.reset_parameters()
+    def reset_parameters(self):
+        self.batch.reset_parameters()
+        self.batchhT.reset_parameters()
+        self.batchhF.reset_parameters()
+        self.batch.bias.data.fill_(0)
+        self.batchhT.bias.data.fill_(0)
+        self.batchhF.bias.data.fill_(0)
+        self.batch.weight.data.fill_(0.1)
+        self.batchhT.weight.data.fill_(0.1)
+        self.batchhF.weight.data.fill_(0.1)
+    def forward(self, x,y,hT,hF,CT,CF,time_step):
+        gates=self.batch(torch.sigmoid(self.W(torch.cat([x,y,hT],dim=1))),time=time_step)
         fT, fF, iT, iF, oT, oF= (gates[:,:self.hidden_dim],gates[:,self.hidden_dim:2*self.hidden_dim],
                                 gates[:,2*self.hidden_dim:3*self.hidden_dim],gates[:,3*self.hidden_dim:4*self.hidden_dim],
                                 gates[:,4*self.hidden_dim:5*self.hidden_dim],gates[:,5*self.hidden_dim:])
@@ -73,10 +119,9 @@ class FTLSTMCell(nn.Module):
         CF=fF*CF+iF*C_F
         hT=oT*torch.tanh(CT)
         hF=oF*torch.tanh(CF)
-        outT=self.batchhT(hT)
-        outF=self.batchhF(hF)
+        outT=self.batchhT(hT,time=time_step)
+        outF=self.batchhF(hF,time=time_step)
         return outT,outF,hT,hF,CT,CF
-
     def init_hidden(self, batch_size):
         return (nn.Parameter(torch.zeros(batch_size, self.hidden_dim)).to(self.device),
                 nn.Parameter(torch.zeros(batch_size, self.hidden_dim)).to(self.device),
@@ -157,9 +202,9 @@ class MultiSpectrogramModel(nn.Module):
     def alignment(self,input1,input2):
         # input2 has less time steps
         temp=[]
-        input2=input2[:,:,:(input1.shape[2])//2]
+        input2=input2[:,:,:((input1.shape[2])//2-1)]
         for i in range(input2.shape[2]):
-            temp1=torch.max(input1[:,:,(2*i):(2*i+2)],dim=2)[0]
+            temp1=torch.mean(input1[:,:,(2*i):(2*i+3)],dim=2)[0]
             temp.append(temp1)
         inputx=torch.stack(temp,dim=2)
         inputy=input2
@@ -195,7 +240,7 @@ class FTLSTM(nn.Module):
         self.num_layers_ftlstm=num_layers_ftlstm
         for i in range(num_layers_ftlstm):
             name = 'ftlstm_cell{}'.format(i)
-            cell = FTLSTMCell(inputx_dim,inputy_dim,hidden_dim)
+            cell = FTLSTMCell(inputx_dim,inputy_dim,hidden_dim,self.time)
             setattr(self, name, cell)
             self._all_layers.append(cell)
     def forward(self,inputx,inputy):
@@ -212,7 +257,7 @@ class FTLSTM(nn.Module):
                     (hT,hF,CT,CF)=getattr(self, name).init_hidden(bsize)
                     internal_state.append((hT,hF,CT,CF))
                 (hT,hF,CT,CF)=internal_state[i]
-                outT,outF,hT,hF,CT,CF=getattr(self,name)(x,y,hT,hF,CT,CF)
+                outT,outF,hT,hF,CT,CF=getattr(self,name)(x,y,hT,hF,CT,CF,t)
                 internal_state[i]=hT,hF,CT,CF
             outputT.append(outT)
             outputF.append(outF)
