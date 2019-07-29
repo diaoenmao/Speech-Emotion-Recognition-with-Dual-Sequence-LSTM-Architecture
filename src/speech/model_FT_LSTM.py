@@ -8,7 +8,6 @@ class SeparatedBatchNorm1d(nn.Module):
         super(SeparatedBatchNorm1d, self).__init__()
         self.num_features = num_features
         self.max_length = max_length
-        self.affine = affine
         self.eps = eps
         self.momentum = momentum
         self.weight = nn.Parameter(torch.FloatTensor(num_features))
