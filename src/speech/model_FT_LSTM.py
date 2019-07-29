@@ -57,8 +57,6 @@ class FTLSTMCell(nn.Module):
         self.WFc=nn.Linear(self.inputy_dim+self.hidden_dim,self.hidden_dim,bias=True)
 
         self.batch=nn.BatchNorm1d(num_features=6*self.hidden_dim)
-        self.batchC_T=nn.BatchNorm1d(num_features=self.hidden_dim)
-        self.batchC_F=nn.BatchNorm1d(num_features=self.hidden_dim)
         self.batchhT=nn.BatchNorm1d(num_features=self.hidden_dim)
         self.batchhF=nn.BatchNorm1d(num_features=self.hidden_dim)
         self.dropout=nn.Dropout(p=dropout, inplace=False)
@@ -69,8 +67,8 @@ class FTLSTMCell(nn.Module):
         fT, fF, iT, iF, oT, oF= (gates[:,:self.hidden_dim],gates[:,self.hidden_dim:2*self.hidden_dim],
                                 gates[:,2*self.hidden_dim:3*self.hidden_dim],gates[:,3*self.hidden_dim:4*self.hidden_dim],
                                 gates[:,4*self.hidden_dim:5*self.hidden_dim],gates[:,5*self.hidden_dim:])
-        C_T=self.batchC_T(torch.tanh(self.WTc(torch.cat([x,hT],dim=1))))
-        C_F=self.batchC_F(torch.tanh(self.WFc(torch.cat([y,hF],dim=1))))
+        C_T=torch.tanh(self.WTc(torch.cat([x,hT],dim=1)))
+        C_F=torch.tanh(self.WFc(torch.cat([y,hF],dim=1)))
         CT=fT*CT+iT*C_T
         CF=fF*CF+iF*C_F
         hT=oT*torch.tanh(CT)
