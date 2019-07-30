@@ -163,9 +163,9 @@ class MultiSpectrogramModel(nn.Module):
     def alignment(self,input1,input2):
         # input2 has less time steps
         temp=[]
-        input2=input2[:,:,:(input1.shape[2])//2]
+        input2=input2[:,:,:((input1.shape[2])//2-1)]
         for i in range(input2.shape[2]):
-            temp1=torch.max(input1[:,:,(2*i):(2*i+2)],dim=2)[0]
+            temp1=torch.mean(input1[:,:,(2*i):(2*i+3)],dim=2)
             temp.append(temp1)
         inputx=torch.stack(temp,dim=2)
         inputy=input2
@@ -187,7 +187,7 @@ class MultiSpectrogramModel(nn.Module):
     def dimension(self):
         return self.input_dims[0],self.input_dims[1]
     def dimension_time(self):
-        temp=(self.time_dims[0])//2
+        temp=(self.time_dims[0])//2-1
         return temp
 class FTLSTM(nn.Module):
     def __init__(self,time,inputx_dim,inputy_dim,hidden_dim,num_layers_ftlstm,device):
