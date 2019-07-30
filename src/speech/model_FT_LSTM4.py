@@ -90,10 +90,10 @@ class FTLSTMCell(nn.Module):
         self.batch_Th = SeparatedBatchNorm1d(num_features=3 * self.hidden_dim, max_length=max_length)
         self.batch_Fi = SeparatedBatchNorm1d(num_features=3 * self.hidden_dim, max_length=max_length)
         self.batch_Fh = SeparatedBatchNorm1d(num_features=3 * self.hidden_dim, max_length=max_length)
-        self.batch_Tci = SeparatedBatchNorm1d(num_features=self.hidden_dim, max_length=max_length)
-        self.batch_Fci = SeparatedBatchNorm1d(num_features=self.hidden_dim, max_length=max_length)
-        self.batch_Tch = SeparatedBatchNorm1d(num_features=self.hidden_dim, max_length=max_length)
-        self.batch_Fch = SeparatedBatchNorm1d(num_features=self.hidden_dim, max_length=max_length)
+        #self.batch_Tci = SeparatedBatchNorm1d(num_features=self.hidden_dim, max_length=max_length)
+        #self.batch_Fci = SeparatedBatchNorm1d(num_features=self.hidden_dim, max_length=max_length)
+        #self.batch_Tch = SeparatedBatchNorm1d(num_features=self.hidden_dim, max_length=max_length)
+        #self.batch_Fch = SeparatedBatchNorm1d(num_features=self.hidden_dim, max_length=max_length)
         self.batch_CT=SeparatedBatchNorm1d(num_features=self.hidden_dim, max_length=max_length)
         self.batch_CF=SeparatedBatchNorm1d(num_features=self.hidden_dim, max_length=max_length)
 
@@ -110,7 +110,7 @@ class FTLSTMCell(nn.Module):
         self.device=torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.reset_parameters()
     def reset_parameters(self):
-        for x in [self.batch_Ti,self.batch_Th,self.batch_Fi,self.batch_Fh,self.batch_Tci,self.batch_Fci,self.batch_Tch,self.batch_Fch,self.batch_CT,self.batch_CF]:
+        for x in [self.batch_Ti,self.batch_Th,self.batch_Fi,self.batch_Fh,self.batch_CT,self.batch_CF]:
             x.reset_parameters()
     def forward(self, x,y,hT,hF,CT,CF,time_step):
         gates_T=self.batch_Ti(torch.sigmoid(self.WTi(torch.cat([x,y],dim=1))),time=time_step)+self.batch_Th(torch.sigmoid(self.WTh(torch.cat([hT],dim=1))),time=time_step)
@@ -119,18 +119,18 @@ class FTLSTMCell(nn.Module):
                                 gates_T[:,2*self.hidden_dim:3*self.hidden_dim])
         fF,iF, oF= (gates_F[:,:self.hidden_dim],gates_F[:,self.hidden_dim:2*self.hidden_dim],
                                 gates_F[:,2*self.hidden_dim:3*self.hidden_dim])
-        C_Ti=self.batch_Tci(torch.tanh(self.WTci(torch.cat([x],dim=1))),time=time_step)
-        C_Fi=self.batch_Fci(torch.tanh(self.WFci(torch.cat([y],dim=1))),time=time_step)
-        C_Th=self.batch_Tch(torch.tanh(self.WTch(torch.cat([hT],dim=1))),time=time_step)
-        C_Fh=self.batch_Fci(torch.tanh(self.WFch(torch.cat([hF],dim=1))),time=time_step)
+        C_Ti=torch.tanh(self.WTci(torch.cat([x],dim=1)))
+        C_Fi=torch.tanh(self.WFci(torch.cat([y],dim=1)))
+        C_Th=torch.tanh(self.WTch(torch.cat([hT],dim=1)))
+        C_Fh=torch.tanh(self.WFch(torch.cat([hF],dim=1)))
         C_T=C_Ti+C_Th
         C_F=C_Fi+C_Fh
         CT=fT*CT+iT*C_T
         CF=fF*CF+iF*C_F
-        hT=oT*self.batch_CT(torch.tanh(CT),time=time_step)
-        hF=oF*self.batch_CF(torch.tanh(CF),time=time_step)
-        outT=hT
-        outF=hF
+        hT=oT*torch.tanh(CT)
+        hF=oF*torch.tanh(CF)
+        outT=self.batch_CT(hT,time=time_step)
+        outF=self.batch_CF(hF,time=time_step)
         return outT,outF,hT,hF,CT,CF
     def init_hidden(self, batch_size):
         return (nn.Parameter(torch.zeros(batch_size, self.hidden_dim)).to(self.device),
