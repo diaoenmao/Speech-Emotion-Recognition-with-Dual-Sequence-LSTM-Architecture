@@ -86,10 +86,10 @@ class FTLSTMCell(nn.Module):
         self.inputx_dim=inputx_dim
         self.inputy_dim=inputy_dim
         # BN parameters
-        self.batch_Ti = SeparatedBatchNorm1d(num_features=3 * self.hidden_dim, max_length=max_length)
-        self.batch_Th = SeparatedBatchNorm1d(num_features=3 * self.hidden_dim, max_length=max_length)
-        self.batch_Fi = SeparatedBatchNorm1d(num_features=3 * self.hidden_dim, max_length=max_length)
-        self.batch_Fh = SeparatedBatchNorm1d(num_features=3 * self.hidden_dim, max_length=max_length)
+        #self.batch_Ti = SeparatedBatchNorm1d(num_features=3 * self.hidden_dim, max_length=max_length)
+        #self.batch_Th = SeparatedBatchNorm1d(num_features=3 * self.hidden_dim, max_length=max_length)
+        #self.batch_Fi = SeparatedBatchNorm1d(num_features=3 * self.hidden_dim, max_length=max_length)
+        #self.batch_Fh = SeparatedBatchNorm1d(num_features=3 * self.hidden_dim, max_length=max_length)
         #self.batch_Tci = SeparatedBatchNorm1d(num_features=self.hidden_dim, max_length=max_length)
         #self.batch_Fci = SeparatedBatchNorm1d(num_features=self.hidden_dim, max_length=max_length)
         #self.batch_Tch = SeparatedBatchNorm1d(num_features=self.hidden_dim, max_length=max_length)
@@ -110,11 +110,15 @@ class FTLSTMCell(nn.Module):
         self.device=torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.reset_parameters()
     def reset_parameters(self):
-        for x in [self.batch_Ti,self.batch_Th,self.batch_Fi,self.batch_Fh,self.batch_CT,self.batch_CF]:
+        #for x in [self.batch_Ti,self.batch_Th,self.batch_Fi,self.batch_Fh,self.batch_CT,self.batch_CF]:
+            #x.reset_parameters()
+        for x in [self.batch_CT,self.batch_CF]:
             x.reset_parameters()
     def forward(self, x,y,hT,hF,CT,CF,time_step):
-        gates_T=self.batch_Ti(torch.sigmoid(self.WTi(torch.cat([x,y],dim=1))),time=time_step)+self.batch_Th(torch.sigmoid(self.WTh(torch.cat([hT],dim=1))),time=time_step)
-        gates_F=self.batch_Fi(torch.sigmoid(self.WFi(torch.cat([x,y],dim=1))),time=time_step)+self.batch_Fh(torch.sigmoid(self.WFh(torch.cat([hF],dim=1))),time=time_step)
+        #gates_T=self.batch_Ti(torch.sigmoid(self.WTi(torch.cat([x,y],dim=1))),time=time_step)+self.batch_Th(torch.sigmoid(self.WTh(torch.cat([hT],dim=1))),time=time_step)
+        #gates_F=self.batch_Fi(torch.sigmoid(self.WFi(torch.cat([x,y],dim=1))),time=time_step)+self.batch_Fh(torch.sigmoid(self.WFh(torch.cat([hF],dim=1))),time=time_step)
+        gates_T=torch.sigmoid(self.WTi(torch.cat([x,y],dim=1)))+torch.sigmoid(self.WTh(torch.cat([hT],dim=1)))
+        gates_F=torch.sigmoid(self.WFi(torch.cat([x,y],dim=1)))+torch.sigmoid(self.WFh(torch.cat([hF],dim=1)))
         fT,iT, oT= (gates_T[:,:self.hidden_dim],gates_T[:,self.hidden_dim:2*self.hidden_dim],
                                 gates_T[:,2*self.hidden_dim:3*self.hidden_dim])
         fF,iF, oF= (gates_F[:,:self.hidden_dim],gates_F[:,self.hidden_dim:2*self.hidden_dim],
