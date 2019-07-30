@@ -103,7 +103,7 @@ class FTLSTMCell(nn.Module):
         self.WFh=nn.Linear(self.hidden_dim,3*self.hidden_dim,bias=True)
         self.WTci=nn.Linear(self.inputx_dim,self.hidden_dim,bias=True)
         self.WTch=nn.Linear(self.hidden_dim,self.hidden_dim,bias=True)
-        self.WFci=nn.Linear(self.inputy_dim,bias=True)
+        self.WFci=nn.Linear(self.inputy_dim,self.hidden_dim,bias=True)
         self.WFch=nn.Linear(self.hidden_dim,self.hidden_dim,bias=True)
 
         self.dropout=nn.Dropout(p=dropout, inplace=False)
