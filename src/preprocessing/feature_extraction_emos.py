@@ -8,7 +8,7 @@ import pdb
 
 OPENSMILE_CONFIG_PATH = '/scratch/speech/opensmile/opensmile-2.3.0/config/MFCC12_E_D_A.conf'
 DATASET_PATH = '/scratch/speech/datasets/'
-out_file = '/scratch/speech/Speech-Emotion-Analysis/src/preprocessing/temp.csv'
+out_file = '/scratch/speech/Speech-Emotion-Analysis/src/preprocessing/temp_emo.csv'
 
 in_file = '/scratch/speech/IEMOCAP_full_release/Session1/sentences/wav/Ses01F_impro01/Ses01F_impro01_F000.wav'
 
@@ -30,19 +30,24 @@ def load_paths_and_labels():
 
 
 def extract_features(args, dataframe):
+    emotions = ['hap', 'exc', 'sad', 'ang', 'neu']
     input = []
     target = []
     for file, emotion, valence, activation, dominance in dataframe.values:
-        cmd = 'SMILExtract -C {} -I {} -csvoutput {} -headercsv 0'.format(args.config_path, file, out_file)
-        os.system(cmd)
-        if args.time_series:
-            df = pd.read_csv(out_file, delimiter=';').iloc[:, 2:]
-        else:
-            df = pd.read_csv(out_file, delimiter=';').iloc[:, 1:]
-        input.append(df.values)
-        target.append(emotion)
-    #    input = np.array(input)
-    #    target = np.array(target)
+        if emotion in emotions:
+            cmd = 'SMILExtract -C {} -I {} -csvoutput {} -headercsv 0'.format(args.config_path, file, out_file)
+            os.system(cmd)
+            if args.time_series:
+                df = pd.read_csv(out_file, delimiter=';').iloc[:,2:]
+            else:
+                df = pd.read_csv(out_file, delimiter=';').iloc[:,1:]
+            input.append(df.values)
+            if emotion == 'exc':
+                target.append('hap')
+            else:
+                target.append(emotion)
+#    input = np.array(input)
+#    target = np.array(target)
     return input, target
 
 
