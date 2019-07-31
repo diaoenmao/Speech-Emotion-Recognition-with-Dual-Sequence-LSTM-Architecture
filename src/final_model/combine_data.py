@@ -4,11 +4,11 @@ import numpy as np
 def check_consistent(hand_dict, spec_512_dict, spec_1024_dict):
     flag = True
     for i in range(len(hand_dict["target"])):
-        #np.argmax(hand_dict["target"][i]) ==
-        if np.argmax(spec_512_dict["target"][i]) == np.argmax(spec_1024_dict["target"][i]):
+        if np.argmax(hand_dict["target"][i]) == np.argmax(spec_512_dict["target"][i]) == np.argmax(spec_1024_dict["target"][i]):
             continue
         else:
             flag = False
+            print(i)
             break
     if flag:
         print("Datasets consistent")
