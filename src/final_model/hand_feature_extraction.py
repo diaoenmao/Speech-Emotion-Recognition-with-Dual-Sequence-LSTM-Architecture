@@ -1,9 +1,7 @@
 import os
-import argparse
 import pandas as pd
 import numpy as np
 import pickle
-from sklearn.model_selection import train_test_split
 import pdb
 
 OPENSMILE_CONFIG_PATH = '/scratch/speech/opensmile/opensmile-2.3.0/config/MFCC12_E_D_A.conf'
@@ -16,18 +14,21 @@ data = pd.read_csv('/scratch/speech/raw_audio_dataset/audio_paths_labels_updated
 
 session_indices = [0]
 
+encode = {"hap": [1, 0, 0, 0], "exc": [1, 0, 0, 0], "neu": [0, 1, 0, 0], "ang": [0, 0, 1, 0], "sad": [0, 0, 0, 1]}
+
 def extract_features(dataframe):
     input = []
     target = []
     for i, (file, emotion) in enumerate(dataframe.values):
         if i % 1000 == 0: print(i)
-        if file[44] != next(iter(dataframe.values))[0][44]:
+        if file[44] != dataframe.values[i+1][0][44]:
+            pdb.set_trace()
             session_indices.append(i+1)
         cmd = 'SMILExtract -C {} -I {} -csvoutput {} -headercsv 0'.format(OPENSMILE_CONFIG_PATH, file, out_file)
         os.system(cmd)
         df = pd.read_csv(out_file, delimiter=';').iloc[:, 2:]
         input.append(df.values)
-        target.append(emotion)
+        target.append(encode[emotion])
     print(session_indices)
     return input, target
 
@@ -47,7 +48,7 @@ def split_data(data, session):
     test = {'input': input_test, 'target': target_test}
     return train, test
 
-def save(dataset, session_indices):
+def save(dataset):
     with open(DATASET_PATH + dataset_name + '_full.pkl', 'wb') as f:
         pickle.dump(dataset, f)
     for i in range(5):
