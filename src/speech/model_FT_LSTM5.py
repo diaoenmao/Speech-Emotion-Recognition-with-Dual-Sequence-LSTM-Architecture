@@ -86,8 +86,9 @@ class FTLSTMCell(nn.Module):
         self.inputx_dim=inputx_dim
         self.inputy_dim=inputy_dim
         # BN parameters
-        #self.batch = SeparatedBatchNorm1d(num_features=4*self.hidden_dim, max_length=max_length)
-        self.batchhT = SeparatedBatchNorm1d(num_features=self.hidden_dim, max_length=max_length)
+        self.batch = SeparatedBatchNorm1d(num_features=4*self.hidden_dim, max_length=max_length)
+        #self.batchhT = SeparatedBatchNorm1d(num_features=self.hidden_dim, max_length=max_length)
+        self.batchhT=nn.BatchNorm1d(self.hidden_dim)
 
         self.W=nn.Linear(self.inputx_dim+self.inputy_dim+self.hidden_dim,4*self.hidden_dim,bias=True)
         self.WTc=nn.Linear(self.inputx_dim+self.hidden_dim,self.hidden_dim,bias=True)
@@ -97,14 +98,14 @@ class FTLSTMCell(nn.Module):
         self.device=torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.reset_parameters()
     def reset_parameters(self):
-        #self.batch.reset_parameters()
-        self.batchhT.reset_parameters()
-        #self.batch.bias.data.fill_(0)
-        self.batchhT.bias.data.fill_(0)
-        #self.batch.weight.data.fill_(0.1)
-        self.batchhT.weight.data.fill_(0.1)
+        self.batch.reset_parameters()
+        #self.batchhT.reset_parameters()
+        self.batch.bias.data.fill_(0)
+        #self.batchhT.bias.data.fill_(0)
+        self.batch.weight.data.fill_(0.1)
+        #self.batchhT.weight.data.fill_(0.1)
     def forward(self, x,y,hT,CT,time_step):
-        gates=torch.sigmoid(self.W(torch.cat([x,y,hT],dim=1)))
+        gates=self.batch(torch.sigmoid(self.W(torch.cat([x,y,hT],dim=1))),time=time_step)
         fT, iT, iF, oT= (gates[:,:self.hidden_dim],gates[:,self.hidden_dim:2*self.hidden_dim],
                         gates[:,2*self.hidden_dim:3*self.hidden_dim],gates[:,3*self.hidden_dim:4*self.hidden_dim])
         C_T=torch.tanh(self.WTc(torch.cat([x,hT],dim=1)))
