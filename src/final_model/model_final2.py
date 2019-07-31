@@ -237,6 +237,7 @@ class FTLSTM(nn.Module):
             y=inputy[:,:,t]
             for i in range(self.num_layers_ftlstm):
                 name = 'ftlstm_cell{}'.format(i)
+                print(i)
                 if t==0:
                     bsize,_=x.size()
                     (hT,CT)=getattr(self, name).init_hidden(bsize)
