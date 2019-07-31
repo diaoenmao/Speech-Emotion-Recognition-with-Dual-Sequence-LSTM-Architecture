@@ -88,7 +88,7 @@ class FTLSTMCell(nn.Module):
         # BN parameters
         self.batch = SeparatedBatchNorm1d(num_features=4*self.hidden_dim, max_length=max_length)
         #self.batchhT = SeparatedBatchNorm1d(num_features=self.hidden_dim, max_length=max_length)
-        self.batchhT=nn.BatchNorm1d(self.hidden_dim)
+        #self.batchhT=nn.BatchNorm1d(self.hidden_dim)
 
         self.W=nn.Linear(self.inputx_dim+self.inputy_dim+self.hidden_dim,4*self.hidden_dim,bias=True)
         self.WTc=nn.Linear(self.inputx_dim+self.hidden_dim,self.hidden_dim,bias=True)
@@ -112,7 +112,7 @@ class FTLSTMCell(nn.Module):
         C_F=torch.tanh(self.WFc(torch.cat([y,hT],dim=1)))
         CT=fT*CT+iT*C_T+iF*C_F
         hT=oT*torch.tanh(CT)
-        outT=self.batchhT(hT)
+        outT=hT
         return outT,hT,CT
     def init_hidden(self, batch_size):
         return (nn.Parameter(torch.zeros(batch_size, self.hidden_dim)).to(self.device),
