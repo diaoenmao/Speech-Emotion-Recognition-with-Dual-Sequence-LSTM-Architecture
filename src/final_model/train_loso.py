@@ -64,7 +64,7 @@ def train_model(args):
         print("============================ Session " + str(session) + " =============================")
 
         path="batch_size:{};out_channels:{};kernel_size_cnn:{};weight:{}".format(args.batch_size,out_channels,kernel_size_cnn,weight)
-        file_path="/scratch/speech/models/final_classification/"+args.file_path+".txt"
+        file_path="/scratch/speech/models/andre_classification/"+args.file_path+".txt"
         with open(file_path,"a+") as f:
             f.write("\n"+"============ model starts, Session {} ===========".format(session))
             f.write("\n"+"model_parameters: "+str(sum(p.numel() for p in model.parameters() if p.requires_grad))+"\n"+path+"\n")
@@ -123,7 +123,7 @@ def train_model(args):
             output = []
             y_true = []
             y_pred = []
-            torch.save(model.module.state_dict(), "/scratch/speech/models/final_checkpoint/Session_{}_path_{}_epoch_{}.pt".format(session,path,epoch+1))
+            torch.save(model.module.state_dict(), "/scratch/speech/models/andre_checkpoint/Session_{}_path_{}_epoch_{}.pt".format(session,path,epoch+1))
             model.eval()
             with torch.no_grad():
                 for j,(input_lstm, input1, input2, target, seq_length) in enumerate(test_loader):
@@ -171,14 +171,14 @@ def train_model(args):
                     f.write("Average Top 10 Accuracy:{:06.5f}".format(np.mean(np.sort(np.array(test_acc))[-10:]))+"\n")
                     f.write("Best Class Accuracy:{:06.5f}".format(max(class_acc))+"\n")
                     f.write("Average Top 10 Class Accuracy:{:06.5f}".format(np.mean(np.sort(np.array(class_acc))[-10:]))+"\n")
-                    f.write("/scratch/speech/models/final_checkpoint/Session_{}_path_{}_epoch_{}.pt".format(session,path,epoch+1)+"\n")
-                    f.write("/scratch/speech/models/final_classification/checkpoint_stats"+path+".pkl"+"\n")
+                    f.write("/scratch/speech/models/andre_checkpoint/Session_{}_path_{}_epoch_{}.pt".format(session,path,epoch+1)+"\n")
+                    f.write("/scratch/speech/models/andre_classification/checkpoint_stats"+path+".pkl"+"\n")
                     f.write("============================= model ends ==================================="+"\n")
         print(file_path)
         print()
         all_test_acc+=np.sort(np.array(test_acc))[-10:].tolist()
         all_class_acc+=np.sort(np.array(class_acc))[-10:].tolist()
-    with open("/scratch/speech/models/final_classification/checkpoint_stats"+path+".pkl","wb") as pickle_out:
+    with open("/scratch/speech/models/andre_classification/checkpoint_stats"+path+".pkl","wb") as pickle_out:
         pickle.dump({"all_test_acc":all_test_acc, "all_class_acc": all_class_acc},pickle_out)
     with open(file_path, 'a+') as f:
         f.write("Mean test acc: " + str(np.mean(all_test_acc)))
