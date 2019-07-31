@@ -52,7 +52,7 @@ def save(dataset, nfft):
             pickle.dump(test, f)
 
 if __name__ == '__main__':
-    nfft = 512
+    nfft = 1024
     input, target = extract_data(df, nfft)
     dataset = {'input': input, 'target': target}
     save(dataset, nfft)
