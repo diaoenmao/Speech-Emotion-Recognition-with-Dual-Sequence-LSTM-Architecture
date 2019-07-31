@@ -37,7 +37,7 @@ def combine(session, option):
             spec_1024_dict = pickle.load(f)
         check_consistent(hand_dict, spec_512_dict, spec_1024_dict)
         dict = {'input_lstm': hand_dict['input'], 'input1': spec_512_dict['input'], 'input2': spec_1024_dict['input'], 'target': hand_dict['target']}
-        with open('/scratch/speech/hand_raw_dataset/EMO39_mel_spectrogram_train_{}.pkl'.format(session), 'wb') as train:
+        with open('/scratch/speech/final_dataset/EMO39_mel_spectrogram_train_{}.pkl'.format(session), 'wb') as train:
             pickle.dump(dict, train)
 
     elif option == 'test':
@@ -49,7 +49,7 @@ def combine(session, option):
             spec_1024_dict = pickle.load(f)
         check_consistent(hand_dict, spec_512_dict, spec_1024_dict)
         dict = {'input_lstm': hand_dict['input'], 'input1': spec_512_dict['input'], 'input2': spec_1024_dict['input'], 'target': hand_dict['target']}
-        with open('/scratch/speech/hand_raw_dataset/EMO39_mel_spectrogram_test_{}.pkl'.format(session), 'wb') as test:
+        with open('/scratch/speech/final_dataset/EMO39_mel_spectrogram_test_{}.pkl'.format(session), 'wb') as test:
             pickle.dump(dict, test)
 
 if __name__ == '__main__':
