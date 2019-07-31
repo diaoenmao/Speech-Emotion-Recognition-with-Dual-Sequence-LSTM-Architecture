@@ -6,7 +6,7 @@ import pdb
 
 OPENSMILE_CONFIG_PATH = '/scratch/speech/opensmile/opensmile-2.3.0/config/MFCC12_E_D_A.conf'
 DATASET_PATH = '/scratch/speech/final_dataset/'
-dataset_name = 'IEMOCAP/'
+dataset_name = 'IEMOCAP'
 
 out_file = '/scratch/speech/temp.csv'
 

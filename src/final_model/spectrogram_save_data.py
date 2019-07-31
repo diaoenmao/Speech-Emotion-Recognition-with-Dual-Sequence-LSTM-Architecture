@@ -16,6 +16,7 @@ def extract_data(dataframe, nfft):
     input = []
     target = []
     for i, (file, emotion) in enumerate(dataframe.values):
+        if i % 500 == 0: print(i)
         if i < len(dataframe.values) - 1 and file[44] != dataframe.values[i+1][0][44]:
             session_indices.append(i+1)
         sample_rate, data = wavfile.read(file)
