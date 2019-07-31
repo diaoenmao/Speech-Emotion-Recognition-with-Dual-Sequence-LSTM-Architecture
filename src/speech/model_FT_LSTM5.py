@@ -86,13 +86,13 @@ class FTLSTMCell(nn.Module):
         self.inputx_dim=inputx_dim
         self.inputy_dim=inputy_dim
         # BN parameters
-        self.batch = SeparatedBatchNorm1d(num_features=4*self.hidden_dim, max_length=max_length)
+        self.batch = SeparatedBatchNorm1d(num_features=3*self.hidden_dim, max_length=max_length)
         #self.batchhT = SeparatedBatchNorm1d(num_features=self.hidden_dim, max_length=max_length)
-        #self.batchhT=nn.BatchNorm1d(self.hidden_dim)
+        self.batchhT=nn.BatchNorm1d(self.hidden_dim)
 
-        self.W=nn.Linear(self.inputx_dim+self.inputy_dim+self.hidden_dim,4*self.hidden_dim,bias=True)
+        self.W=nn.Linear(self.inputx_dim+self.inputy_dim+self.hidden_dim,3*self.hidden_dim,bias=True)
         self.WTc=nn.Linear(self.inputx_dim+self.hidden_dim,self.hidden_dim,bias=True)
-        self.WFc=nn.Linear(self.inputy_dim+self.hidden_dim,self.hidden_dim,bias=True)
+        #self.WFc=nn.Linear(self.inputy_dim+self.hidden_dim,self.hidden_dim,bias=True)
 
         self.dropout=nn.Dropout(p=dropout, inplace=False)
         self.device=torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -106,13 +106,13 @@ class FTLSTMCell(nn.Module):
         #self.batchhT.weight.data.fill_(0.1)
     def forward(self, x,y,hT,CT,time_step):
         gates=self.batch(torch.sigmoid(self.W(torch.cat([x,y,hT],dim=1))),time=time_step)
-        fT, iT, iF, oT= (gates[:,:self.hidden_dim],gates[:,self.hidden_dim:2*self.hidden_dim],
-                        gates[:,2*self.hidden_dim:3*self.hidden_dim],gates[:,3*self.hidden_dim:4*self.hidden_dim])
+        fT, iT, oT= (gates[:,:self.hidden_dim],gates[:,self.hidden_dim:2*self.hidden_dim],
+                        gates[:,2*self.hidden_dim:3*self.hidden_dim])
         C_T=torch.tanh(self.WTc(torch.cat([x,hT],dim=1)))
-        C_F=torch.tanh(self.WFc(torch.cat([y,hT],dim=1)))
-        CT=fT*CT+iT*C_T+iF*C_F
+        #C_F=torch.tanh(self.WFc(torch.cat([y,hT],dim=1)))
+        CT=fT*CT+iT*C_T
         hT=oT*torch.tanh(CT)
-        outT=hT
+        outT=self.batchhT(hT)
         return outT,hT,CT
     def init_hidden(self, batch_size):
         return (nn.Parameter(torch.zeros(batch_size, self.hidden_dim)).to(self.device),
@@ -192,9 +192,12 @@ class MultiSpectrogramModel(nn.Module):
     def alignment(self,input1,input2):
         # input2 has less time steps
         temp=[]
-        input2=input2[:,:,:((input1.shape[2])//2-1)]
+        #input2=input2[:,:,:((input1.shape[2])//2-1)]
         for i in range(input2.shape[2]):
-            temp1=torch.mean(input1[:,:,(2*i):(2*i+3)],dim=2)
+            if 2*i+2<=input1.shape[2]:
+                temp1=torch.mean(input1[:,:,(2*i):(2*i+2)],dim=2)
+            else:
+                temp1=torch.mean(input1[:,:,-2:],dim=2)
             temp.append(temp1)
         inputx=torch.stack(temp,dim=2)
         inputy=input2
