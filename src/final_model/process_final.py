@@ -10,11 +10,11 @@ import torch.nn.functional as F
 class IEMOCAP(Dataset):
     def __init__(self, name, nfft, train=True):
         if train:
-            f1 = open('/scratch/speech/final_dataset/EMO39_'+name+'_spectrogram_nfft{}_updated_train.pkl'.format(nfft[0]), 'rb')
-            f2 = open('/scratch/speech/final_dataset/EMO39_'+name+'_spectrogram_nfft{}_updated_train.pkl'.format(nfft[1]), 'rb')
+            f1 = open('/scratch/speech/hand_raw_dataset/EMO39_'+name+'_spectrogram_nfft{}_updated_train.pkl'.format(nfft[0]), 'rb')
+            f2 = open('/scratch/speech/hand_raw_dataset/EMO39_'+name+'_spectrogram_nfft{}_updated_train.pkl'.format(nfft[1]), 'rb')
         else:
-            f1 = open('/scratch/speech/final_dataset/EMO39_'+name+'_spectrogram_nfft{}_updated_test.pkl'.format(nfft[0]), 'rb')
-            f2 = open('/scratch/speech/final_dataset/EMO39_'+name+'_spectrogram_nfft{}_updated_test.pkl'.format(nfft[1]), 'rb')
+            f1 = open('/scratch/speech/hand_raw_dataset/EMO39_'+name+'_spectrogram_nfft{}_updated_test.pkl'.format(nfft[0]), 'rb')
+            f2 = open('/scratch/speech/hand_raw_dataset/EMO39_'+name+'_spectrogram_nfft{}_updated_test.pkl'.format(nfft[1]), 'rb')
         data1 = pickle.load(f1)
         data2 = pickle.load(f2)
         self.input_lstm = data1["input_lstm"]
