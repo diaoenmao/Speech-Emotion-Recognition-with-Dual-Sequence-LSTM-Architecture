@@ -45,6 +45,7 @@ def train_model(args):
     hidden_dim_lstm=200
     epoch_num=50
     weight = args.weight
+    nfft = [512,1024]
 
     model = CNN_FTLSTM(input_channels, out_channels, kernel_size_cnn,
                     stride_size_cnn, kernel_size_pool, stride_size_pool,nfft,
