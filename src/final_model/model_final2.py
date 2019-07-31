@@ -99,14 +99,17 @@ class FTLSTMCell(nn.Module):
         self.batch.reset_parameters()
         self.batch.bias.data.fill_(0)
         self.batch.weight.data.fill_(0.1)
-    def forward(self, x,y,hT,CT,time_step):
+    def forward(self, x,y,hT,CT,time_step,last_layer=False):
         gates=self.batch(torch.sigmoid(self.W(torch.cat([x,y,hT],dim=1))),time=time_step)
         fT, iT, oT= (gates[:,:self.hidden_dim],gates[:,self.hidden_dim:2*self.hidden_dim],
                                 gates[:,2*self.hidden_dim:3*self.hidden_dim])
         C_T=torch.tanh(self.WTc(torch.cat([x,hT],dim=1)))
         CT=fT*CT+iT*C_T
         hT=oT*torch.tanh(CT)
-        outT=self.batchhT(hT)
+        if last_layer:
+            outT=self.dropout(self.batchhT(hT))
+        else:
+            outT=self.batchhT(hT)
         return outT,hT,CT
     def init_hidden(self, batch_size):
         return (nn.Parameter(torch.zeros(batch_size, self.hidden_dim)).to(self.device),
@@ -219,8 +222,12 @@ class FTLSTM(nn.Module):
         self.num_layers_ftlstm=num_layers_ftlstm
         for i in range(num_layers_ftlstm):
             name = 'ftlstm_cell{}'.format(i)
-            cell = FTLSTMCell(inputx_dim,inputy_dim,hidden_dim,self.time)
-            setattr(self, name, cell)
+            if i==0:
+                cell = FTLSTMCell(inputx_dim,inputy_dim,hidden_dim,self.time)
+                setattr(self, name, cell)
+            else:
+                cell = FTLSTMCell(hidden_dim,inputy_dim,hidden_dim,self.time)
+                setattr(self, name, cell)
             self._all_layers.append(cell)
     def forward(self,inputx,inputy):
         internal_state = []
@@ -235,9 +242,11 @@ class FTLSTM(nn.Module):
                     (hT,CT)=getattr(self, name).init_hidden(bsize)
                     internal_state.append((hT,CT))
                 (hT,CT)=internal_state[i]
-                outT,hT,CT=getattr(self,name)(x,y,hT,CT,t)
+                if i==self.num_layers_ftlstm-1:
+                    x,hT,CT=getattr(self,name)(x,y,hT,CT,t,True)
+                x,hT,CT=getattr(self,name)(x,y,hT,CT,t)
                 internal_state[i]=hT,CT
-            outputT.append(outT)
+            outputT.append(x)
         return torch.stack(outputT,dim=2)
 class CNN_FTLSTM(nn.Module):
     def __init__(self,in_channels, out_channels, kernel_size_cnn, 
