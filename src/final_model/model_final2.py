@@ -269,6 +269,7 @@ class CNN_FTLSTM(nn.Module):
         self.LSTM_Audio=LSTM_Audio(self.hidden_dim_lstm,self.num_layers,self.device,bidirectional=False)
         self.classification_hand = nn.Linear(self.hidden_dim_lstm, self.num_labels).to(self.device)
         self.special=special
+        '''
         if self.special=="concat":
             self.classification_raw=nn.Linear(hidden_dim,self.num_labels).to(self.device)
         elif self.special=="attention":
@@ -278,6 +279,7 @@ class CNN_FTLSTM(nn.Module):
         else:
             assert self.special=="add" ,"invalid special command"
             self.classification_raw=nn.Linear(hidden_dim,self.num_labels).to(self.device)
+        '''
     def forward(self,input_lstm,input1,input2,target,seq_length,train=True):
         '''
         input1=input1.to(self.device)
@@ -293,6 +295,7 @@ class CNN_FTLSTM(nn.Module):
         out_lstm = self.LSTM_Audio(input_lstm).permute(0,2,1)
         temp = [torch.unsqueeze(torch.mean(out_lstm[k,:,:int(s.item())],dim=1),dim=0) for k,s in enumerate(seq_length)]
         out_lstm = torch.cat(temp,dim=0)
+        '''
         if self.special=="concat":
             out=torch.mean(outT,dim=2)
             out = self.classification_raw(out)
@@ -302,6 +305,7 @@ class CNN_FTLSTM(nn.Module):
         else:
             assert self.special=="add" ,"invalid special command"
             out=self.classification_raw(torch.mean(outT+outF,dim=2))
+        '''
         out_lstm = self.classification_hand(out_lstm)
         p = self.weight
         #out_final = p*out+(1-p)*out_lstm 
