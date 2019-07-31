@@ -41,10 +41,9 @@ def combine(name, session, option):
         check_consistent(hand_dict, spec_512_dict, spec_1024_dict)
 
 
-    dict = {'input_lstm': hand_dict['input'], 'input1': spec_512_dict['input']
-    train1,test1=split_data(dict3)
+    dict = {'input_lstm': hand_dict['input'], 'input1': spec_512_dict['input'], 'input2': spec_1024_dict['input'], 'target': hand_dict['target']}
     with open('/scratch/speech/hand_raw_dataset/EMO39_'+name+'_spectrogram_full.pkl', 'wb') as full:
-        pickle.dump(dict3,full)
+        pickle.dump(dict,full)
     with open('/scratch/speech/hand_raw_dataset/EMO39_'+name+'_spectrogram_train.pkl', 'wb') as train:
         pickle.dump(train1,train)
     with open('/scratch/speech/hand_raw_dataset/EMO39_'+name+'_spectrogram_test.pkl', 'wb') as test:
