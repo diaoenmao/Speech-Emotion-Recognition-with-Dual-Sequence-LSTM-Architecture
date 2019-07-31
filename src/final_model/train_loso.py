@@ -175,7 +175,6 @@ def train_model(args):
                     f.write("/scratch/speech/models/final_checkpoint/Session_{}_path_{}_epoch_{}.pt".format(session,path,epoch+1)+"\n")
                     f.write("/scratch/speech/models/final_classification/checkpoint_stats"+path+".pkl"+"\n")
                     f.write("============================= model ends ==================================="+"\n")
-        pickle_out.close()
         print(file_path)
         print()
         all_test_acc+=np.sort(np.array(test_acc))[-10:].tolist()
