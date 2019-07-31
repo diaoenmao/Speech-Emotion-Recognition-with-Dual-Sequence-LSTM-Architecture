@@ -247,7 +247,7 @@ class FTLSTM(nn.Module):
                 outT,hT,CT=getattr(self,name)(x,y,hT,CT,t)
                 internal_state[i]=hT,CT
             outputT.append(outT)
-        return torch.stack(outputT,dim=2),torch.stack(outputF,dim=2)
+        return torch.stack(outputT,dim=2)
 class CNN_FTLSTM(nn.Module):
     def __init__(self,in_channels, out_channels, kernel_size_cnn, 
                     stride_cnn, kernel_size_pool, stride_pool,nfft,
@@ -287,7 +287,7 @@ class CNN_FTLSTM(nn.Module):
         target=target.to(self.device)
         seq_length=seq_length.to(self.device)
         inputx,inputy=getattr(self,"cnn_multi")(input1,input2)
-        outT,outF=getattr(self,"ftlstm")(inputx,inputy)
+        outT=getattr(self,"ftlstm")(inputx,inputy)
         out_lstm = self.LSTM_Audio(input_lstm).permute(0,2,1)
         temp = [torch.unsqueeze(torch.mean(out_lstm[k,:,:int(s.item())],dim=1),dim=0) for k,s in enumerate(seq_length)]
         out_lstm = torch.cat(temp,dim=0)
