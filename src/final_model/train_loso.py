@@ -43,7 +43,7 @@ def train_model(args):
     hidden_dim=200
     num_layers_ftlstm=2
     hidden_dim_lstm=200
-    epoch_num=1
+    epoch_num=50
     weight = args.weight
     nfft = [512,1024]
 
@@ -181,10 +181,10 @@ def train_model(args):
     with open("/scratch/speech/models/final_classification/checkpoint_stats"+path+".pkl","wb") as pickle_out:
         pickle.dump({"all_test_acc":all_test_acc, "all_class_acc": all_class_acc},pickle_out)
     with open(file_path, 'a+') as f:
-        f.write("Mean test acc: " + np.mean(all_test_acc))
-        f.write("Std. test acc: " + np.std(all_test_acc))
-        f.write("Mean class acc: " + np.mean(all_class_acc))
-        f.write("Std. class acc: " + np.std(all_class_acc))
+        f.write("Mean test acc: " + str(np.mean(all_test_acc)))
+        f.write("Std. test acc: " + str(np.std(all_test_acc)))
+        f.write("Mean class acc: " + str(np.mean(all_class_acc)))
+        f.write("Std. class acc: " + str(np.std(all_class_acc)))
 if __name__ == '__main__':
     args = init_parser()
     train_model(args)
