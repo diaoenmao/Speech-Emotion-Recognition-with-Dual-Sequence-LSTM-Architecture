@@ -23,7 +23,7 @@ def extract_features(dataframe):
         if i % 1000 == 0: print(i)
         if file[44] != next(iter(dataframe.values))[0][44]:
             session_indices.append(i+1)
-        cmd = 'SMILExtract -C {} -I {} -csvoutput {} -headercsv 0'.format(args.config_path, file, out_file)
+        cmd = 'SMILExtract -C {} -I {} -csvoutput {} -headercsv 0'.format(OPENSMILE_CONFIG_PATH, file, out_file)
         os.system(cmd)
         df = pd.read_csv(out_file, delimiter=';').iloc[:, 2:]
         input.append(df.values)
