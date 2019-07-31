@@ -51,9 +51,9 @@ def train_model(args):
     all_test_acc=[]
     all_class_acc=[]
     for session in range(5):
-            model = CNN_FTLSTM(input_channels, out_channels, kernel_size_cnn,
-                                stride_size_cnn, kernel_size_pool, stride_size_pool,nfft,
-                                hidden_dim,num_layers_ftlstm,weight,args.special,device)
+        model = CNN_FTLSTM(input_channels, out_channels, kernel_size_cnn,
+                            stride_size_cnn, kernel_size_pool, stride_size_pool,nfft,
+                            hidden_dim,num_layers_ftlstm,weight,args.special,device)
         print("============================ Number of parameters ====================================")
         print(str(sum(p.numel() for p in model.parameters() if p.requires_grad)))
         training_data = IEMOCAP(session=session, train=True)
