@@ -52,7 +52,7 @@ def combine(session, option):
             pickle.dump(dict, test)
 
 if __name__ == '__main__':
-    combine(_, 'full')
+    combine(0, 'full')
     for i in range(5):
         combine(i, 'train')
         combine(i, 'test')
