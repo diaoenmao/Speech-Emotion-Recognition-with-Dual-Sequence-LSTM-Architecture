@@ -78,7 +78,7 @@ class LFLB(nn.Module):
         return out
 
 class FTLSTMCell(nn.Module):
-    def __init__(self,  inputx_dim,inputy_dim,hidden_dim, max_length, dropout=0):
+    def __init__(self,  inputx_dim,inputy_dim,hidden_dim, max_length, dropout=0,last_layer=False):
         # inputx, inputy should be one single time step, B*D
         super(FTLSTMCell, self).__init__()
         self.max_length = max_length
@@ -95,18 +95,19 @@ class FTLSTMCell(nn.Module):
         self.dropout=nn.Dropout(p=dropout, inplace=False)
         self.device=torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.reset_parameters()
+        self.last_layer=last_layer
     def reset_parameters(self):
         self.batch.reset_parameters()
         self.batch.bias.data.fill_(0)
         self.batch.weight.data.fill_(0.1)
-    def forward(self, x,y,hT,CT,time_step,last_layer=False):
+    def forward(self, x,y,hT,CT,time_step):
         gates=self.batch(torch.sigmoid(self.W(torch.cat([x,y,hT],dim=1))),time=time_step)
         fT, iT, oT= (gates[:,:self.hidden_dim],gates[:,self.hidden_dim:2*self.hidden_dim],
                                 gates[:,2*self.hidden_dim:3*self.hidden_dim])
         C_T=torch.tanh(self.WTc(torch.cat([x,hT],dim=1)))
         CT=fT*CT+iT*C_T
         hT=oT*torch.tanh(CT)
-        if last_layer:
+        if self.last_layer:
             outT=self.dropout(self.batchhT(hT))
         else:
             outT=self.batchhT(hT)
@@ -222,8 +223,8 @@ class FTLSTM(nn.Module):
         self.num_layers_ftlstm=num_layers_ftlstm
         for i in range(num_layers_ftlstm):
             name = 'ftlstm_cell{}'.format(i)
-            if i==0:
-                cell = FTLSTMCell(inputx_dim,inputy_dim,hidden_dim,self.time)
+            if i==num_layers_ftlstm-1:
+                cell = FTLSTMCell(inputx_dim,inputy_dim,hidden_dim,self.time,last_layer=True)
                 setattr(self, name, cell)
             else:
                 cell = FTLSTMCell(hidden_dim,inputy_dim,hidden_dim,self.time)
@@ -237,14 +238,11 @@ class FTLSTM(nn.Module):
             y=inputy[:,:,t]
             for i in range(self.num_layers_ftlstm):
                 name = 'ftlstm_cell{}'.format(i)
-                print(i)
                 if t==0:
                     bsize,_=x.size()
                     (hT,CT)=getattr(self, name).init_hidden(bsize)
                     internal_state.append((hT,CT))
                 (hT,CT)=internal_state[i]
-                if i==self.num_layers_ftlstm-1:
-                    x,hT,CT=getattr(self,name)(x,y,hT,CT,t,True)
                 x,hT,CT=getattr(self,name)(x,y,hT,CT,t)
                 internal_state[i]=hT,CT
             outputT.append(x)
