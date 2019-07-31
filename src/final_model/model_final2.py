@@ -260,12 +260,12 @@ class CNN_FTLSTM(nn.Module):
         print("time step after alignment:",time)
         cell=FTLSTM(time,inputx_dim,inputy_dim,hidden_dim,num_layers_ftlstm,device)
         setattr(self,"ftlstm",cell)
+        '''
         self.device=device
         self.hidden_dim_lstm=200
         self.num_layers=2
         self.num_labels=4
         self.weight=nn.Parameter(torch.FloatTensor([weight]),requires_grad=False)
-        '''
         self.LSTM_Audio=LSTM_Audio(self.hidden_dim_lstm,self.num_layers,self.device,bidirectional=False)
         self.classification_hand = nn.Linear(self.hidden_dim_lstm, self.num_labels).to(self.device)
         self.special=special
@@ -314,7 +314,7 @@ class CNN_FTLSTM(nn.Module):
         #losses_batch_raw=F.cross_entropy(out,torch.max(target,1)[1])
         #losses_batch=p*losses_batch_raw+(1-p)*losses_batch_hand
         losses_batch=losses_batch_hand 
-        
+
         correct_batch=torch.unsqueeze(correct_batch,dim=0)
         losses_batch=torch.unsqueeze(losses_batch, dim=0)
         if train:
