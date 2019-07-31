@@ -43,9 +43,9 @@ def combine(session, option):
     elif option == 'test':
         with open('/scratch/speech/final_dataset/IEMOCAP_test_{}.pkl'.format(session), 'rb') as f:
             hand_dict = pickle.load(f)
-        with open('/scratch/speech/final_dataset/mel_spectrogram_nfft{}'.format(512) + '_train_{}.pkl'.format(session), 'rb') as f:
+        with open('/scratch/speech/final_dataset/mel_spectrogram_nfft{}'.format(512) + '_test_{}.pkl'.format(session), 'rb') as f:
             spec_512_dict = pickle.load(f)
-        with open('/scratch/speech/final_dataset/mel_spectrogram_nfft{}'.format(1024) + '_train_{}.pkl'.format(session), 'rb') as f:
+        with open('/scratch/speech/final_dataset/mel_spectrogram_nfft{}'.format(1024) + '_test_{}.pkl'.format(session), 'rb') as f:
             spec_1024_dict = pickle.load(f)
         check_consistent(hand_dict, spec_512_dict, spec_1024_dict)
         dict = {'input_lstm': hand_dict['input'], 'input1': spec_512_dict['input'], 'input2': spec_1024_dict['input'], 'target': hand_dict['target']}
