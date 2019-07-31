@@ -38,10 +38,16 @@ def extract_features_ts(args, dataframe):
 '''
 
 def split_data(data, session):
-    input_test = data['input'][session_indices[session]:session_indices[session + 1]]
-    target_test = data['target'][session_indices[session]:session_indices[session + 1]]
-    input_train = data['input'][:session_indices[session]] + data['input'][session_indices[session + 1]:]
-    target_train = data['target'][:session_indices[session]] + data['target'][session_indices[session + 1]:]
+    if session < len(session_indices) - 1:
+        input_test = data['input'][session_indices[session]:session_indices[session + 1]]
+        target_test = data['target'][session_indices[session]:session_indices[session + 1]]
+        input_train = data['input'][:session_indices[session]] + data['input'][session_indices[session + 1]:]
+        target_train = data['target'][:session_indices[session]] + data['target'][session_indices[session + 1]:]
+    else:
+        input_test = data['input'][session_indices[session]:]
+        target_test = data['target'][session_indices[session]:]
+        input_train = data['input'][:session_indices[session]]
+        target_train = data['target'][:session_indices[session]]
     train = {'input': input_train, 'target': target_train}
     test = {'input': input_test, 'target': target_test}
     return train, test
