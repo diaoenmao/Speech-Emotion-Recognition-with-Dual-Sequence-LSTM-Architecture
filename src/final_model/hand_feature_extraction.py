@@ -14,6 +14,8 @@ data = pd.read_csv('/scratch/speech/raw_audio_dataset/audio_paths_labels_updated
 
 session_indices = [0]
 
+encode = {"hap": [1, 0, 0, 0], "exc": [1, 0, 0, 0], "neu": [0, 1, 0, 0], "ang": [0, 0, 1, 0], "sad": [0, 0, 0, 1]}
+
 def extract_features(dataframe):
     input = []
     target = []
@@ -26,7 +28,7 @@ def extract_features(dataframe):
         os.system(cmd)
         df = pd.read_csv(out_file, delimiter=';').iloc[:, 2:]
         input.append(df.values)
-        target.append(emotion)
+        target.append(encode[emotion])
     print(session_indices)
     return input, target
 
