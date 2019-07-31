@@ -56,9 +56,9 @@ def train_model(args):
     all_test_acc=[]
     all_class_acc=[]
     for session in range(5):
-        training_data = IEMOCAP(train=True, session=session)
+        training_data = IEMOCAP(session=session, train=True)
         train_loader = DataLoader(dataset=training_data, batch_size=batch_size, shuffle=True, collate_fn=my_collate, num_workers=0, drop_last=True)
-        testing_data = IEMOCAP(train=False, session=session)
+        testing_data = IEMOCAP(session=session, train=False)
         test_loader = DataLoader(dataset=testing_data, batch_size=batch_size, shuffle=True, collate_fn=my_collate, num_workers=0,drop_last=False)
 
         print("============================ Session " + session + " =============================")
