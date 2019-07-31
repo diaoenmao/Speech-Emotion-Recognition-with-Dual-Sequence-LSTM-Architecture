@@ -62,7 +62,7 @@ def train_model(args):
         testing_data = IEMOCAP(session=session, train=False)
         test_loader = DataLoader(dataset=testing_data, batch_size=batch_size, shuffle=True, collate_fn=my_collate, num_workers=0,drop_last=False)
 
-        print("============================ Session " + session + " =============================")
+        print("============================ Session " + str(session) + " =============================")
 
         path="batch_size:{};out_channels:{};kernel_size_cnn:{};weight:{}".format(args.batch_size,out_channels,kernel_size_cnn,weight)
         file_path="/scratch/speech/models/final_classification/"+args.file_path+".txt"
