@@ -21,7 +21,7 @@ def extract_features(dataframe):
     target = []
     for i, (file, emotion) in enumerate(dataframe.values):
         if i % 1000 == 0: print(i)
-        if file[44] != next(dataframe.values)[0][44]:
+        if file[44] != next(iter(dataframe.values))[0][44]:
             session_indices.append(i+1)
         cmd = 'SMILExtract -C {} -I {} -csvoutput {} -headercsv 0'.format(args.config_path, file, out_file)
         os.system(cmd)
