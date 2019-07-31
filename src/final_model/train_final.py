@@ -50,7 +50,7 @@ def train_model(args):
     training_data = IEMOCAP(name='mel', nfft=nfft, train=True)
     train_loader = DataLoader(dataset=training_data, batch_size=batch_size, shuffle=True, collate_fn=my_collate, num_workers=0, drop_last=True)
     testing_data = IEMOCAP(name='mel', nfft=nfft, train=False)
-    test_loader = DataLoader(dataset=testing_data, batch_size=batch_size, shuffle=True, collate_fn=my_collate, num_workers=0,drop_last=False)
+    test_loader = DataLoader(dataset=testing_data, batch_size=batch_size, shuffle=True, collate_fn=my_collate, num_workers=0,drop_last=True)
     model = CNN_FTLSTM(input_channels, out_channels, kernel_size_cnn,
                     stride_size_cnn, kernel_size_pool, stride_size_pool,nfft,
                     hidden_dim,num_layers_ftlstm,weight,args.special,device)
