@@ -91,7 +91,7 @@ class FTLSTMCell(nn.Module):
         self.batchhT=nn.BatchNorm1d(self.hidden_dim)
 
         self.W=nn.Linear(self.inputx_dim+self.inputy_dim+self.hidden_dim,3*self.hidden_dim,bias=True)
-        self.WTc=nn.Linear(self.inputx_dim+self.hidden_dim,self.hidden_dim,bias=True)
+        self.WTc=nn.Linear(self.inputy_dim+self.hidden_dim,self.hidden_dim,bias=True)
         #self.WFc=nn.Linear(self.inputy_dim+self.hidden_dim,self.hidden_dim,bias=True)
 
         self.dropout=nn.Dropout(p=dropout, inplace=False)
@@ -105,10 +105,10 @@ class FTLSTMCell(nn.Module):
         self.batch.weight.data.fill_(0.1)
         #self.batchhT.weight.data.fill_(0.1)
     def forward(self, x,y,hT,CT,time_step):
-        gates=self.batch(torch.sigmoid(self.W(torch.cat([x,y,hT],dim=1))),time=time_step)
+        gates=self.batch(torch.sigmoid(self.W(torch.cat([y,x,hT],dim=1))),time=time_step)
         fT, iT, oT= (gates[:,:self.hidden_dim],gates[:,self.hidden_dim:2*self.hidden_dim],
                         gates[:,2*self.hidden_dim:3*self.hidden_dim])
-        C_T=torch.tanh(self.WTc(torch.cat([x,hT],dim=1)))
+        C_T=torch.tanh(self.WTc(torch.cat([y,hT],dim=1)))
         #C_F=torch.tanh(self.WFc(torch.cat([y,hT],dim=1)))
         CT=fT*CT+iT*C_T
         hT=oT*torch.tanh(CT)
