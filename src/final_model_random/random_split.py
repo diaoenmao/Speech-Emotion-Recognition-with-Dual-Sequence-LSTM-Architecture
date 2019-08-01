@@ -18,6 +18,9 @@ input2 = [input2[i] for i in p]
 target = [target[i] for i in p]
 dict = {'input_lstm': input_lstm, 'input1': input1, 'input2': input2, 'target': target}
 
+def equal_chunks(l, i):
+    return [l[:i], l[i:(2*i)], l[(2*i):(3*i)], l[(3*i):(4*i)], l[(4*i):]]
+
 def check_consistent(hand_dict, spec_512_dict, spec_1024_dict):
     flag = True
     for i in range(len(hand_dict["target"])):
@@ -33,7 +36,8 @@ def check_consistent(hand_dict, spec_512_dict, spec_1024_dict):
         raise ValueError("Datasets inconsistent")
 
 def split_data(data, fold):
-    x = [np.array_split(np.array(data[key]), 5) for key in data.keys()]
+    interval = len(input_lstm) // 5
+    x = [equal_chunks(data[key], interval) for key in data.keys()]
 
     input_lstm_test = x[0][fold]
     input1_test = x[1][fold]
