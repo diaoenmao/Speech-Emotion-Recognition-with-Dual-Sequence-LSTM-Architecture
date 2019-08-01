@@ -51,7 +51,6 @@ class SpectrogramModel(nn.Module):
         self._all_layers = []
         self.num_layers_cnn=len(out_channels)
         for i in range(self.num_layers_cnn):
-            print(strideF)
             name = 'lflb_cell{}'.format(i)
             cell = LFLB(self.in_channels[i], self.out_channels[i], self.kernel_size_cnn, self.stride_cnn,
                         self.padding_cnn[i], self.padding_pool[i],self.kernel_size_pool, self.stride_pool, self.device)
@@ -90,10 +89,10 @@ class MultiSpectrogramModel(nn.Module):
             self.input_dims.append(getattr(self,name).dimension())
             self._all_layers.append(cell)
     def forward(self, input1,input2):
-        input1 = input1.to(self.device)
+        input2 = input2.to(self.device)
         name = 'spec_cell{}'
-        input1 = getattr(self, name.format("0"))(input1)
-        return input1
+        input2 = getattr(self, name.format("0"))(input2)
+        return input2
     def dimension(self):
         return self.input_dims[0]
 
