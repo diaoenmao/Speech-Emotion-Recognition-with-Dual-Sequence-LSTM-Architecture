@@ -5,24 +5,8 @@ import pdb
 import numpy as np
 
 '''
-handcrafted features. and. one. spectrogram 
+ one. spectrogram with 4 layers
 '''
-class LSTM_Audio(nn.Module):
-    def __init__(self, hidden_dim, num_layers, device,dropout_rate=0 ,bidirectional=False):
-        super(LSTM_Audio, self).__init__()
-        self.device = device
-        self.num_features = 39
-        self.hidden_dim = hidden_dim
-        self.num_layers = num_layers
-        self.dropout_rate = dropout_rate
-        self.bidirectional = bidirectional
-        self.lstm = nn.LSTM(self.num_features, self.hidden_dim, self.num_layers, batch_first=True,
-                           dropout=self.dropout_rate, bidirectional=self.bidirectional).to(self.device)
-
-    def forward(self, input):
-        input = input.to(self.device)
-        out, hn = self.lstm(input)
-        return out
 class LFLB(nn.Module):
     def __init__(self, in_channels, out_channels, kernel_size_cnn, stride_cnn, padding_cnn, padding_pool,kernel_size_pool, stride_pool, device):
         super(LFLB, self).__init__()
@@ -127,8 +111,6 @@ class CNN_FTLSTM(nn.Module):
         self.num_layers=2
         self.num_labels=4
         self.weight=nn.Parameter(torch.FloatTensor([weight]),requires_grad=False)
-        self.LSTM_Audio=LSTM_Audio(self.hidden_dim_lstm,self.num_layers,self.device,bidirectional=False)
-        self.classification_hand = nn.Linear(self.hidden_dim_lstm, self.num_labels).to(self.device)
         self.classification_raw=nn.Linear(hidden_dim,self.num_labels).to(self.device)
 
     def forward(self,input_lstm,input1,input2,target,seq_length,train=True):
@@ -139,20 +121,13 @@ class CNN_FTLSTM(nn.Module):
         
         inputx=getattr(self,"cnn")(input1)
         outT=getattr(self,"ftlstm")(inputx.permute(0,2,1)).permute(0,2,1)
-        out_lstm = self.LSTM_Audio(input_lstm).permute(0,2,1)
-        temp = [torch.unsqueeze(torch.mean(out_lstm[k,:,:int(s.item())],dim=1),dim=0) for k,s in enumerate(seq_length)]
-        out_lstm = torch.cat(temp,dim=0)
         out=torch.mean(outT,dim=2)
         out = self.classification_raw(out)
-        out_lstm = self.classification_hand(out_lstm)
         p = self.weight
-        out_final = p*out+(1-p)*out_lstm 
         target_index = torch.argmax(target, dim=1).to(self.device)
-        pred_index = torch.argmax(out_final, dim=1).to(self.device)
-        correct_batch=torch.sum(target_index==torch.argmax(out_final,dim=1))
-        losses_batch_hand=F.cross_entropy(out_lstm,torch.max(target,1)[1])
-        losses_batch_raw=F.cross_entropy(out,torch.max(target,1)[1])
-        losses_batch=p*losses_batch_raw+(1-p)*losses_batch_hand
+        pred_index = torch.argmax(out, dim=1).to(self.device)
+        correct_batch=torch.sum(target_index==torch.argmax(out,dim=1))
+        losses_batch=F.cross_entropy(out,torch.max(target,1)[1])
         correct_batch=torch.unsqueeze(correct_batch,dim=0)
         losses_batch=torch.unsqueeze(losses_batch, dim=0)
         if train:

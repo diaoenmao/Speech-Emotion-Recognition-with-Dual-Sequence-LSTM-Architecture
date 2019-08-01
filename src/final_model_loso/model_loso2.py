@@ -3,6 +3,9 @@ import torch.nn as nn
 import torch.nn.functional as F
 import pdb
 import numpy as np
+'''
+Handcraftd features with one spec with lstm+ batch normalization
+'''
 class SeparatedBatchNorm1d(nn.Module):
     def __init__(self, num_features, max_length, eps=1e-5, momentum=0.1):
         super(SeparatedBatchNorm1d, self).__init__()
