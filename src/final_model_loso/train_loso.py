@@ -25,7 +25,6 @@ def init_parser():
     parser.add_argument('--kernel_size_pool_2','-kp2',default=2,type=int,dest='kernel_size_pool2')
     parser.add_argument('--stride_size_pool', '-sp', default=2, type=int, dest='stride_size_pool')
     parser.add_argument('--weight', '-w', default=0.5, type=float, dest='weight')
-    parser.add_argument('--special', '-special', default="concat", type=str, dest='special')
     parser.add_argument('--file','-f',default="recent",type=str,dest='file_path')
     return parser.parse_args()
 
@@ -36,16 +35,16 @@ def train_model(args):
     batch_size=args.batch_size
     input_channels = 1
     out_channels = [args.out_channels1, args.out_channels2]
-    kernel_size_cnn = [[args.kernel_size_cnn1, args.kernel_size_cnn2],[args.kernel_size_cnn2, args.kernel_size_cnn1]]
-    stride_size_cnn = [[args.stride_size_cnn1, args.stride_size_cnn2],[args.stride_size_cnn2, args.stride_size_cnn1]]
-    kernel_size_pool = [[args.kernel_size_pool1, args.kernel_size_pool2],[args.kernel_size_pool2, args.kernel_size_pool1]]
-    stride_size_pool = [args.stride_size_pool]*2
+    kernel_size_cnn = [args.kernel_size_cnn1, args.kernel_size_cnn2]
+    stride_size_cnn = [args.stride_size_cnn1, args.stride_size_cnn2]
+    kernel_size_pool = [args.kernel_size_pool1, args.kernel_size_pool2]
+    stride_size_pool = args.stride_size_pool
     hidden_dim=200
-    num_layers_ftlstm=1
+    num_layers_ftlstm=2
     hidden_dim_lstm=200
     epoch_num=50
     weight = args.weight
-    nfft = [512,1024]
+    nfft = 512
 
     # Load the training data
     all_test_acc=[]
@@ -53,7 +52,7 @@ def train_model(args):
     for session in range(5):
         model = CNN_FTLSTM(input_channels, out_channels, kernel_size_cnn,
                             stride_size_cnn, kernel_size_pool, stride_size_pool,nfft,
-                            hidden_dim,num_layers_ftlstm,weight,args.special,device)
+                            hidden_dim,num_layers_ftlstm,weight,device)
         print("============================ Number of parameters ====================================")
         print(str(sum(p.numel() for p in model.parameters() if p.requires_grad)))
         training_data = IEMOCAP(session=session, train=True)
