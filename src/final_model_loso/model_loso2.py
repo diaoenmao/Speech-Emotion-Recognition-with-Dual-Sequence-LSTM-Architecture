@@ -193,10 +193,10 @@ class FTLSTM(nn.Module):
                     (hT,CT)=getattr(self, name).init_hidden(bsize)
                     internal_state.append((hT,CT))
                 (hT,CT)=internal_state[i]
+                print(x.shape)
                 x,hT,CT=getattr(self,name)(x,hT,CT,t)
                 internal_state[i]=hT,CT
                 print(i)
-                print(x.shape)
             outputT.append(x)
         return torch.stack(outputT,dim=2)
 class CNN_FTLSTM(nn.Module):
