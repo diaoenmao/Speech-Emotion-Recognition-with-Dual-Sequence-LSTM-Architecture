@@ -186,8 +186,8 @@ def train_model(args):
         print(file_path)
         all_test_acc+=np.sort(np.array(test_acc))[-5:].tolist()
         all_class_acc+=np.sort(np.array(class_acc))[-5:].tolist()
-        best_class_acc+=max(class_acc)
-        best_test_acc+=max(test_acc)
+        best_class_acc.append(max(class_acc))
+        best_test_acc.append(max(test_acc))
     with open("/scratch/speech/models/final_classification_random/checkpoint_stats"+path+".pkl","wb") as pickle_out:
         pickle.dump({"all_test_acc":all_test_acc, "all_class_acc": all_class_acc},pickle_out)
     with open(file_path, 'a+') as f:
