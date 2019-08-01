@@ -57,6 +57,8 @@ def split_data(data, fold):
     train = {'input_lstm': input_lstm_train, 'input1': input1_train, 'input2': input2_train, 'target': target_train}
     test = {'input_lstm': input_lstm_test, 'input1': input1_test, 'input2': input2_test, 'target': target_test}
 
+    return train, test
+
 def create_pickle(dict, fold):
     train, test = split_data(dict, fold)
     with open(dataset_path + 'EMO39_mel_spectrogram_train_{}.pkl'.format(fold), 'wb') as f:
