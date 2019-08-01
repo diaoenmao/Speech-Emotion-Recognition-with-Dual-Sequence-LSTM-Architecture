@@ -175,11 +175,10 @@ class FTLSTM(nn.Module):
         for i in range(num_layers_ftlstm):
             name = 'ftlstm_cell{}'.format(i)
             if i==num_layers_ftlstm-1:
-                cell = FTLSTMCell(inputx_dim,hidden_dim,self.time,last_layer=True)
-                setattr(self, name, cell)
+                cell = FTLSTMCell(hidden_dim,hidden_dim,self.time,last_layer=True)
             else:
-                cell = FTLSTMCell(hidden_dim,hidden_dim,self.time)
-                setattr(self, name, cell)
+                cell = FTLSTMCell(inputx_dim,hidden_dim,self.time)
+            setattr(self, name, cell)
             self._all_layers.append(cell)
     def forward(self,inputx):
         internal_state = []
@@ -193,10 +192,8 @@ class FTLSTM(nn.Module):
                     (hT,CT)=getattr(self, name).init_hidden(bsize)
                     internal_state.append((hT,CT))
                 (hT,CT)=internal_state[i]
-                print(x.shape)
                 x,hT,CT=getattr(self,name)(x,hT,CT,t)
                 internal_state[i]=hT,CT
-                print(i)
             outputT.append(x)
         return torch.stack(outputT,dim=2)
 class CNN_FTLSTM(nn.Module):
