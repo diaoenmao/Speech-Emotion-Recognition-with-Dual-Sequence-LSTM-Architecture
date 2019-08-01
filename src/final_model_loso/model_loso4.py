@@ -61,6 +61,7 @@ class SpectrogramModel(nn.Module):
                         self.padding_cnn[i], self.padding_pool[i],self.kernel_size_pool[i], self.stride_pool[i], self.device)
             setattr(self, name, cell)
             self._all_layers.append(cell)
+            print(strideF)
             strideF=self.cnn_shape(strideF,self.kernel_size_cnn[i][0],self.stride_cnn[i][0],self.padding_cnn[i][0],
                                     self.kernel_size_pool[i][0],self.stride_pool[i][0],self.padding_pool[i][0])
 
@@ -69,6 +70,7 @@ class SpectrogramModel(nn.Module):
         x = input.to(self.device)
         for i in range(self.num_layers_cnn):
             name = 'lflb_cell{}'.format(i)
+            print(x.shape)
             x = getattr(self, name)(x)
         out = torch.flatten(x,start_dim=1,end_dim=2)
         return out
@@ -120,7 +122,6 @@ class CNN_FTLSTM(nn.Module):
         seq_length=seq_length.to(self.device)
         
         inputx=getattr(self,"cnn")(input1)
-        pdb.set_trace()
         outT=getattr(self,"ftlstm")(inputx.permute(0,2,1)).permute(0,2,1)
         out=torch.mean(outT,dim=2)
         out = self.classification_raw(out)
