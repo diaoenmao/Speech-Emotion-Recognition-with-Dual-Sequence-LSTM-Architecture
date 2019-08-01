@@ -52,7 +52,7 @@ class SpectrogramModel(nn.Module):
         self.num_layers_cnn=len(out_channels)
         for i in range(self.num_layers_cnn):
             name = 'lflb_cell{}'.format(i)
-            cell = LFLB(self.in_channels, self.out_channels, self.kernel_size_cnn, self.stride_cnn,
+            cell = LFLB(self.in_channels[i], self.out_channels[i], self.kernel_size_cnn, self.stride_cnn,
                         self.padding_cnn[i], self.padding_pool[i],self.kernel_size_pool, self.stride_pool, self.device)
             setattr(self, name, cell)
             self._all_layers.append(cell)
