@@ -102,7 +102,7 @@ class FTLSTM(nn.Module):
                            dropout=self.dropout_rate, bidirectional=self.bidirectional).to(self.device)
     def forward(self,inputx):
         inputx = inputx.to(self.device)
-        out, hn = self.lstm(inputx)
+        out, hn = self.ftlstm(inputx)
         return out
 class CNN_FTLSTM(nn.Module):
     def __init__(self,in_channels, out_channels, kernel_size_cnn, 
