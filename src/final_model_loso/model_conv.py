@@ -91,9 +91,6 @@ class ConvLSTM(nn.Module):
             setattr(self, name, cell)
             self._all_layers.append(cell)
             self.strideF=self.cnn_shape(self.strideF, self.kernel_size[i][0],self.stride[i][0], self.padding[i][0],self.kernel_size_pool[i],self.stride_pool[i],self.padding_pool[i])
-        self.linear_dim=int(self.out_channels[-1]*self.strideF)
-        self.classification_convlstm = nn.Linear(self.linear_dim, self.num_labels)
-        self.weight= nn.Parameter(torch.tensor(0).float(),requires_grad=False)
     def forward(self,input):
         # input should be a list of inputs, like a time stamp, maybe 1280 for 100 times.
         ##data process here
@@ -118,6 +115,8 @@ class ConvLSTM(nn.Module):
         out=torch.stack(outputs,dim=2)
         # B*dF*T
         return out
+    def dimension(self):
+        return self.strideF
 class CNN_FTLSTM(nn.Module):
     def __init__(self,in_channels, out_channels, kernel_size_cnn, 
                     stride_cnn, kernel_size_pool, stride_pool,nfft,
@@ -126,13 +125,16 @@ class CNN_FTLSTM(nn.Module):
         super(CNN_FTLSTM,self).__init__()
         
         self._all_layers=[]
-        cell=ConvLSTM(input_channels, out_channels, kernel_size, stride_cnn, kernel_size_pool,stride_pool,device)
+        cell=ConvLSTM(input_channels, out_channels[0], kernel_size_cnn[0], stride_cnn[0], kernel_size_pool[0],stride_pool[0],nfft[0],device)
         setattr(self,"cnn",cell)
+        self.strideF=getattr(self,"cnn",cell).dimension()
         self.device=device
         self.hidden_dim_lstm=200
         self.num_layers=2
         self.num_labels=4
         self.weight=nn.Parameter(torch.FloatTensor([weight]),requires_grad=False)
+        self.linear_dim=int(out_channels[-1]*self.strideF)
+        self.classification_convlstm = nn.Linear(self.linear_dim, self.num_labels)
     def forward(self,input_lstm,input1,input2,target,seq_length,train=True):
         input1=input1.to(self.device)
         input2=input2.to(self.device)
