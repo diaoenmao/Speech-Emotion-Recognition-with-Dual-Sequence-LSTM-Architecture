@@ -5,7 +5,7 @@ import pdb
 import numpy as np
 
 '''
- one. spectrogram +lstm
+ 2 spectrograms+2lstm
 '''
 class LFLB(nn.Module):
     def __init__(self, in_channels, out_channels, kernel_size_cnn, stride_cnn, padding_cnn, padding_pool,kernel_size_pool, stride_pool, device):
@@ -74,7 +74,37 @@ class SpectrogramModel(nn.Module):
         return out
     def dimension(self):
         return self.strideF*self.out_channels[-1]
-
+class MultiSpectrogramModel(nn.Module):
+    def __init__(self, in_channels, out_channels, kernel_size_cnn, stride_cnn, kernel_size_pool, stride_pool, device, nfft):
+        super(MultiSpectrogramModel, self).__init__()
+        self.device=device
+        self.in_channels = in_channels
+        self.out_channels = out_channels
+        self.kernel_size_cnn = kernel_size_cnn
+        self.stride_cnn = stride_cnn
+        self.kernel_size_pool = kernel_size_pool
+        self.stride_pool = stride_pool
+        self._all_layers = []
+        self.num_branches = 2
+        self.input_dims=[]
+        self.time_dims=[]
+        for i in range(self.num_branches):
+            name = 'spec_cell{}'.format(i)
+            cell = SpectrogramModel(self.in_channels[i], self.out_channels[i], self.kernel_size_cnn[i], self.stride_cnn[i], self.kernel_size_pool[i], self.stride_pool[i], self.device, nfft[i])
+            setattr(self, name, cell)
+            self.input_dims.append(getattr(self,name).dimension())
+            self.time_dims.append(getattr(self,name).dimension_time())
+            self._all_layers.append(cell)
+        print("time scales after CNN:", self.time_dims)
+    def forward(self, input1,input2):
+        input1 = input1.to(self.device)
+        input2 = input2.to(self.device)
+        name = 'spec_cell{}'
+        input1 = getattr(self, name.format("0"))(input1)
+        input2 = getattr(self, name.format("1"))(input2)
+        return input1, input2
+    def dimension(self):
+        return self.input_dims[0],self.input_dims[1]
 
 class FTLSTM(nn.Module):
     def __init__(self,inputx_dim,hidden_dim,num_layers_ftlstm,device):
@@ -100,34 +130,44 @@ class CNN_FTLSTM(nn.Module):
         super(CNN_FTLSTM,self).__init__()
         
         self._all_layers=[]
-        cell=SpectrogramModel(in_channels, out_channels, kernel_size_cnn, stride_cnn, kernel_size_pool, stride_pool,device, nfft)
+        cell=MultiSpectrogramModel(in_channels, out_channels, kernel_size_cnn, stride_cnn, kernel_size_pool, stride_pool,device, nfft)
         setattr(self,"cnn",cell)
-        inputx_dim=getattr(self,"cnn").dimension()
+        inputx_dim,inputy_dim=getattr(self,"cnn").dimension()
         cell=FTLSTM(inputx_dim,hidden_dim,num_layers_ftlstm,device)
-        setattr(self,"ftlstm",cell)
+        setattr(self,"ftlstm1",cell)
+        cell=FTLSTM(inputy_dim,hidden_dim,num_layers_ftlstm,device)
+        setattr(self,"ftlstm2",cell)
         
         self.device=device
         self.hidden_dim_lstm=200
         self.num_layers=2
         self.num_labels=4
         self.weight=nn.Parameter(torch.FloatTensor([weight]),requires_grad=False)
-        self.classification_raw=nn.Linear(hidden_dim,self.num_labels).to(self.device)
+        self.classification_raw1=nn.Linear(hidden_dim,self.num_labels).to(self.device)
+        self.classification_raw2=nn.Linear(hidden_dim,self.num_labels).to(self.device)
 
     def forward(self,input_lstm,input1,input2,target,seq_length,train=True):
         input1=input1.to(self.device)
+        input2=input2.to(self.device)
         input_lstm=input_lstm.to(self.device)
         target=target.to(self.device)
         seq_length=seq_length.to(self.device)
         
-        inputx=getattr(self,"cnn")(input1)
-        outT=getattr(self,"ftlstm")(inputx.permute(0,2,1)).permute(0,2,1)
-        out=torch.mean(outT,dim=2)
-        out = self.classification_raw(out)
+        inputx,inputy=getattr(self,"cnn")(input1,input2)
+        out1=getattr(self,"ftlstm1")(inputx.permute(0,2,1)).permute(0,2,1)
+        out2=getattr(self,"ftlstm2")(inputy.permute(0,2,1)).permute(0,2,1)
+        out1=torch.mean(out1,dim=2)
+        out2=torch.mean(out2,dim=2)
+        out1 = self.classification_raw1(out1)
+        out2 = self.classification_raw2(out2)
         p = self.weight
+        out_final=p*(out1)+(1-p)*out2
         target_index = torch.argmax(target, dim=1).to(self.device)
-        pred_index = torch.argmax(out, dim=1).to(self.device)
-        correct_batch=torch.sum(target_index==torch.argmax(out,dim=1))
-        losses_batch=F.cross_entropy(out,torch.max(target,1)[1])
+        pred_index = torch.argmax(out_final, dim=1).to(self.device)
+        correct_batch=torch.sum(target_index==torch.argmax(out_final,dim=1))
+        losses_batch1=F.cross_entropy(out1,torch.max(target,1)[1])
+        losses_batch2=F.cross_entropy(out2,torch.max(target,1)[1])
+        losses_batch=p*losses_batch1+(1-p)*losses_batch2
         correct_batch=torch.unsqueeze(correct_batch,dim=0)
         losses_batch=torch.unsqueeze(losses_batch, dim=0)
         if train:

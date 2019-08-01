@@ -46,7 +46,7 @@ def train_model(args):
     kernel_size_cnn=[(2,2)]*4
     stride_size_cnn=[(1,1)]*4
     kernel_size_pool=[(2,2)]*4
-    stride_size_pool=[(1,1)]*2+[(2,2)]*2
+    stride_size_pool=[(2,2)]+[(1,1)]+[(2,2)]+[(1,1)]
     hidden_dim=200
     num_layers_ftlstm=2
     hidden_dim_lstm=200
@@ -80,7 +80,7 @@ def train_model(args):
         model.train()
         ## optimizer
         # Use Adam as the optimizer with learning rate 0.01 to make it fast for testing purposes
-        optimizer = optim.Adam(model.parameters(),lr=0.0001)
+        optimizer = optim.Adam(model.parameters(),lr=0.001)
         optimizer2=optim.SGD(model.parameters(), lr=0.1)
         scheduler = ReduceLROnPlateau(optimizer=optimizer,factor=0.5, patience=2, threshold=1e-3)
         #scheduler2=ReduceLROnPlateau(optimizer=optimizer2, factor=0.5, patience=2, threshold=1e-3)
@@ -184,8 +184,6 @@ def train_model(args):
         print(file_path)
         all_test_acc+=np.sort(np.array(test_acc))[-5:].tolist()
         all_class_acc+=np.sort(np.array(class_acc))[-5:].tolist()
-    with open("/scratch/speech/models/andre_classification/checkpoint_stats"+path+".pkl","wb") as pickle_out:
-        pickle.dump({"all_test_acc":all_test_acc, "all_class_acc": all_class_acc},pickle_out)
     with open(file_path, 'a+') as f:
         f.write("Mean test acc: {:06.5f}; Std. test acc: {:06.5f}; Highest test acc: {:06.5f}".format(np.mean(all_test_acc),np.std(all_test_acc),np.max(all_test_acc)))
         f.write("\n")
