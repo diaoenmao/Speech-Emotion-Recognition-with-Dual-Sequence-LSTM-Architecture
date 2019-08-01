@@ -241,7 +241,7 @@ class FTLSTM(nn.Module):
             outputT.append(x)
         return torch.stack(outputT,dim=2)
 class CNN_FTLSTM(nn.Module):
-    def __init__(self,in_channels, out_channels, kernel_size_cnn, 
+    def __init__(self,in_channels, out_channels, kernel_size_cnn,
                     stride_cnn, kernel_size_pool, stride_pool,nfft,
                     hidden_dim,num_layers_ftlstm,weight,
                     device):
@@ -260,7 +260,7 @@ class CNN_FTLSTM(nn.Module):
         cell=FTLSTM(time,inputx_dim,inputy_dim,hidden_dim,num_layers_ftlstm,device)
         setattr(self,"ftlstm",cell)
         self.weight=nn.Parameter(torch.FloatTensor([weight]),requires_grad=False)
-        self.LSTM_Audio=LSTM_Audio(self.hidden_dim_lstm,self.num_layers,self.device,bidirectional=False)
+        self.LSTM_Audio=LSTM_Audio(self.hidden_dim_lstm,self.num_layers,self.device)
         self.classification_hand = nn.Linear(self.hidden_dim_lstm, self.num_labels).to(self.device)
         self.classification_raw=nn.Linear(hidden_dim,self.num_labels).to(self.device)
 
@@ -281,13 +281,13 @@ class CNN_FTLSTM(nn.Module):
         out = self.classification_raw(out)
         out_lstm = self.classification_hand(out_lstm)
         p = self.weight
-        out_final = p*out+(1-p)*out_lstm 
+        out_final = p*out+(1-p)*out_lstm
         target_index = torch.argmax(target, dim=1).to(self.device)
         pred_index = torch.argmax(out_final, dim=1).to(self.device)
         correct_batch=torch.sum(target_index==torch.argmax(out_final,dim=1))
         losses_batch_hand=F.cross_entropy(out_lstm,torch.max(target,1)[1])
         losses_batch_raw=F.cross_entropy(out,torch.max(target,1)[1])
-        losses_batch=p*losses_batch_raw+(1-p)*losses_batch_hand  
+        losses_batch=p*losses_batch_raw+(1-p)*losses_batch_hand
         correct_batch=torch.unsqueeze(correct_batch,dim=0)
         losses_batch=torch.unsqueeze(losses_batch, dim=0)
         if train:
