@@ -42,10 +42,10 @@ def train_model(args):
     stride_size_pool = args.stride_size_pool
     '''
     out_channels=[16,64,64,16]
-    kernel_size_cnn=[2]*4
-    stride_size_cnn=[1]*4
-    kernel_size_pool=[2,2,2,2]
-    stride_size_pool=[1,1,2,2]
+    kernel_size_cnn=[(2,2)]*4
+    stride_size_cnn=[(1,1)]*4
+    kernel_size_pool=[(2,2)]*4
+    stride_size_pool=[(1,1)]*2+[(2,2)]*2
     hidden_dim=200
     num_layers_ftlstm=2
     hidden_dim_lstm=200
@@ -129,7 +129,7 @@ def train_model(args):
             output = []
             y_true = []
             y_pred = []
-            torch.save(model.module.state_dict(), "/scratch/speech/models/andre_checkpoint/Session_{}_path_{}_epoch_{}.pt".format(session,path,epoch+1))
+            #torch.save(model.module.state_dict(), "/scratch/speech/models/andre_checkpoint/Session_{}_path_{}_epoch_{}.pt".format(session,path,epoch+1))
             model.eval()
             with torch.no_grad():
                 for j,(input_lstm, input1, input2, target, seq_length) in enumerate(test_loader):

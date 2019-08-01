@@ -45,9 +45,9 @@ class SpectrogramModel(nn.Module):
         self.out_channels = out_channels
         self.kernel_size_cnn = kernel_size_cnn
         self.stride_cnn = stride_cnn
-        self.padding_cnn =[(int((self.kernel_size_cnn[0]-1)/2),int((self.kernel_size_cnn[1]-1)/2)) for i in range(len(out_channels))]
+        self.padding_cnn =[(int((self.kernel_size_cnn[i][0]-1)/2),int((self.kernel_size_cnn[i][1]-1)/2)) for i in range(len(out_channels))]
         self.kernel_size_pool = kernel_size_pool
-        self.padding_pool=[(int((self.kernel_size_pool[0]-1)/2),int((self.kernel_size_pool[1]-1)/2)) for i in range(len(out_channels))]
+        self.padding_pool=[(int((self.kernel_size_pool[i][0]-1)/2),int((self.kernel_size_pool[i][1]-1)/2)) for i in range(len(out_channels))]
         self.stride_pool = stride_pool
 # data shape
         self.nfft = nfft
@@ -57,12 +57,12 @@ class SpectrogramModel(nn.Module):
         self.num_layers_cnn=len(out_channels)
         for i in range(self.num_layers_cnn):
             name = 'lflb_cell{}'.format(i)
-            cell = LFLB(self.in_channels[i], self.out_channels[i], self.kernel_size_cnn, self.stride_cnn,
-                        self.padding_cnn[i], self.padding_pool[i],self.kernel_size_pool, self.stride_pool, self.device)
+            cell = LFLB(self.in_channels[i], self.out_channels[i], self.kernel_size_cnn[i], self.stride_cnn[i],
+                        self.padding_cnn[i], self.padding_pool[i],self.kernel_size_pool[i], self.stride_pool[i], self.device)
             setattr(self, name, cell)
             self._all_layers.append(cell)
-            strideF=self.cnn_shape(strideF,self.kernel_size_cnn[0],self.stride_cnn[0],self.padding_cnn[i][0],
-                                    self.kernel_size_pool[0],self.stride_pool,self.padding_pool[i][0])
+            strideF=self.cnn_shape(strideF,self.kernel_size_cnn[i][0],self.stride_cnn[i][0],self.padding_cnn[i][0],
+                                    self.kernel_size_pool[i][0],self.stride_pool[i][0],self.padding_pool[i][0])
 
         self.strideF=strideF
     def forward(self, input):
