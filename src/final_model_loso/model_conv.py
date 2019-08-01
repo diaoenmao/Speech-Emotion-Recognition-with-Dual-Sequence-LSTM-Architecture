@@ -87,7 +87,7 @@ class ConvLSTM(nn.Module):
         self.padding_pool=[(int((self.kernel_size_pool[0]-1)/2),int((self.kernel_size_pool[1]-1)/2)) for i in range(self.num_layers)]
         for i in range(self.num_layers):
             name = 'cell{}'.format(i)
-            cell = ConvLSTMCell(self.in_channels[i], self.out_channels[i], self.kernel_size_cnn[0],self.stride_cnn[0],self.kernel_size_pool[0],self.stride_pool[0],self.padding_cnn[i][0],self.padding_pool[i][0],self.device)
+            cell = ConvLSTMCell(self.in_channels[i], self.out_channels[i], self.kernel_size_cnn[0],self.stride_cnn[0],self.kernel_size_pool[0],self.stride_pool,self.padding_cnn[i][0],self.padding_pool[i][0],self.device)
             setattr(self, name, cell)
             self._all_layers.append(cell)
             strideF=self.cnn_shape(strideF,self.kernel_size_cnn[0],self.stride_cnn[0],self.padding_cnn[i][0],
