@@ -74,7 +74,7 @@ def train_model(args):
         print("============================ session " + str(session) + " =============================")
 
         path="model:{};batch_size:{};out_channels:{};kernel_size_cnn:{};weight:{};lr:{}".format(args.model,args.batch_size,out_channels,kernel_size_cnn,weight,args.lr)
-        file_path="/scratch/speech/models/final_classification_random/"+args.file_path+".txt"
+        file_path="/scratch/speech/models/final_classification_loso/"+args.file_path+".txt"
         with open(file_path,"a+") as f:
             f.write("\n"+"============ model starts, session {} ===========".format(session))
             f.write("\n"+"model_parameters: "+str(sum(p.numel() for p in model.parameters() if p.requires_grad))+"\n"+path+"\n")
