@@ -87,7 +87,7 @@ class ConvLSTM(nn.Module):
         self.padding_pool=[(int((self.kernel_size_pool[0]-1)/2),int((self.kernel_size_pool[1]-1)/2)) for i in range(self.num_layers)]
         for i in range(self.num_layers):
             name = 'cell{}'.format(i)
-            cell = ConvLSTMCell(self.in_channels[i], self.out_channels[i], self.kernel_size_cnn,self.stride_cnn,self.kernel_size_pool,self.stride_pool,self.padding_cnn[i],self.padding_pool[i],self.device)
+            cell = ConvLSTMCell(self.in_channels[i], self.out_channels[i], self.kernel_size_cnn[0],self.stride_cnn[0],self.kernel_size_pool[0],self.stride_pool[0],self.padding_cnn[i][0],self.padding_pool[i][0],self.device)
             setattr(self, name, cell)
             self._all_layers.append(cell)
             strideF=self.cnn_shape(strideF,self.kernel_size_cnn[0],self.stride_cnn[0],self.padding_cnn[i][0],
@@ -96,7 +96,7 @@ class ConvLSTM(nn.Module):
     def forward(self,input):
         # input should be a list of inputs, like a time stamp, maybe 1280 for 100 times.
         ##data process here
-        step=input.shape[2]
+        step=input.shape[3]
         internal_state = []
         outputs = []
         for s in range(step):
@@ -143,6 +143,7 @@ class CNN_FTLSTM(nn.Module):
         input_lstm=input_lstm.to(self.device)
         target=target.to(self.device)
         seq_length=seq_length.to(self.device)
+
         inputx=getattr(self,"cnn")(input1)
         inputx=torch.mean(inputx,dim=2)
         out1=self.classification_convlstm(inputx)
