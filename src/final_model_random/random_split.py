@@ -11,11 +11,11 @@ input2 = data['input2']
 target = data['target']
 
 p = np.random.permutation(len(input_lstm))
-input_lstm = input_lstm[p]
-input1 = input1[p]
-input2 = input2[p]
-target = target[p]
-dict = {'input_lstm': input_lstm, 'input1': input1, 'input2': input2, 'target': target}
+input_lstm = np.array(input_lstm)[p]
+input1 = np.array(input1)[p]
+input2 = np.array(input2)[p]
+target = np.array(target)[p]
+dict = {'input_lstm': input_lstm.tolist(), 'input1': input1.tolist(), 'input2': input2.tolist(), 'target': target.tolist()}
 
 def check_consistent(hand_dict, spec_512_dict, spec_1024_dict):
     flag = True
