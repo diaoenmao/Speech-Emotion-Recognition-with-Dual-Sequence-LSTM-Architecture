@@ -10,13 +10,13 @@ input_lstm = data['input_lstm']
 input1 = data['input1']
 input2 = data['input2']
 target = data['target']
-pdb.set_trace()
-p = np.random.permutation(len(input_lstm))
-input_lstm = np.stack(input_lstm)[p]
-input1 = np.array(input1)[p]
-input2 = np.array(input2)[p]
-target = np.array(target)[p]
-dict = {'input_lstm': input_lstm.tolist(), 'input1': input1.tolist(), 'input2': input2.tolist(), 'target': target.tolist()}
+
+p = np.random.permutation(len(input_lstm)).tolist()
+input_lstm = [input_lstm[i] for i in p]
+input1 = [input1[i] for i in p]
+input2 = [input2[i] for i in p]
+target = [target[i] for i in p]
+dict = {'input_lstm': input_lstm, 'input1': input1, 'input2': input2, 'target': target}
 
 def check_consistent(hand_dict, spec_512_dict, spec_1024_dict):
     flag = True
