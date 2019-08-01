@@ -227,7 +227,7 @@ class FTLSTM(nn.Module):
         for i in range(num_layers_ftlstm):
             name = 'ftlstm_cell{}'.format(i)
             if i==num_layers_ftlstm-1:
-                cell = FTLSTMCell(hidden_dim,inputy_dim,hidden_dim,self.time)
+                cell = FTLSTMCell(hidden_dim,hidden_dim,hidden_dim,self.time)
             else:
                 cell = FTLSTMCell(inputx_dim,inputy_dim,hidden_dim,self.time)
             setattr(self, name, cell)
