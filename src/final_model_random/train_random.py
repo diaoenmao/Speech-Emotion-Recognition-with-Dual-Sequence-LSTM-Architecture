@@ -32,19 +32,18 @@ def train_model(args):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     device_ids=[0,1,2,3]
     num_devices=len(device_ids)
-    batch_size=8
+    batch_size=args.batch_size
     input_channels = 1
     out_channels = [args.out_channels1, args.out_channels2]
-    kernel_size_cnn = [args.kernel_size_cnn1, args.kernel_size_cnn2]
-    stride_size_cnn = [args.stride_size_cnn1, args.stride_size_cnn2]
-    kernel_size_pool = [args.kernel_size_pool1, args.kernel_size_pool2]
-    stride_size_pool = args.stride_size_pool
+    kernel_size_cnn = [[args.kernel_size_cnn1, args.kernel_size_cnn2],[args.kernel_size_cnn2, args.kernel_size_cnn1]]
+    stride_size_cnn = [[args.stride_size_cnn1, args.stride_size_cnn2],[args.stride_size_cnn2, args.stride_size_cnn1]]
+    kernel_size_pool = [[args.kernel_size_pool1, args.kernel_size_pool2],[args.kernel_size_pool2, args.kernel_size_pool1]]
+    stride_size_pool = [args.stride_size_pool]*2
     hidden_dim=200
     num_layers_ftlstm=2
     hidden_dim_lstm=200
     epoch_num=50
-    weight = args.weight
-    nfft = [512, 1024]
+    nfft=[512,1024]
 
     # Load the training data
     all_test_acc=[]
