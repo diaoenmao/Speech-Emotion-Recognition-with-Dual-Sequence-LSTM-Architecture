@@ -1,5 +1,6 @@
 import pickle
 import numpy as np
+import pdb
 
 dataset_path = '/scratch/speech/final_dataset_random/'
 f = open('/scratch/speech/final_dataset/EMO39_mel_spectrogram_full.pkl', 'rb')
@@ -9,9 +10,9 @@ input_lstm = data['input_lstm']
 input1 = data['input1']
 input2 = data['input2']
 target = data['target']
-
+pdb.set_trace()
 p = np.random.permutation(len(input_lstm))
-input_lstm = np.array(input_lstm)[p]
+input_lstm = np.stack(input_lstm)[p]
 input1 = np.array(input1)[p]
 input2 = np.array(input2)[p]
 target = np.array(target)[p]
