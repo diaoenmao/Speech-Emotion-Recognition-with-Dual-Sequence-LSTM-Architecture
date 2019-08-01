@@ -82,15 +82,12 @@ class MultiSpectrogramModel(nn.Module):
         self._all_layers = []
         self.num_branches = 1
         self.input_dims=[]
-        self.time_dims=[]
         for i in range(self.num_branches):
             name = 'spec_cell{}'.format(i)
             cell = SpectrogramModel(self.in_channels, self.out_channels, self.kernel_size_cnn[i], self.stride_cnn[i], self.kernel_size_pool[i], self.stride_pool[i], self.device, nfft[i])
             setattr(self, name, cell)
             self.input_dims.append(getattr(self,name).dimension())
-            self.time_dims.append(getattr(self,name).dimension_time())
             self._all_layers.append(cell)
-        print("time scales after CNN:", self.time_dims)
     def forward(self, input1,input2):
         input1 = input1.to(self.device)
         name = 'spec_cell{}'
