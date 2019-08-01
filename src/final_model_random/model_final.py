@@ -36,12 +36,12 @@ class SeparatedBatchNorm1d(nn.Module):
             weight=self.weight, bias=self.bias, training=self.training,
             momentum=self.momentum, eps=self.eps)
 class LSTM_Audio(nn.Module):
-    def __init__(self, device,dropout_rate=0 ,bidirectional=False):
+    def __init__(self, hidden_dim,num_layers,device,dropout_rate=0 ,bidirectional=False):
         super(LSTM_Audio, self).__init__()
         self.device = device
         self.num_features = 39
-        self.hidden_dim = 200
-        self.num_layers = 2
+        self.hidden_dim = hidden_dim
+        self.num_layers = num_layers
         self.dropout_rate = dropout_rate
         self.bidirectional = bidirectional
         self.lstm = nn.LSTM(self.num_features, self.hidden_dim, self.num_layers, batch_first=True,
