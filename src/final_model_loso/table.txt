@@ -1,0 +1,3 @@
+model_loso3: Mean test acc: 0.5620355478370963Std. test acc: 0.01100437294043668Mean class acc: 0.5705588026591121Std. class acc: 0.014602316166380582 (top 10)
+
+model_loso4:
