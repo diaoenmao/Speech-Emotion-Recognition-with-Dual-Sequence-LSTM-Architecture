@@ -120,6 +120,7 @@ class CNN_FTLSTM(nn.Module):
         seq_length=seq_length.to(self.device)
         
         inputx=getattr(self,"cnn")(input1)
+        pdb.set_trace()
         outT=getattr(self,"ftlstm")(inputx.permute(0,2,1)).permute(0,2,1)
         out=torch.mean(outT,dim=2)
         out = self.classification_raw(out)
