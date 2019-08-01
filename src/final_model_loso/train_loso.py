@@ -36,6 +36,7 @@ def train_model(args):
     if args.model=="loso3": from model_loso3 import CNN_FTLSTM
     if args.model=="loso4": from model_loso4 import CNN_FTLSTM
     if args.model=="loso5": from model_loso5 import CNN_FTLSTM
+    if args.model=="conv": from model_conv import CNN_FTLSTM
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     if torch.cuda.is_available():torch.cuda.manual_seed_all(999)
     np.random.seed(999)

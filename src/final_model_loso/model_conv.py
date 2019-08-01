@@ -6,9 +6,9 @@ import numpy as np
 from torch.nn.utils.rnn import pad_packed_sequence, pad_sequence, pack_padded_sequence
 
 class ConvLSTMCell(nn.Module):
-    def __init__(self, input_channels, out_channels, kernel_size, stride_cnn,kernel_size_pool, stride_pool,padding,padding_pool,device):
+    def __init__(self, in_channels, out_channels, kernel_size, stride_cnn,kernel_size_pool, stride_pool,padding,padding_pool,device):
         super(ConvLSTMCell, self).__init__()
-        self.input_channels = input_channels
+        self.in_channels = in_channels
         self.out_channels = out_channels
         self.kernel_size = kernel_size
         self.stride=stride_cnn
@@ -17,16 +17,16 @@ class ConvLSTMCell(nn.Module):
         self.stride_pool=stride_pool
         self.padding_pool=padding_pool
 
-        self.Wxi = nn.Conv1d(self.input_channels, self.out_channels, self.kernel_size, self.stride,self.padding,  bias=True)
+        self.Wxi = nn.Conv1d(self.in_channels, self.out_channels, self.kernel_size, self.stride,self.padding,  bias=True)
         self.Whi = nn.Conv1d(self.out_channels, self.out_channels, self.kernel_size, self.stride, self.padding, bias=False)
 
-        self.Wxf = nn.Conv1d(self.input_channels, self.out_channels, self.kernel_size, self.stride,self.padding,  bias=True)
+        self.Wxf = nn.Conv1d(self.in_channels, self.out_channels, self.kernel_size, self.stride,self.padding,  bias=True)
         self.Whf = nn.Conv1d(self.out_channels, self.out_channels, self.kernel_size, self.stride,self.padding, bias=False)
 
-        self.Wxc = nn.Conv1d(self.input_channels, self.out_channels, self.kernel_size, self.stride, self.padding, bias=True)
+        self.Wxc = nn.Conv1d(self.in_channels, self.out_channels, self.kernel_size, self.stride, self.padding, bias=True)
         self.Whc = nn.Conv1d(self.out_channels, self.out_channels, self.kernel_size, self.stride, self.padding, bias=False)
 
-        self.Wxo = nn.Conv1d(self.input_channels, self.out_channels, self.kernel_size, self.stride,self.padding,  bias=True)
+        self.Wxo = nn.Conv1d(self.in_channels, self.out_channels, self.kernel_size, self.stride,self.padding,  bias=True)
         self.Who = nn.Conv1d(self.out_channels, self.out_channels, self.kernel_size, self.stride, self.padding, bias=False)
 
         self.max_pool = nn.MaxPool1d(self.kernel_size_pool, stride=self.stride_pool, padding=self.padding_pool)
@@ -60,21 +60,20 @@ class ConvLSTMCell(nn.Module):
 
 
 class ConvLSTM(nn.Module):
-    # input_channels corresponds to the first input feature map
+    # in_channels corresponds to the first input feature map
     # hidden state is a list of succeeding lstm layers.
     # kernel size is also a list, same length as out_channels
     def cnn_shape(self,x,kc,sc,pc,km,sm,pm):
         temp = int((x+2*pc-kc)/sc+1)
         temp=int((temp+2*pm-km)/sm+1)
         return temp
-    def __init__(self, input_channels, out_channels, kernel_size, stride_cnn, kernel_size_pool,stride_pool,nfft,device):
+    def __init__(self, in_channels, out_channels, kernel_size_cnn, stride_cnn, kernel_size_pool,stride_pool,nfft,device):
         super(ConvLSTM, self).__init__()
         self.device= device
-        self.input_channels = [input_channels] + out_channels
+        self.in_channels = [in_channels] + out_channels
         self.out_channels = out_channels
-        self.kernel_size = kernel_size
+        self.kernel_size_cnn = kernel_size_cnn
         self.stride_cnn=stride_cnn
-        self.padding = [int((k-1) / 2) for k in self.kernel_size]
         self.num_layers = len(out_channels)
         self._all_layers = []
         self.num_labels=4
@@ -82,15 +81,18 @@ class ConvLSTM(nn.Module):
         self.num_layers_lstm = 2
         self.kernel_size_pool=kernel_size_pool
         self.stride_pool=stride_pool
-        self.padding_pool=[int((kp-1)/2) for kp in self.kernel_size_pool]
         self.nfft = nfft
-        self.strideF = self.nfft//4
+        strideF = self.nfft//4
+        self.padding_cnn =[(int((self.kernel_size_cnn[0]-1)/2),int((self.kernel_size_cnn[1]-1)/2)) for i in range(self.num_layers)]
+        self.padding_pool=[(int((self.kernel_size_pool[0]-1)/2),int((self.kernel_size_pool[1]-1)/2)) for i in range(self.num_layers)]
         for i in range(self.num_layers):
             name = 'cell{}'.format(i)
-            cell = ConvLSTMCell(self.input_channels[i], self.out_channels[i], self.kernel_size[i],stride_cnn[i],self.kernel_size_pool[i],self.stride_pool[i],self.padding[i],self.padding_pool[i],self.device)
+            cell = ConvLSTMCell(self.in_channels[i], self.out_channels[i], self.kernel_size_cnn,self.stride_cnn,self.kernel_size_pool,self.stride_pool,self.padding_cnn[i],self.padding_pool[i],self.device)
             setattr(self, name, cell)
             self._all_layers.append(cell)
-            self.strideF=self.cnn_shape(self.strideF, self.kernel_size[i][0],self.stride[i][0], self.padding[i][0],self.kernel_size_pool[i],self.stride_pool[i],self.padding_pool[i])
+            strideF=self.cnn_shape(strideF,self.kernel_size_cnn[0],self.stride_cnn[0],self.padding_cnn[i][0],
+                                   self.kernel_size_pool[0],self.stride_pool,self.padding_pool[i][0])
+        self.strideF=strideF
     def forward(self,input):
         # input should be a list of inputs, like a time stamp, maybe 1280 for 100 times.
         ##data process here
@@ -125,7 +127,7 @@ class CNN_FTLSTM(nn.Module):
         super(CNN_FTLSTM,self).__init__()
         
         self._all_layers=[]
-        cell=ConvLSTM(input_channels, out_channels[0], kernel_size_cnn[0], stride_cnn[0], kernel_size_pool[0],stride_pool[0],nfft[0],device)
+        cell=ConvLSTM(in_channels, out_channels, kernel_size_cnn[0], stride_cnn[0], kernel_size_pool[0],stride_pool[0],nfft[0],device)
         setattr(self,"cnn",cell)
         self.strideF=getattr(self,"cnn",cell).dimension()
         self.device=device
@@ -141,8 +143,9 @@ class CNN_FTLSTM(nn.Module):
         input_lstm=input_lstm.to(self.device)
         target=target.to(self.device)
         seq_length=seq_length.to(self.device)
-        
-        inputx=getattr(self,"cnn")(input1,input2)
+        inputx=getattr(self,"cnn")(input1)
+        inputx=torch.mean(inputx,dim=2)
+        out1=self.classification_convlstm(inputx)
         p = self.weight
         out_final=out1
         target_index = torch.argmax(target, dim=1).to(self.device)

@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import pdb
 import numpy as np
-
+# 1 LSTM_CNN. 1 spec
 class LFLB(nn.Module):
     def __init__(self, in_channels, out_channels, kernel_size_cnn, stride_cnn, padding_cnn, padding_pool,kernel_size_pool, stride_pool, device):
         super(LFLB, self).__init__()
