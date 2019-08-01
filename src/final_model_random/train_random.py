@@ -1,7 +1,7 @@
 import torch
 from torch import optim
-from model_loso3 import CNN_FTLSTM
-from process_loso import IEMOCAP, my_collate
+from model_final import CNN_FTLSTM
+from process_random import IEMOCAP, my_collate
 from torch.utils.data import DataLoader
 from torch.optim.lr_scheduler import ReduceLROnPlateau, CosineAnnealingLR, MultiStepLR
 import pdb
