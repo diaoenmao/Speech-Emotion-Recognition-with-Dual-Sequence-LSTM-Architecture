@@ -122,7 +122,7 @@ class CNN_FTLSTM(nn.Module):
         self._all_layers=[]
         cell=MultiSpectrogramModel(in_channels, out_channels, kernel_size_cnn, stride_cnn, kernel_size_pool, stride_pool,device, nfft)
         setattr(self,"cnn",cell)
-        inputx_dim,inputy_dim=getattr(self,"cnn").dimension()
+        inputx_dim=getattr(self,"cnn").dimension()
         cell=FTLSTM(inputx_dim,hidden_dim,num_layers_ftlstm,device)
         setattr(self,"ftlstm1",cell) 
         self.device=device
