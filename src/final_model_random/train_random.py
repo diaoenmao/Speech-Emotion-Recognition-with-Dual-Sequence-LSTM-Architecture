@@ -44,7 +44,7 @@ def train_model(args):
     hidden_dim_lstm=200
     epoch_num=50
     nfft=[512,1024]
-
+    weight = args.weight
     # Load the training data
     all_test_acc=[]
     all_class_acc=[]
