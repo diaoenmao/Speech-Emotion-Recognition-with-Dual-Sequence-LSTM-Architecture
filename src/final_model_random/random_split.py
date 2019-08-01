@@ -55,7 +55,7 @@ def split_data(data, fold):
     target_train = sum(x[3], [])
 
     train = {'input_lstm': input_lstm_train, 'input1': input1_train, 'input2': input2_train, 'target': target_train}
-    test = {'input_lstm': input_lstm_test.tolist(), 'input1': input1_test.tolist(), 'input2': input2_test.tolist(), 'target': target_test.tolist()}
+    test = {'input_lstm': input_lstm_test, 'input1': input1_test, 'input2': input2_test, 'target': target_test}
 
 def create_pickle(dict, fold):
     train, test = split_data(dict, fold)
