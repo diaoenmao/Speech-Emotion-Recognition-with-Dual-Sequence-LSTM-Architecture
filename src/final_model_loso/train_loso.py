@@ -35,6 +35,7 @@ def train_model(args):
     if args.model=="loso2": from model_loso2 import CNN_FTLSTM
     if args.model=="loso3": from model_loso3 import CNN_FTLSTM
     if args.model=="loso4": from model_loso4 import CNN_FTLSTM
+    if args.model=="loso5": from model_loso5 import CNN_FTLSTM
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     if torch.cuda.is_available():torch.cuda.manual_seed_all(999)
     np.random.seed(999)
@@ -72,7 +73,7 @@ def train_model(args):
 
         print("============================ session " + str(session) + " =============================")
 
-        path="model:{};batch_size:{};out_channels:{};kernel_size_cnn:{};weight:{};lr{}".format(args.model,args.batch_size,out_channels,kernel_size_cnn,weight,args.lr)
+        path="model:{};batch_size:{};out_channels:{};kernel_size_cnn:{};weight:{};lr:{}".format(args.model,args.batch_size,out_channels,kernel_size_cnn,weight,args.lr)
         file_path="/scratch/speech/models/final_classification_random/"+args.file_path+".txt"
         with open(file_path,"a+") as f:
             f.write("\n"+"============ model starts, session {} ===========".format(session))
