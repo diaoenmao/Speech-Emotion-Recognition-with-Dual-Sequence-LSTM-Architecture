@@ -1,3 +1,5 @@
 model_loso3: Mean test acc: 0.5620355478370963Std. test acc: 0.01100437294043668Mean class acc: 0.5705588026591121Std. class acc: 0.014602316166380582 (top 10)
 
-model_loso4:
+model_loso4: with nfft=512, 4. layers
+out_channels:[16, 64, 64, 16];kernel_size_cnn:[(2, 2), (2, 2), (2, 2), (2, 2)];stride_size_cnn:[(1, 1), (1, 1), (1, 1), (1, 1)];kernel_size_pool:[(2, 2), (2, 2), (2, 2), (2, 2)];stride_size_pool:[(1, 1), (1, 1), (2, 2), (2, 2)]
+
