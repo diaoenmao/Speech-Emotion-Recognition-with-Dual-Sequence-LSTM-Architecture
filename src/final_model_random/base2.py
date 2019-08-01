@@ -57,7 +57,7 @@ class SpectrogramModel(nn.Module):
             setattr(self, name, cell)
             self._all_layers.append(cell)
             strideF=self.cnn_shape(strideF,self.kernel_size_cnn[0],self.stride_cnn[0],self.padding_cnn[i][0],
-                                    self.kernel_size_pool[0],self.stride_pool[0],self.padding_pool[i][0])
+                                    self.kernel_size_pool[0],self.stride_pool,self.padding_pool[i][0])
 
         self.strideF=strideF
     def forward(self, input):
