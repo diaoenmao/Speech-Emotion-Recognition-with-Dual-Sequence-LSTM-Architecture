@@ -78,19 +78,17 @@ class LFLB(nn.Module):
         return out
 
 class FTLSTMCell(nn.Module):
-    def __init__(self,  inputx_dim,inputy_dim,hidden_dim, max_length, dropout=0,last_layer=False):
+    def __init__(self,  inputx_dim,hidden_dim, max_length, dropout=0,last_layer=False):
         # inputx, inputy should be one single time step, B*D
         super(FTLSTMCell, self).__init__()
         self.max_length = max_length
         self.hidden_dim=hidden_dim
         self.inputx_dim=inputx_dim
-        self.inputy_dim=inputy_dim
         # BN parameters
-        self.batch = SeparatedBatchNorm1d(num_features=3 * self.hidden_dim, max_length=max_length)
+        self.batch = SeparatedBatchNorm1d(num_features=4 * self.hidden_dim, max_length=max_length)
         self.batchhT = nn.BatchNorm1d(self.hidden_dim)
 
-        self.W=nn.Linear(self.inputx_dim+self.hidden_dim,3*self.hidden_dim,bias=True)
-        self.WTc=nn.Linear(self.inputx_dim+self.hidden_dim,self.hidden_dim,bias=True)
+        self.W=nn.Linear(self.inputx_dim+self.hidden_dim,4*self.hidden_dim,bias=True)
 
         self.dropout=nn.Dropout(p=dropout, inplace=False)
         self.device=torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -100,11 +98,10 @@ class FTLSTMCell(nn.Module):
         self.batch.reset_parameters()
         self.batch.bias.data.fill_(0)
         self.batch.weight.data.fill_(0.1)
-    def forward(self, x,y,hT,CT,time_step):
+    def forward(self, x,hT,CT,time_step):
         gates=self.batch(torch.sigmoid(self.W(torch.cat([x,hT],dim=1))),time=time_step)
-        fT, iT, oT= (gates[:,:self.hidden_dim],gates[:,self.hidden_dim:2*self.hidden_dim],
-                                gates[:,2*self.hidden_dim:3*self.hidden_dim])
-        C_T=torch.tanh(self.WTc(torch.cat([x,hT],dim=1)))
+        fT, iT, C_T,oT= (gates[:,:self.hidden_dim],gates[:,self.hidden_dim:2*self.hidden_dim],
+                                gates[:,2*self.hidden_dim:3*self.hidden_dim],gates[:,3*self.hidden_dim:4*self.hidden_dim])
         CT=fT*CT+iT*C_T
         hT=oT*torch.tanh(CT)
         if self.last_layer:
@@ -165,78 +162,30 @@ class SpectrogramModel(nn.Module):
     def dimension_time(self):
         return self.time
 
-class MultiSpectrogramModel(nn.Module):
-    def __init__(self, in_channels, out_channels, kernel_size_cnn, stride_cnn, kernel_size_pool, stride_pool, device, nfft):
-        super(MultiSpectrogramModel, self).__init__()
-        self.device=device
-        self.in_channels = in_channels
-        self.out_channels = out_channels
-        self.kernel_size_cnn = kernel_size_cnn
-        self.stride_cnn = stride_cnn
-        self.kernel_size_pool = kernel_size_pool
-        self.stride_pool = stride_pool
-        self._all_layers = []
-        self.num_branches = 1
-        self.input_dims=[]
-        self.time_dims=[]
-        for i in range(self.num_branches):
-            name = 'spec_cell{}'.format(i)
-            cell = SpectrogramModel(self.in_channels, self.out_channels, self.kernel_size_cnn[i], self.stride_cnn[i], self.kernel_size_pool[i], self.stride_pool[i], self.device, nfft[i])
-            setattr(self, name, cell)
-            self.input_dims.append(getattr(self,name).dimension())
-            self.time_dims.append(getattr(self,name).dimension_time())
-            self._all_layers.append(cell)
-        print("time scales after CNN:", self.time_dims)
-    '''
-    def alignment(self,input1,input2):
-        # input2 has less time steps
-        temp=[]
-        input2=input2[:,:,:((input1.shape[2])//2-1)]
-        for i in range(input2.shape[2]):
-            temp1=torch.mean(input1[:,:,(2*i):(2*i+3)],dim=2)
-            temp.append(temp1)
-        inputx=torch.stack(temp,dim=2)
-        inputy=input2
-        return inputx,inputy
-    '''
-    def forward(self, input1):
-        input1 = input1.to(self.device)
-        #input2 = input2.to(self.device)
-        name = 'spec_cell{}'
-        input1 = getattr(self, name.format("0"))(input1)
-        #input2 = getattr(self, name.format("1"))(input2)
-        #input1,input2=self.alignment(input1,input2)
-        return input1
-    def dimension(self):
-        return self.input_dims[0]#,self.input_dims[1]
-    def dimension_time(self):
-        temp=self.time_dims[0]
-        return temp
+
 class FTLSTM(nn.Module):
-    def __init__(self,time,inputx_dim,inputy_dim,hidden_dim,num_layers_ftlstm,device):
+    def __init__(self,time,inputx_dim,hidden_dim,num_layers_ftlstm,device):
         super(FTLSTM,self).__init__()
         self._all_layers=[]
         self.device=device
         self.time=time
         self.inputx_dim=inputx_dim
-        self.inputy_dim=inputy_dim
         self.hidden_dim=hidden_dim
         self.num_layers_ftlstm=num_layers_ftlstm
         for i in range(num_layers_ftlstm):
             name = 'ftlstm_cell{}'.format(i)
             if i==num_layers_ftlstm-1:
-                cell = FTLSTMCell(inputx_dim,inputy_dim,hidden_dim,self.time,last_layer=True)
+                cell = FTLSTMCell(inputx_dim,hidden_dim,self.time,last_layer=True)
                 setattr(self, name, cell)
             else:
-                cell = FTLSTMCell(hidden_dim,inputy_dim,hidden_dim,self.time)
+                cell = FTLSTMCell(hidden_dim,hidden_dim,self.time)
                 setattr(self, name, cell)
             self._all_layers.append(cell)
-    def forward(self,inputx,inputy):
+    def forward(self,inputx):
         internal_state = []
         outputT = []
         for t in range(self.time):
             x=inputx[:,:,t]
-            y=inputy[:,:,t]
             for i in range(self.num_layers_ftlstm):
                 name = 'ftlstm_cell{}'.format(i)
                 if t==0:
@@ -244,7 +193,7 @@ class FTLSTM(nn.Module):
                     (hT,CT)=getattr(self, name).init_hidden(bsize)
                     internal_state.append((hT,CT))
                 (hT,CT)=internal_state[i]
-                x,hT,CT=getattr(self,name)(x,y,hT,CT,t)
+                x,hT,CT=getattr(self,name)(x,hT,CT,t)
                 internal_state[i]=hT,CT
             outputT.append(x)
         return torch.stack(outputT,dim=2)
@@ -256,13 +205,12 @@ class CNN_FTLSTM(nn.Module):
         super(CNN_FTLSTM,self).__init__()
         
         self._all_layers=[]
-        cell=MultiSpectrogramModel(in_channels, out_channels, kernel_size_cnn, stride_cnn,
-                                     kernel_size_pool, stride_pool, device, nfft)
-        setattr(self,"cnn_multi",cell)
-        inputx_dim,inputy_dim=getattr(self,"cnn_multi").dimension()
-        time=getattr(self,"cnn_multi").dimension_time()
+        cell=SpectrogramModel(in_channels, out_channels, kernel_size_cnn, stride_cnn, kernel_size_pool, stride_pool,device, nfft)
+        setattr(self,"cnn",cell)
+        inputx_dim=getattr(self,"cnn").dimension()
+        time=getattr(self,"cnn").dimension_time()
         print("time step after alignment:",time)
-        cell=FTLSTM(time,inputx_dim,inputy_dim,hidden_dim,num_layers_ftlstm,device)
+        cell=FTLSTM(time,inputx_dim,hidden_dim,num_layers_ftlstm,device)
         setattr(self,"ftlstm",cell)
         
         self.device=device
@@ -277,14 +225,13 @@ class CNN_FTLSTM(nn.Module):
     def forward(self,input_lstm,input1,input2,target,seq_length,train=True):
         
         input1=input1.to(self.device)
-        input2=input2.to(self.device)
         input_lstm=input_lstm.to(self.device)
         target=target.to(self.device)
         
         seq_length=seq_length.to(self.device)
         
-        inputx,inputy=getattr(self,"cnn_multi")(input1,input2)
-        outT=getattr(self,"ftlstm")(inputx,inputy)
+        inputx=getattr(self,"cnn")(input1)
+        outT=getattr(self,"ftlstm")(inputx)
         
         out_lstm = self.LSTM_Audio(input_lstm).permute(0,2,1)
         temp = [torch.unsqueeze(torch.mean(out_lstm[k,:,:int(s.item())],dim=1),dim=0) for k,s in enumerate(seq_length)]
