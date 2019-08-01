@@ -49,10 +49,10 @@ def split_data(data, fold):
     x[2].remove(input2_test)
     x[3].remove(target_test)
 
-    input_lstm_train = np.concatenate(x[0]).tolist()
-    input1_train = np.concatenate(x[1]).tolist()
-    input2_train = np.concatenate(x[2]).tolist()
-    target_train = np.concatenate(x[3]).tolist()
+    input_lstm_train = sum(x[0], [])
+    input1_train = sum(x[1], [])
+    input2_train = sum(x[2], [])
+    target_train = sum(x[3], [])
 
     train = {'input_lstm': input_lstm_train, 'input1': input1_train, 'input2': input2_train, 'target': target_train}
     test = {'input_lstm': input_lstm_test.tolist(), 'input1': input1_test.tolist(), 'input2': input2_test.tolist(), 'target': target_test.tolist()}
