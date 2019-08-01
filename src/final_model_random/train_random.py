@@ -32,7 +32,7 @@ def train_model(args):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     device_ids=[0,1,2,3]
     num_devices=len(device_ids)
-    batch_size=1
+    batch_size=8
     input_channels = 1
     out_channels = [args.out_channels1, args.out_channels2]
     kernel_size_cnn = [args.kernel_size_cnn1, args.kernel_size_cnn2]
@@ -58,7 +58,7 @@ def train_model(args):
         training_data = IEMOCAP(fold=fold, train=True)
         train_loader = DataLoader(dataset=training_data, batch_size=batch_size, shuffle=True, collate_fn=my_collate, num_workers=0, drop_last=True)
         testing_data = IEMOCAP(fold=fold, train=False)
-        test_loader = DataLoader(dataset=testing_data, batch_size=batch_size, shuffle=True, collate_fn=my_collate, num_workers=0,drop_last=False)
+        test_loader = DataLoader(dataset=testing_data, batch_size=batch_size, shuffle=True, collate_fn=my_collate, num_workers=0,drop_last=True)
 
         print("============================ fold " + str(fold) + " =============================")
 
