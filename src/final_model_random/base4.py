@@ -142,7 +142,7 @@ class CNN_FTLSTM(nn.Module):
         target=target.to(self.device)
         seq_length=seq_length.to(self.device)
         
-        inputx,inputy_dim=getattr(self,"cnn")(input1,input2)
+        inputx,inputy=getattr(self,"cnn")(input1,input2)
         out1=getattr(self,"ftlstm1")(inputx.permute(0,2,1)).permute(0,2,1)
         out2=getattr(self,"ftlstm2")(inputy.permute(0,2,1)).permute(0,2,1)
         out1=torch.mean(out1,dim=2)
