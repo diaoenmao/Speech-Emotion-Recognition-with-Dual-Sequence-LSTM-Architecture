@@ -98,7 +98,7 @@ class FTLSTM(nn.Module):
         self.num_layers_ftlstm=num_layers_ftlstm
         self.dropout_rate=0
         self.bidirectional=False
-        self.ftlstm = nn.LSTM(self.inputx_dim+self.hidden_dim, self.hidden_dim, self.num_layers_ftlstm, batch_first=True,
+        self.ftlstm = nn.LSTM(self.inputx_dim, self.hidden_dim, self.num_layers_ftlstm, batch_first=True,
                            dropout=self.dropout_rate, bidirectional=self.bidirectional).to(self.device)
     def forward(self,inputx):
         inputx = inputx.to(self.device)
@@ -128,14 +128,13 @@ class CNN_FTLSTM(nn.Module):
         self.classification_raw=nn.Linear(hidden_dim,self.num_labels).to(self.device)
 
     def forward(self,input_lstm,input1,input2,target,seq_length,train=True):
-        
-        input1=input1.permute(0,2,1).to(self.device)
+        input1=input1.to(self.device)
         input_lstm=input_lstm.to(self.device)
         target=target.to(self.device)
         seq_length=seq_length.to(self.device)
         
         inputx=getattr(self,"cnn")(input1)
-        outT=getattr(self,"ftlstm")(inputx).permute(0,2,1)
+        outT=getattr(self,"ftlstm")(inputx.permute(0,2,1)).permute(0,2,1)
         out_lstm = self.LSTM_Audio(input_lstm).permute(0,2,1)
         temp = [torch.unsqueeze(torch.mean(out_lstm[k,:,:int(s.item())],dim=1),dim=0) for k,s in enumerate(seq_length)]
         out_lstm = torch.cat(temp,dim=0)
