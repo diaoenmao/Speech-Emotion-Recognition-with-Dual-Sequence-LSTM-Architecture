@@ -1,6 +1,6 @@
 import torch
 from torch import optim
-from model_loso3 import CNN_FTLSTM
+from model_loso4 import CNN_FTLSTM
 from process_loso import IEMOCAP, my_collate
 from torch.utils.data import DataLoader
 from torch.optim.lr_scheduler import ReduceLROnPlateau, CosineAnnealingLR, MultiStepLR
@@ -14,7 +14,7 @@ from sklearn.metrics import confusion_matrix
 
 def init_parser():
     parser = argparse.ArgumentParser(description='Train and test your model as specified by the parameters you enter')
-    parser.add_argument('--batch_size', '-b', default=128, type=int, dest='batch_size')
+    parser.add_argument('--batch_size', '-b', default=256, type=int, dest='batch_size')
     parser.add_argument('--out_channels_1', '-out1', default=64, type=int, dest='out_channels1')
     parser.add_argument('--out_channels_2', '-out2', default=16, type=int, dest='out_channels2')
     parser.add_argument('--kernel_size_cnn_1', '-kc1', default=4, type=int, dest='kernel_size_cnn1')
@@ -34,15 +34,22 @@ def train_model(args):
     num_devices=len(device_ids)
     batch_size=args.batch_size
     input_channels = 1
+    '''
     out_channels = [args.out_channels1, args.out_channels2]
     kernel_size_cnn = [args.kernel_size_cnn1, args.kernel_size_cnn2]
     stride_size_cnn = [args.stride_size_cnn1, args.stride_size_cnn2]
     kernel_size_pool = [args.kernel_size_pool1, args.kernel_size_pool2]
     stride_size_pool = args.stride_size_pool
+    '''
+    out_channels=[16,64,64,16]
+    kernel_size_cnn=[2]*4
+    stride_size_cnn=[1]*4
+    kernel_size_pool=[2,2,2,2]
+    stride_size_pool=[1,1,2,2]
     hidden_dim=200
     num_layers_ftlstm=2
     hidden_dim_lstm=200
-    epoch_num=50
+    epoch_num=1
     weight = args.weight
     nfft = 512
 
@@ -167,23 +174,23 @@ def train_model(args):
                 np.savetxt(f,cm_normalized,delimiter=' ',fmt="%6.5f")
                 if epoch==epoch_num-1:
                     f.write("Best Accuracy:{:06.5f}".format(max(test_acc))+"\n")
-                    f.write("Average Top 10 Accuracy:{:06.5f}".format(np.mean(np.sort(np.array(test_acc))[-10:]))+"\n")
+                    f.write("Average Top 10 Accuracy:{:06.5f}".format(np.mean(np.sort(np.array(test_acc))[-5:]))+"\n")
                     f.write("Best Class Accuracy:{:06.5f}".format(max(class_acc))+"\n")
-                    f.write("Average Top 10 Class Accuracy:{:06.5f}".format(np.mean(np.sort(np.array(class_acc))[-10:]))+"\n")
+                    f.write("Average Top 10 Class Accuracy:{:06.5f}".format(np.mean(np.sort(np.array(class_acc))[-5:]))+"\n")
                     f.write("/scratch/speech/models/andre_checkpoint/Session_{}_path_{}_epoch_{}.pt".format(session,path,epoch+1)+"\n")
                     f.write("/scratch/speech/models/andre_classification/checkpoint_stats"+path+".pkl"+"\n")
                     f.write("============================= model ends ==================================="+"\n")
         print(file_path)
-        print()
-        all_test_acc+=np.sort(np.array(test_acc))[-10:].tolist()
-        all_class_acc+=np.sort(np.array(class_acc))[-10:].tolist()
+        all_test_acc+=np.sort(np.array(test_acc))[-5:].tolist()
+        all_class_acc+=np.sort(np.array(class_acc))[-5:].tolist()
     with open("/scratch/speech/models/andre_classification/checkpoint_stats"+path+".pkl","wb") as pickle_out:
         pickle.dump({"all_test_acc":all_test_acc, "all_class_acc": all_class_acc},pickle_out)
     with open(file_path, 'a+') as f:
-        f.write("Mean test acc: " + str(np.mean(all_test_acc)))
-        f.write("Std. test acc: " + str(np.std(all_test_acc)))
-        f.write("Mean class acc: " + str(np.mean(all_class_acc)))
-        f.write("Std. class acc: " + str(np.std(all_class_acc)))
+        f.write("Mean test acc: {:06.5f}; Std. test acc: {:06.5f}; Highest test acc: {:06.5f}".format(np.mean(all_test_acc),np.std(all_test_acc),np.max(all_test_acc)))
+        f.write("\n")
+        f.write("Mean class acc: {:06.5f}; Std. class acc: {:06.5f}; Highest class acc: {:06.5f}".format(np.mean(all_class_acc),np.std(all_class_acc),np.max(all_class_acc)))
+        f.write("\n")
+        f.wrtie("================================= LOSO Ends ======================================="+"\n")
 if __name__ == '__main__':
     args = init_parser()
     train_model(args)
