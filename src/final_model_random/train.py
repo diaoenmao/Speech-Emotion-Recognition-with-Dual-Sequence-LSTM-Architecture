@@ -1,6 +1,5 @@
 import torch
 from torch import optim
-from model_final import CNN_FTLSTM
 from process_random import IEMOCAP, my_collate
 from torch.utils.data import DataLoader
 from torch.optim.lr_scheduler import ReduceLROnPlateau, CosineAnnealingLR, MultiStepLR
@@ -25,11 +24,17 @@ def init_parser():
     parser.add_argument('--kernel_size_pool_2','-kp2',default=2,type=int,dest='kernel_size_pool2')
     parser.add_argument('--stride_size_pool', '-sp', default=2, type=int, dest='stride_size_pool')
     parser.add_argument('--weight', '-w', default=0.5, type=float, dest='weight')
-    parser.add_argument('--file','-f',default="recent",type=str,dest='file_path')
+    parser.add_argument('--file','-f',default="experiment",type=str,dest='file_path')
+    parser.add_argument('--model','-m',default="model1",type=str,dest='model')
+    parser.add_argument('--epoch_num','-n',default=50,type=int,dest='epoch_num')
     return parser.parse_args()
 
 def train_model(args):
+    from args.model import CNN_FTLSTM
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    if torch.cuda.is_available():torch.cuda.manual_seed_all(999)
+    np.random.seed(999)
+    torch.manual_seed(999)
     device_ids=[0,1,2,3]
     num_devices=len(device_ids)
     batch_size=args.batch_size
@@ -42,12 +47,14 @@ def train_model(args):
     hidden_dim=200
     num_layers_ftlstm=2
     hidden_dim_lstm=200
-    epoch_num=50
+    epoch_num=args.epoch_num
     nfft=[512,1024]
     weight = args.weight
     # Load the training data
     all_test_acc=[]
     all_class_acc=[]
+    best_test_acc=[]
+    best_class_acc=[]
     for fold in range(5):
         model = CNN_FTLSTM(input_channels, out_channels, kernel_size_cnn,
                             stride_size_cnn, kernel_size_pool, stride_size_pool,nfft,
@@ -55,13 +62,13 @@ def train_model(args):
         print("============================ Number of parameters ====================================")
         print(str(sum(p.numel() for p in model.parameters() if p.requires_grad)))
         training_data = IEMOCAP(fold=fold, train=True)
-        train_loader = DataLoader(dataset=training_data, batch_size=batch_size, shuffle=True, collate_fn=my_collate, num_workers=0, drop_last=True)
+        train_loader = DataLoader(dataset=training_data, batch_size=batch_size, shuffle=False, collate_fn=my_collate, num_workers=0, drop_last=False)
         testing_data = IEMOCAP(fold=fold, train=False)
-        test_loader = DataLoader(dataset=testing_data, batch_size=batch_size, shuffle=True, collate_fn=my_collate, num_workers=0,drop_last=False)
+        test_loader = DataLoader(dataset=testing_data, batch_size=batch_size, shuffle=False, collate_fn=my_collate, num_workers=0,drop_last=False)
 
         print("============================ fold " + str(fold) + " =============================")
 
-        path="batch_size:{};out_channels:{};kernel_size_cnn:{};weight:{}".format(args.batch_size,out_channels,kernel_size_cnn,weight)
+        path="model:{};batch_size:{};out_channels:{};kernel_size_cnn:{};weight:{}".format(args.model,args.batch_size,out_channels,kernel_size_cnn,weight)
         file_path="/scratch/speech/models/final_classification_random/"+args.file_path+".txt"
         with open(file_path,"a+") as f:
             f.write("\n"+"============ model starts, fold {} ===========".format(fold))
@@ -121,7 +128,7 @@ def train_model(args):
             output = []
             y_true = []
             y_pred = []
-            torch.save(model.module.state_dict(), "/scratch/speech/models/final_checkpoint_random/fold_{}_path_{}_epoch_{}.pt".format(fold,path,epoch+1))
+            #torch.save(model.module.state_dict(), "/scratch/speech/models/final_checkpoint_random/fold_{}_path_{}_epoch_{}.pt".format(fold,path,epoch+1))
             model.eval()
             with torch.no_grad():
                 for j,(input_lstm, input1, input2, target, seq_length) in enumerate(test_loader):
@@ -166,23 +173,27 @@ def train_model(args):
                 np.savetxt(f,cm_normalized,delimiter=' ',fmt="%6.5f")
                 if epoch==epoch_num-1:
                     f.write("Best Accuracy:{:06.5f}".format(max(test_acc))+"\n")
-                    f.write("Average Top 10 Accuracy:{:06.5f}".format(np.mean(np.sort(np.array(test_acc))[-10:]))+"\n")
+                    f.write("Average Top 10 Accuracy:{:06.5f}".format(np.mean(np.sort(np.array(test_acc))[-5:]))+"\n")
                     f.write("Best Class Accuracy:{:06.5f}".format(max(class_acc))+"\n")
-                    f.write("Average Top 10 Class Accuracy:{:06.5f}".format(np.mean(np.sort(np.array(class_acc))[-10:]))+"\n")
-                    f.write("/scratch/speech/models/final_checkpoint_random/fold_{}_path_{}_epoch_{}.pt".format(fold,path,epoch+1)+"\n")
-                    f.write("/scratch/speech/models/final_classification_random/checkpoint_stats"+path+".pkl"+"\n")
+                    f.write("Average Top 10 Class Accuracy:{:06.5f}".format(np.mean(np.sort(np.array(class_acc))[-5:]))+"\n")
                     f.write("============================= model ends ==================================="+"\n")
         print(file_path)
-        print()
-        all_test_acc+=np.sort(np.array(test_acc))[-10:].tolist()
-        all_class_acc+=np.sort(np.array(class_acc))[-10:].tolist()
+        all_test_acc+=np.sort(np.array(test_acc))[-5:].tolist()
+        all_class_acc+=np.sort(np.array(class_acc))[-5:].tolist()
+        best_class_acc+=max(class_acc)
+        best_test_acc+=max(test_acc)
     with open("/scratch/speech/models/final_classification_random/checkpoint_stats"+path+".pkl","wb") as pickle_out:
         pickle.dump({"all_test_acc":all_test_acc, "all_class_acc": all_class_acc},pickle_out)
     with open(file_path, 'a+') as f:
-        f.write("Mean test acc: " + str(np.mean(all_test_acc)))
-        f.write("Std. test acc: " + str(np.std(all_test_acc)))
-        f.write("Mean class acc: " + str(np.mean(all_class_acc)))
-        f.write("Std. class acc: " + str(np.std(all_class_acc)))
+        f.write("Mean test acc: {:06.5f}; Std. test acc: {:06.5f}; Highest test acc: {:06.5f}".format(np.mean(all_test_acc),np.std(all_test_acc),np.max(all_test_acc)))
+        f.write("\n")
+        f.write("Mean class acc: {:06.5f}; Std. class acc: {:06.5f}; Highest class acc: {:06.5f}".format(np.mean(all_class_acc),np.std(all_class_acc),np.max(all_class_acc)))
+        f.write("\n")
+        f.write("Mean Best test acc: {:06.5f}; Std. Best test acc: {:06.5f}; Highest Best test acc: {:06.5f}".format(np.mean(best_test_acc),np.std(best_test_acc),np.max(best_test_acc)))
+        f.write("\n")
+        f.write("Mean Best class acc: {:06.5f}; Std. Best class acc: {:06.5f}; Highest Best class acc: {:06.5f}".format(np.mean(best_class_acc),np.std(best_class_acc),np.max(best_class_acc)))
+        f.write("\n")
+        f.write("================================= LOSO Ends ======================================="+"\n")
 if __name__ == '__main__':
     args = init_parser()
     train_model(args)
