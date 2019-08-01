@@ -15,6 +15,7 @@ from sklearn.metrics import confusion_matrix
 def init_parser():
     parser = argparse.ArgumentParser(description='Train and test your model as specified by the parameters you enter')
     parser.add_argument('--batch_size', '-b', default=256, type=int, dest='batch_size')
+    parser.add_argument('--epoch', '-n', default=50, type=int, dest='epoch_num')
     parser.add_argument('--out_channels_1', '-out1', default=64, type=int, dest='out_channels1')
     parser.add_argument('--out_channels_2', '-out2', default=16, type=int, dest='out_channels2')
     parser.add_argument('--kernel_size_cnn_1', '-kc1', default=4, type=int, dest='kernel_size_cnn1')
@@ -49,7 +50,7 @@ def train_model(args):
     hidden_dim=200
     num_layers_ftlstm=2
     hidden_dim_lstm=200
-    epoch_num=1
+    epoch_num=args.epoch_num
     weight = args.weight
     nfft = 512
 
@@ -69,7 +70,7 @@ def train_model(args):
 
         print("============================ Session " + str(session) + " =============================")
 
-        path="batch_size:{};out_channels:{};kernel_size_cnn:{};weight:{}".format(args.batch_size,out_channels,kernel_size_cnn,weight)
+        path="batch_size:{};out_channels:{};kernel_size_cnn:{};stride_size_cnn:{};kernel_size_pool:{};stride_size_pool:{};weight:{}".format(args.batch_size,out_channels,kernel_size_cnn,stride_size_cnn,kernel_size_pool,stride_size_pool,weight)
         file_path="/scratch/speech/models/andre_classification/"+args.file_path+".txt"
         with open(file_path,"a+") as f:
             f.write("\n"+"============ model starts, Session {} ===========".format(session))
@@ -190,7 +191,7 @@ def train_model(args):
         f.write("\n")
         f.write("Mean class acc: {:06.5f}; Std. class acc: {:06.5f}; Highest class acc: {:06.5f}".format(np.mean(all_class_acc),np.std(all_class_acc),np.max(all_class_acc)))
         f.write("\n")
-        f.wrtie("================================= LOSO Ends ======================================="+"\n")
+        f.write("================================= LOSO Ends ======================================="+"\n")
 if __name__ == '__main__':
     args = init_parser()
     train_model(args)
