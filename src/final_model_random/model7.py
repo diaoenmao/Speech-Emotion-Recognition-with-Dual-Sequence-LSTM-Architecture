@@ -246,7 +246,7 @@ class FTLSTM(nn.Module):
                     bsize,_=x.size()
                     (hT,hF,CT,CF)=getattr(self, name).init_hidden(bsize)
                     internal_state.append((hT,hF,CT,CF))
-                (hT,CT)=internal_state[i]
+                (hT,hF,CT,CF)=internal_state[i]
                 x,y,hT,hF,CT,CF=getattr(self,name)(x,y,hT,hF,CT,CF,t)
                 internal_state[i]=hT,hF,CT,CF
             outputT.append(x)
