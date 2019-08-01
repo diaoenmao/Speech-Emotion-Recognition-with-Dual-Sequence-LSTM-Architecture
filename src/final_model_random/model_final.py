@@ -47,8 +47,8 @@ class LSTM_Audio(nn.Module):
         self.lstm = nn.LSTM(self.num_features, self.hidden_dim, self.num_layers, batch_first=True,
                            dropout=self.dropout_rate, bidirectional=self.bidirectional).to(self.device)
     def forward(self, input_lstm):
-        input = input.to(self.device)
-        out_lstm = self.lstm(input_lstm)[0]
+        input_lstm = input_lstm.to(self.device)
+        out_lstm,_ = self.lstm(input_lstm)
         return out_lstm
 class LFLB(nn.Module):
     def __init__(self, in_channels, out_channels, kernel_size_cnn, stride_cnn, padding_cnn, padding_pool,kernel_size_pool, stride_pool, device):
