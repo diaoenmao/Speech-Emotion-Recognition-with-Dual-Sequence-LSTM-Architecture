@@ -45,9 +45,9 @@ def split_data(data, fold):
     target_test = x[3][fold]
 
     x[0].remove(input_lstm_test)
-    x[1].remove(input1)
-    x[2].remove(input2)
-    x[3].remove(target)
+    x[1].remove(input1_test)
+    x[2].remove(input2_test)
+    x[3].remove(target_test)
 
     input_lstm_train = np.concatenate(x[0]).tolist()
     input1_train = np.concatenate(x[1]).tolist()
