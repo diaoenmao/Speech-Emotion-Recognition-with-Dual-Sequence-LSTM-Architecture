@@ -58,7 +58,7 @@ def train_model(args):
         training_data = IEMOCAP(session=session, train=True)
         train_loader = DataLoader(dataset=training_data, batch_size=batch_size, shuffle=True, collate_fn=my_collate, num_workers=0, drop_last=True)
         testing_data = IEMOCAP(session=session, train=False)
-        test_loader = DataLoader(dataset=testing_data, batch_size=batch_size, shuffle=True, collate_fn=my_collate, num_workers=0,drop_last=True)
+        test_loader = DataLoader(dataset=testing_data, batch_size=batch_size, shuffle=True, collate_fn=my_collate, num_workers=0,drop_last=False)
 
         print("============================ Session " + str(session) + " =============================")
 
