@@ -59,23 +59,23 @@ def train_model(args):
     all_class_acc=[]
     best_test_acc=[]
     best_class_acc=[]
-    for fold in range(5):
+    for session in range(5):
         model = CNN_FTLSTM(input_channels, out_channels, kernel_size_cnn,
                             stride_size_cnn, kernel_size_pool, stride_size_pool,nfft,
                             hidden_dim,num_layers_ftlstm,weight,device)
         print("============================ Number of parameters ====================================")
         print(str(sum(p.numel() for p in model.parameters() if p.requires_grad)))
-        training_data = IEMOCAP(fold=fold, train=True)
+        training_data = IEMOCAP(session=session, train=True)
         train_loader = DataLoader(dataset=training_data, batch_size=batch_size, shuffle=False, collate_fn=my_collate, num_workers=0, drop_last=False)
-        testing_data = IEMOCAP(fold=fold, train=False)
+        testing_data = IEMOCAP(session=session, train=False)
         test_loader = DataLoader(dataset=testing_data, batch_size=batch_size, shuffle=False, collate_fn=my_collate, num_workers=0,drop_last=False)
 
-        print("============================ fold " + str(fold) + " =============================")
+        print("============================ session " + str(session) + " =============================")
 
         path="model:{};batch_size:{};out_channels:{};kernel_size_cnn:{};weight:{};lr{}".format(args.model,args.batch_size,out_channels,kernel_size_cnn,weight,args.lr)
         file_path="/scratch/speech/models/final_classification_random/"+args.file_path+".txt"
         with open(file_path,"a+") as f:
-            f.write("\n"+"============ model starts, fold {} ===========".format(fold))
+            f.write("\n"+"============ model starts, session {} ===========".format(session))
             f.write("\n"+"model_parameters: "+str(sum(p.numel() for p in model.parameters() if p.requires_grad))+"\n"+path+"\n")
         model.cuda()
         model=DataParallel(model,device_ids=device_ids)
@@ -132,7 +132,7 @@ def train_model(args):
             output = []
             y_true = []
             y_pred = []
-            #torch.save(model.module.state_dict(), "/scratch/speech/models/final_checkpoint_random/fold_{}_path_{}_epoch_{}.pt".format(fold,path,epoch+1))
+            #torch.save(model.module.state_dict(), "/scratch/speech/models/final_checkpoint_random/session_{}_path_{}_epoch_{}.pt".format(session,path,epoch+1))
             model.eval()
             with torch.no_grad():
                 for j,(input_lstm, input1, input2, target, seq_length) in enumerate(test_loader):
