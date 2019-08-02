@@ -29,6 +29,8 @@ class ConvLSTMCell(nn.Module):
         self.Wxo = nn.Conv1d(self.in_channels, self.out_channels, self.kernel_size, self.stride,self.padding,  bias=True)
         self.Who = nn.Conv1d(self.out_channels, self.out_channels, self.kernel_size, self.stride, self.padding, bias=False)
 
+        self.Wcc=nn.Conv1d(self.in_channels,self.out_channels,self.kernel_size,self.stride,self.padding,bias=True)
+
         self.max_pool = nn.MaxPool1d(self.kernel_size_pool, stride=self.stride_pool, padding=self.padding_pool)
         #self.batch = nn.BatchNorm1d(self.out_channels)
 
@@ -39,7 +41,7 @@ class ConvLSTMCell(nn.Module):
     def forward(self, x, h, c):
         ci = torch.sigmoid(self.Wxi(x) + self.Whi(h) )
         cf = torch.sigmoid(self.Wxf(x) + self.Whf(h))
-        cc = cf * c + ci * torch.tanh(self.Wxc(x) + self.Whc(h))
+        cc = cf * torch.tanh(self.Wcc(c)) + ci * torch.tanh(self.Wxc(x) + self.Whc(h))
         co = torch.sigmoid(self.Wxo(x) + self.Who(h))
         ch = co * torch.tanh(cc)
         ch_pool=ch
