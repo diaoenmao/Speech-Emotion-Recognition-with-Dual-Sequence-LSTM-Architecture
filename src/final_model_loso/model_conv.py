@@ -45,7 +45,7 @@ class ConvLSTMCell(nn.Module):
         cc = cf * c + ci * torch.tanh(self.Wxc(x) + self.Whc(h))
         co = torch.sigmoid(self.Wxo(x) + self.Who(h) + cc * self.Wco)
         ch = co * torch.tanh(cc)
-        ch_pool=self.max_pool(ch)
+        ch_pool=ch
         return ch_pool, ch, cc
 
     def init_hidden(self, batch_size, hidden, shape):
@@ -65,7 +65,7 @@ class ConvLSTM(nn.Module):
     # kernel size is also a list, same length as out_channels
     def cnn_shape(self,x,kc,sc,pc,km,sm,pm):
         temp = int((x+2*pc-kc)/sc+1)
-        temp=int((temp+2*pm-km)/sm+1)
+        #temp=int((temp+2*pm-km)/sm+1)
         return temp
     def __init__(self, in_channels, out_channels, kernel_size_cnn, stride_cnn, kernel_size_pool,stride_pool,nfft,device):
         super(ConvLSTM, self).__init__()
@@ -130,6 +130,7 @@ class CNN_FTLSTM(nn.Module):
         cell=ConvLSTM(in_channels, out_channels, kernel_size_cnn[0], stride_cnn[0], kernel_size_pool[0],stride_pool[0],nfft[0],device)
         setattr(self,"cnn",cell)
         self.strideF=getattr(self,"cnn",cell).dimension()
+        print("Frequency Features after Convolution {}".format(self.strideF))
         self.device=device
         self.hidden_dim_lstm=200
         self.num_layers=2
