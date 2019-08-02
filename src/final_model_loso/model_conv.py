@@ -34,27 +34,18 @@ class ConvLSTMCell(nn.Module):
 
         self.dropout=nn.Dropout(p=0.1, inplace=False)
 
-        self.Wci = None
-        self.Wcf = None
-        self.Wco = None
         self.device=device
 
     def forward(self, x, h, c):
-        ci = torch.sigmoid(self.Wxi(x) + self.Whi(h) + c * self.Wci)
-        cf = torch.sigmoid(self.Wxf(x) + self.Whf(h) + c * self.Wcf)
+        ci = torch.sigmoid(self.Wxi(x) + self.Whi(h) )
+        cf = torch.sigmoid(self.Wxf(x) + self.Whf(h))
         cc = cf * c + ci * torch.tanh(self.Wxc(x) + self.Whc(h))
-        co = torch.sigmoid(self.Wxo(x) + self.Who(h) + cc * self.Wco)
+        co = torch.sigmoid(self.Wxo(x) + self.Who(h))
         ch = co * torch.tanh(cc)
         ch_pool=ch
         return ch_pool, ch, cc
 
     def init_hidden(self, batch_size, hidden, shape):
-
-        if self.Wci is None:
-            self.Wci = nn.Parameter(torch.zeros(1, hidden, shape)).to(self.device)
-            self.Wcf = nn.Parameter(torch.zeros(1, hidden, shape)).to(self.device)
-            self.Wco = nn.Parameter(torch.zeros(1, hidden, shape)).to(self.device)
-
         return (nn.Parameter(torch.zeros(batch_size, hidden, shape)).to(self.device),
                 nn.Parameter(torch.zeros(batch_size, hidden, shape)).to(self.device))
 
