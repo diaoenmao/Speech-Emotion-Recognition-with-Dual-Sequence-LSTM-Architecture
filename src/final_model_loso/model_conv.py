@@ -39,17 +39,10 @@ class ConvLSTMCell(nn.Module):
         self.device=device
 
     def forward(self, x, h, c):
-        print("x {}".format(x.shape))
-        print("h {}".format(h.shape))
-        print("c {}".format(c.shape))
         ci = torch.sigmoid(self.Wxi(x) + self.Whi(h) )
-        print("ci {}".format(ci.shape))
         cf = torch.sigmoid(self.Wxf(x) + self.Whf(h))
-        print("cf {}".format(cf.shape))
         cc = cf * torch.tanh(self.Wcc(c)) + ci * torch.tanh(self.Wxc(x) + self.Whc(h))
-        print("cc {}".format(cc.shape))
         co = torch.sigmoid(self.Wxo(x) + self.Who(h))
-        print("co {}".format(co.shape))
         ch = co * torch.tanh(cc)
         ch_pool=ch
         return ch_pool, ch, cc
