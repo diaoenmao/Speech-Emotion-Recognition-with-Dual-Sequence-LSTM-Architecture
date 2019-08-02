@@ -27,6 +27,7 @@ def init_parser():
     parser.add_argument('--file','-f',default="experiment",type=str,dest='file_path')
     parser.add_argument('--model','-m',default="model1",type=str,dest='model')
     parser.add_argument('--epoch_num','-n',default=50,type=int,dest='epoch_num')
+    parser.add_argument('--learning_rate', '-lr', default=0.001, type=float, dest='lr')
     return parser.parse_args()
 
 def train_model(args):
@@ -79,7 +80,7 @@ def train_model(args):
 
         print("============================ fold " + str(fold) + " =============================")
 
-        path="model:{};batch_size:{};out_channels:{};kernel_size_cnn:{};weight:{}".format(args.model,args.batch_size,out_channels,kernel_size_cnn,weight)
+        path="model:{};batch_size:{};out_channels:{};kernel_size_cnn:{};weight:{};lr:{}".format(args.model,args.batch_size,out_channels,kernel_size_cnn,weight,args.lr)
         file_path="/scratch/speech/models/final_classification_random/"+args.file_path+".txt"
         with open(file_path,"a+") as f:
             f.write("\n"+"============ model starts, fold {} ===========".format(fold))
@@ -89,7 +90,7 @@ def train_model(args):
         model.train()
         ## optimizer
         # Use Adam as the optimizer with learning rate 0.01 to make it fast for testing purposes
-        optimizer = optim.Adam(model.parameters(),lr=0.0001)
+        optimizer = optim.Adam(model.parameters(),lr=args.lr)
         optimizer2=optim.SGD(model.parameters(), lr=0.1)
         scheduler = ReduceLROnPlateau(optimizer=optimizer,factor=0.5, patience=2, threshold=1e-3)
         #scheduler2=ReduceLROnPlateau(optimizer=optimizer2, factor=0.5, patience=2, threshold=1e-3)
