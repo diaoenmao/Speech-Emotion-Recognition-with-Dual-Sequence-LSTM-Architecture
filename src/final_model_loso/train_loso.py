@@ -74,7 +74,7 @@ def train_model(args):
 
         print("============================ session " + str(session) + " =============================")
 
-        path="model:{};batch_size:{};out_channels:{};kernel_size_cnn:{};weight:{};lr:{}".format(args.model,args.batch_size,out_channels,kernel_size_cnn,weight,args.lr)
+        path="model:{};batch_size:{};out_channels:{};kernel_size_cnn:{};stride_size_cnn:{};weight:{};lr:{}".format(args.model,args.batch_size,out_channels,kernel_size_cnn,stride_size_cnn,weight,args.lr)
         file_path="/scratch/speech/models/final_classification_loso/"+args.file_path+".txt"
         with open(file_path,"a+") as f:
             f.write("\n"+"============ model starts, session {} ===========".format(session))
@@ -108,8 +108,8 @@ def train_model(args):
             correct=0
             model.train()
             for j, (input_lstm, input1, input2, target, seq_length) in enumerate(train_loader):
-                if (j+1)%2==0:
-                    print("=================================Train Batch"+ str(j+1)+str(weight)+"===================================================")
+                #if (j+1)%2==0:
+                    #print("=================================Train Batch"+ str(j+1)+str(weight)+"===================================================")
                 num=input_lstm.shape[0]
                 if num%num_devices!=0:
                     input_lstm=input_lstm[:int(num-num%num_devices)]
@@ -188,8 +188,8 @@ def train_model(args):
         all_class_acc+=np.sort(np.array(class_acc))[-5:].tolist()
         best_class_acc.append(max(class_acc))
         best_test_acc.append(max(test_acc))
-    with open("/scratch/speech/models/final_classification_loso/checkpoint_stats"+path+".pkl","wb") as pickle_out:
-        pickle.dump({"all_test_acc":all_test_acc, "all_class_acc": all_class_acc},pickle_out)
+    #with open("/scratch/speech/models/final_classification_loso/checkpoint_stats"+path+".pkl","wb") as pickle_out:
+        #pickle.dump({"all_test_acc":all_test_acc, "all_class_acc": all_class_acc},pickle_out)
     with open(file_path, 'a+') as f:
         f.write(path+"\n")
         f.write("Mean test acc: {:06.5f}; Std. test acc: {:06.5f}; Highest test acc: {:06.5f}".format(np.mean(all_test_acc),np.std(all_test_acc),np.max(all_test_acc)))
