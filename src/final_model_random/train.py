@@ -194,8 +194,6 @@ def train_model(args):
         all_class_acc+=np.sort(np.array(class_acc))[-5:].tolist()
         best_class_acc.append(max(class_acc))
         best_test_acc.append(max(test_acc))
-    with open("/scratch/speech/models/final_classification_random/checkpoint_stats"+path+".pkl","wb") as pickle_out:
-        pickle.dump({"all_test_acc":all_test_acc, "all_class_acc": all_class_acc},pickle_out)
     with open(file_path, 'a+') as f:
         f.write(path+"\n")
         f.write("Mean test acc: {:06.5f}; Std. test acc: {:06.5f}; Highest test acc: {:06.5f}".format(np.mean(all_test_acc),np.std(all_test_acc),np.max(all_test_acc)))
