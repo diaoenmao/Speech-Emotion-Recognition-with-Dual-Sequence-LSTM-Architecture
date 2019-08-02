@@ -108,8 +108,8 @@ def train_model(args):
             correct=0
             model.train()
             for j, (input_lstm, input1, input2, target, seq_length) in enumerate(train_loader):
-                #if (j+1)%20==0:
-                    #print("=================================Train Batch"+ str(j+1)+str(weight)+"===================================================")
+                if (j+1)%2==0:
+                    print("=================================Train Batch"+ str(j+1)+str(weight)+"===================================================")
                 num=input_lstm.shape[0]
                 if num%num_devices!=0:
                     input_lstm=input_lstm[:int(num-num%num_devices)]
