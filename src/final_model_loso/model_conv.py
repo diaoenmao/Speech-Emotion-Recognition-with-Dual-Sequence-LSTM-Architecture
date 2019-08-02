@@ -29,7 +29,7 @@ class ConvLSTMCell(nn.Module):
         self.Wxo = nn.Conv1d(self.in_channels, self.out_channels, self.kernel_size, self.stride,self.padding,  bias=True)
         self.Who = nn.Conv1d(self.out_channels, self.out_channels, self.kernel_size, self.stride, self.padding, bias=False)
 
-        self.Wcc=nn.Conv1d(self.in_channels,self.out_channels,self.kernel_size,self.stride,self.padding,bias=True)
+        self.Wcc=nn.Conv1d(self.out_channels,self.out_channels,self.kernel_size,self.stride,self.padding,bias=True)
 
         self.max_pool = nn.MaxPool1d(self.kernel_size_pool, stride=self.stride_pool, padding=self.padding_pool)
         #self.batch = nn.BatchNorm1d(self.out_channels)
