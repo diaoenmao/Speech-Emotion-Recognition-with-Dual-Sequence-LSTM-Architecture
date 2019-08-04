@@ -44,9 +44,9 @@ def train_model(args):
     if args.model=="base4": from base4 import CNN_FTLSTM
     if args.model=="base5": from base5 import CNN_FTLSTM
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    if torch.cuda.is_available():torch.cuda.manual_seed_all(365)
-    np.random.seed(365)
-    torch.manual_seed(365)
+    if torch.cuda.is_available():torch.cuda.manual_seed_all(999)
+    np.random.seed(999)
+    torch.manual_seed(999)
     device_ids=[0,1,2,3]
     num_devices=len(device_ids)
     batch_size=args.batch_size
