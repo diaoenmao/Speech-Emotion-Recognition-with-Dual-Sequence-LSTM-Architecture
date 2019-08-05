@@ -267,7 +267,7 @@ class CNN_FTLSTM_no_hand(nn.Module):
                     stride_cnn, kernel_size_pool, stride_pool,nfft,
                     hidden_dim,num_layers_ftlstm,weight,
                     device):
-        super(CNN_FTLSTM,self).__init__()
+        super(CNN_FTLSTM_no_hand,self).__init__()
         self.device=device
         self.hidden_dim_lstm=200
         self.num_layers=2
