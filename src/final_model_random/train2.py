@@ -57,7 +57,7 @@ def train_model(args):
     best_test_acc=[]
     best_class_acc=[]
     for fold in range(5):
-        for mo in ["LSTM_Audio","CNN_FTLSTM_no_hand","CNN_FTLSTM"]:
+        for mo in ["CNN_FTLSTM"]:
             if mo=="LSTM_Audio":
                 model=LSTM_Audio(hidden_dim_lstm,2,device)
             if mo=="CNN_FTLSTM_no_hand":

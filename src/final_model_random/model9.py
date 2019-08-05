@@ -57,10 +57,10 @@ class LSTM_Audio(nn.Module):
         out_lstm=out_lstm.permute(0,2,1)
         temp = [torch.unsqueeze(torch.mean(out_lstm[k,:,:int(s.item())],dim=1),dim=0) for k,s in enumerate(seq_length)]
         out_lstm = torch.cat(temp,dim=0)
-        out_lstm = self.classification_hand(out_lstm)
         return out_lstm
     def forward(self,input_lstm,input1,input2,target,seq_length,train=True):
         out_lstm=self.forward2(input_lstm,seq_length)
+        out_lstm = self.classification_hand(out_lstm)
         target_index = torch.argmax(target, dim=1).to(self.device)
         pred_index = torch.argmax(out_lstm, dim=1).to(self.device)
         correct_batch=torch.sum(target_index==torch.argmax(out_lstm,dim=1))
@@ -288,11 +288,11 @@ class CNN_FTLSTM_no_hand(nn.Module):
         inputx,inputy=getattr(self,"cnn_multi")(input1,input2)
         outT=getattr(self,"ftlstm")(inputx,inputy)
         out=torch.mean(outT,dim=2)
-        out = self.classification_raw(out)
         return out
     def forward(self,input_lstm,input1,input2,target,seq_length,train=True):
         target=target.to(self.device)
         out=self.forward2(input1,input2)
+        out = self.classification_raw(out)
         target_index = torch.argmax(target, dim=1).to(self.device)
         pred_index = torch.argmax(out, dim=1).to(self.device)
         correct_batch=torch.sum(target_index==torch.argmax(out,dim=1))
@@ -314,8 +314,7 @@ class CNN_FTLSTM(nn.Module):
         self.num_layers=2
         self.num_labels=4
         self.weight=nn.Parameter(torch.FloatTensor([weight]),requires_grad=False)
-        self.classification_hand = nn.Linear(self.hidden_dim_lstm, self.num_labels).to(self.device)
-        self.classification_raw=nn.Linear(hidden_dim,self.num_labels).to(self.device)
+        self.classification = nn.Linear(self.hidden_dim_lstm+hidden_dim, self.num_labels).to(self.device)
 
         #load pretrained models
         model1=LSTM_Audio(self.hidden_dim_lstm,self.num_layers,self.device)
@@ -334,13 +333,11 @@ class CNN_FTLSTM(nn.Module):
         out_lstm=getattr(self,"LSTM_Audio").forward2(input_lstm,seq_length)
         target=target.to(self.device)
         p = self.weight
-        out_final = p*out+(1-p)*out_lstm
+        out_final = self.classification(torch.cat([out,out_lstm],dim=1))
         target_index = torch.argmax(target, dim=1).to(self.device)
         pred_index = torch.argmax(out_final, dim=1).to(self.device)
         correct_batch=torch.sum(target_index==torch.argmax(out_final,dim=1))
-        losses_batch_hand=F.cross_entropy(out_lstm,torch.max(target,1)[1])
-        losses_batch_raw=F.cross_entropy(out,torch.max(target,1)[1])
-        losses_batch=p*losses_batch_raw+(1-p)*losses_batch_hand
+        losses_batch=F.cross_entropy(out_final,torch.max(target,1)[1])
         correct_batch=torch.unsqueeze(correct_batch,dim=0)
         losses_batch=torch.unsqueeze(losses_batch, dim=0)
         if train:
