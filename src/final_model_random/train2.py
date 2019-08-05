@@ -59,7 +59,7 @@ def train_model(args):
     for fold in range(5):
         for mo in ["LSTM_Audio","CNN_FTLSTM_no_hand","CNN_FTLSTM"]:
             if mo=="LSTM_Audio":
-                model=LSTM_Audio(hidden_dim,num_layers,device)
+                model=LSTM_Audio(hidden_dim_lstm,2,device)
             if mo=="CNN_FTLSTM_no_hand":
                 model = CNN_FTLSTM_no_hand(input_channels, out_channels, kernel_size_cnn,stride_size_cnn, kernel_size_pool, stride_size_pool,nfft,hidden_dim,num_layers_ftlstm,weight,device)
             if mo=="CNN_FTLSTM":
