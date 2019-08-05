@@ -108,8 +108,6 @@ def train_model(args):
                 correct=0
                 model.train()
                 for j, (input_lstm, input1, input2, target, seq_length) in enumerate(train_loader):
-                    #if (j+1)%20==0:
-                        #print("=================================Train Batch"+ str(j+1)+str(weight)+"===================================================")
                     num=input_lstm.shape[0]
                     if num%num_devices!=0:
                         input_lstm=input_lstm[:int(num-num%num_devices)]
@@ -123,7 +121,6 @@ def train_model(args):
                     correct_batch=torch.sum(correct_batch,dim=0)
                     losses += loss.item() * (int(num-num%num_devices))
                     loss.backward()
-                    weight=model.module.state_dict()["weight"]
                     optimizer.step()
                     correct += correct_batch.item()
                 accuracy=correct*1.0/(j*batch_size+int(num-num%num_devices))
