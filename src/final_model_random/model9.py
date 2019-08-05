@@ -314,7 +314,7 @@ class CNN_FTLSTM(nn.Module):
         self.num_layers=2
         self.num_labels=4
         self.weight=nn.Parameter(torch.FloatTensor([weight]),requires_grad=False)
-        self.classification = nn.Linear(self.hidden_dim_lstm+hidden_dim, self.num_labels).to(self.device)
+        self.classification = nn.Linear(self.hidden_dim_lstm, self.num_labels).to(self.device)
 
         #load pretrained models
         model1=LSTM_Audio(self.hidden_dim_lstm,self.num_layers,self.device)
@@ -333,7 +333,7 @@ class CNN_FTLSTM(nn.Module):
         out_lstm=getattr(self,"LSTM_Audio").forward2(input_lstm,seq_length)
         target=target.to(self.device)
         p = self.weight
-        out_final = self.classification(torch.cat([out,out_lstm],dim=1))
+        out_final = self.classification(out+out_lstm)
         target_index = torch.argmax(target, dim=1).to(self.device)
         pred_index = torch.argmax(out_final, dim=1).to(self.device)
         correct_batch=torch.sum(target_index==torch.argmax(out_final,dim=1))
