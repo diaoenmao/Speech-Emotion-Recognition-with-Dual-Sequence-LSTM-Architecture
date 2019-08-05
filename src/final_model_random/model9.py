@@ -318,15 +318,15 @@ class CNN_FTLSTM(nn.Module):
         self.classification_raw=nn.Linear(hidden_dim,self.num_labels).to(self.device)
 
         #load pretrained models
-        LSTM_Audio=LSTM_Audio(self.hidden_dim_lstm,self.num_layers,self.device)
-        CNN_FTLSTM_no_hand=CNN_FTLSTM_no_hand(in_channels, out_channels, kernel_size_cnn,
+        model1=LSTM_Audio(self.hidden_dim_lstm,self.num_layers,self.device)
+        model2=CNN_FTLSTM_no_hand(in_channels, out_channels, kernel_size_cnn,
                     stride_cnn, kernel_size_pool, stride_pool,nfft,
                     hidden_dim,num_layers_ftlstm,weight,
                     device)
-        LSTM_Audio.load_state_dict(torch.load("/scratch/speech/models/final_classification_random/LSTM_Audio_pretrained.pt"))
-        CNN_FTLSTM_no_hand.load_state_dict(torch.load("/scratch/speech/models/final_classification_random/CNN_FTLSTM_no_hand_pretrained.pt"))
-        setattr(self,"LSTM_Audio",LSTM_Audio)
-        setattr(self,"CNN_FTLSTM_no_hand",CNN_FTLSTM_no_hand)
+        model1.load_state_dict(torch.load("/scratch/speech/models/final_classification_random/LSTM_Audio_pretrained.pt"))
+        model2.load_state_dict(torch.load("/scratch/speech/models/final_classification_random/CNN_FTLSTM_no_hand_pretrained.pt"))
+        setattr(self,"LSTM_Audio",model1)
+        setattr(self,"CNN_FTLSTM_no_hand",model2)
 
 
     def forward(self,input_lstm,input1,input2,target,seq_length,train=True):
