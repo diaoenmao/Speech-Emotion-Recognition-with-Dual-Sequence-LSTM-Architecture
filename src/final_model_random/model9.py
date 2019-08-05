@@ -40,6 +40,7 @@ class LSTM_Audio(nn.Module):
         super(LSTM_Audio, self).__init__()
         self.device = device
         self.num_features = 39
+        self.num_labels=4
         self.hidden_dim = hidden_dim
         self.num_layers = num_layers
         self.dropout_rate = dropout_rate
