@@ -102,6 +102,10 @@ def train_model(args):
             train_loss=[]
             class_acc= []
             print("Model Initialized: {}".format(path)+"\n")
+            if mo!="CNN_FTLSTM":
+                epoch_num=10
+            else:
+                epoch_num=args.epoch_num
             for epoch in range(epoch_num):  # again, normally you would NOT do 300 epochs, it is toy data
                 print("===================================" + str(epoch+1) + "==============================================")
                 losses = 0
