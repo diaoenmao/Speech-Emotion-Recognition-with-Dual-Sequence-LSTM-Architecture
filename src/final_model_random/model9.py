@@ -55,8 +55,6 @@ class LSTM_Audio(nn.Module):
 
         out_lstm,_ = self.lstm(input_lstm)
         out_lstm=out_lstm.permute(0,2,1)
-        assert out_lstm.shape[1]==39, "size mismatch"
-
         temp = [torch.unsqueeze(torch.mean(out_lstm[k,:,:int(s.item())],dim=1),dim=0) for k,s in enumerate(seq_length)]
         out_lstm = torch.cat(temp,dim=0)
         out_lstm = self.classification_hand(out_lstm)
