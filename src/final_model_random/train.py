@@ -39,6 +39,7 @@ def train_model(args):
     if args.model=="model6": from model6 import CNN_FTLSTM
     if args.model=="model7": from model7 import CNN_FTLSTM
     if args.model=="model8": from model8 import CNN_FTLSTM
+    if args.model=="model10": from model10 import CNN_FTLSTM
     if args.model=="base1": from base1 import CNN_FTLSTM
     if args.model=="base2": from base2 import CNN_FTLSTM
     if args.model=="base3": from base3 import CNN_FTLSTM
