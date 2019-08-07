@@ -28,6 +28,7 @@ def init_parser():
     parser.add_argument('--model','-m',default="model1",type=str,dest='model')
     parser.add_argument('--epoch_num','-n',default=50,type=int,dest='epoch_num')
     parser.add_argument('--learning_rate', '-lr', default=0.001, type=float, dest='lr')
+    parser.add_argument('--experiment','-e',default=1,type=int,dest='experiment')
     return parser.parse_args()
 
 def train_model(args):
@@ -47,7 +48,7 @@ def train_model(args):
     if args.model=="base5": from base5 import CNN_FTLSTM
     if args.model=="base6": from base5 import CNN_FTLSTM
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    experiment=10
+    experiment=args.experiment(10)
     device_ids=[0,1,2,3]
     num_devices=len(device_ids)
     batch_size=args.batch_size
