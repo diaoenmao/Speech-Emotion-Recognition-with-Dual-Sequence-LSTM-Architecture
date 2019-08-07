@@ -89,7 +89,7 @@ def train_model(args):
             path="model:{};batch_size:{};out_channels:{};kernel_size_cnn:{};weight:{};lr:{}".format(args.model,args.batch_size,out_channels,kernel_size_cnn,weight,args.lr)
             file_path="/scratch/speech/models/final_classification_random/"+args.file_path+".txt"
             with open(file_path,"a+") as f:
-                f.write("\n"+"============ model starts, fold {} , experiment {}===========".format(fold,e))
+                f.write("\n"+"============ model starts, fold {} , experiment {}===========".format(fold,e)+"\n")
             model.cuda()
             model=DataParallel(model,device_ids=device_ids)
             model.train()
@@ -190,9 +190,9 @@ def train_model(args):
                     #np.savetxt(f,cm_normalized,delimiter=' ',fmt="%6.5f")
                     if epoch==epoch_num-1:
                         f.write("Best Accuracy:{:06.5f}".format(max(test_acc))+"\n")
-                        f.write("Average Top 10 Accuracy:{:06.5f}".format(np.mean(np.sort(np.array(test_acc))[-5:]))+"\n")
+                        #f.write("Average Top 10 Accuracy:{:06.5f}".format(np.mean(np.sort(np.array(test_acc))[-5:]))+"\n")
                         f.write("Best Class Accuracy:{:06.5f}".format(max(class_acc))+"\n")
-                        f.write("Average Top 10 Class Accuracy:{:06.5f}".format(np.mean(np.sort(np.array(class_acc))[-5:]))+"\n")
+                        #f.write("Average Top 10 Class Accuracy:{:06.5f}".format(np.mean(np.sort(np.array(class_acc))[-5:]))+"\n")
                         f.write("============================= model ends ==================================="+"\n")
             print(file_path)
             #all_test_acc+=np.sort(np.array(test_acc))[-5:].tolist()
