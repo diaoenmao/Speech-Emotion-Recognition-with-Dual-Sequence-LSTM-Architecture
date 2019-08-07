@@ -200,7 +200,7 @@ def train_model(args):
             best_class_acc.append(max(class_acc))
             best_test_acc.append(max(test_acc))
     with open(file_path, 'a+') as f:
-        f.write(path+"\n")
+        #f.write(path+"\n")
         f.write("\n"+"model_parameters: "+str(sum(p.numel() for p in model.parameters() if p.requires_grad))+"\n"+path+"\n")
         #f.write("Mean test acc: {:06.5f}; Std. test acc: {:06.5f}; Highest test acc: {:06.5f}".format(np.mean(all_test_acc),np.std(all_test_acc),np.max(all_test_acc)))
         #f.write("\n")
