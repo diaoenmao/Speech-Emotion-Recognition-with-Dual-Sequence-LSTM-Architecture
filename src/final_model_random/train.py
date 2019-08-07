@@ -193,7 +193,7 @@ def train_model(args):
                         #f.write("Average Top 10 Accuracy:{:06.5f}".format(np.mean(np.sort(np.array(test_acc))[-5:]))+"\n")
                         f.write("Best Class Accuracy:{:06.5f}".format(max(class_acc))+"\n")
                         #f.write("Average Top 10 Class Accuracy:{:06.5f}".format(np.mean(np.sort(np.array(class_acc))[-5:]))+"\n")
-                        f.write("============================= model ends ==================================="+"\n")
+                        #f.write("============================= model ends ==================================="+"\n")
             print(file_path)
             #all_test_acc+=np.sort(np.array(test_acc))[-5:].tolist()
             #all_class_acc+=np.sort(np.array(class_acc))[-5:].tolist()
