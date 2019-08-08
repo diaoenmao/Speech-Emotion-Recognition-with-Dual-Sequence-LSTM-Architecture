@@ -96,6 +96,8 @@ class FTLSTMCell(nn.Module):
         self.reset_parameters()
     def reset_parameters(self):
         self.batch.reset_parameters()
+        self.batch.bias.data.fill_(0)
+        self.batch.weight.data.fill_(0.1)
         self.batchhT.reset_parameters()
     def forward(self, x,y,hT,CT,time_step):
         gates=self.batch(torch.sigmoid(self.W(torch.cat([x,y,hT],dim=1))),time=time_step)
