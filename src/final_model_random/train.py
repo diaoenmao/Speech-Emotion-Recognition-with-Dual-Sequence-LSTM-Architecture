@@ -30,6 +30,7 @@ def init_parser():
     parser.add_argument('--learning_rate', '-lr', default=0.001, type=float, dest='lr')
     parser.add_argument('--experiment','-e',default=1,type=int,dest='experiment')
     parser.add_argument('--gpu','-g',default=1,type=int,dest='gpu')
+    parser.add_argument('--comment','-c',default=False,type=bool,dest="comment")
     return parser.parse_args()
 
 def train_model(args):
@@ -190,9 +191,10 @@ def train_model(args):
 
                 print("Epoch: {}-----------Training Loss: {:06.5f} -------- Testing Loss: {:06.5f} -------- Training Acc: {:06.5f} -------- Testing Acc: {:06.5f} -------- Class Acc: {:06.5f}".format(epoch+1,losses,losses_test, accuracy, accuracy_test, class_accuracy_test)+"\n")
                 with open(file_path,"a+") as f:
-                    f.write("Epoch: {}-----------Training Loss: {:06.5f} -------- Testing Loss: {:06.5f} -------- Training Acc: {:06.5f} -------- Testing Acc: {:06.5f} -------- Class Acc: {:06.5f}".format(epoch+1,losses,losses_test, accuracy, accuracy_test, class_accuracy_test)+"\n")
-                    f.write("confusion_matrix:"+"\n")
-                    np.savetxt(f,cm_normalized,delimiter=' ',fmt="%6.5f")
+                    if args.comment:
+                        f.write("Epoch: {}-----------Training Loss: {:06.5f} -------- Testing Loss: {:06.5f} -------- Training Acc: {:06.5f} -------- Testing Acc: {:06.5f} -------- Class Acc: {:06.5f}".format(epoch+1,losses,losses_test, accuracy, accuracy_test, class_accuracy_test)+"\n")
+                        f.write("confusion_matrix:"+"\n")
+                        np.savetxt(f,cm_normalized,delimiter=' ',fmt="%6.5f")
                     if epoch==epoch_num-1:
                         f.write("Best Accuracy:{:06.5f}".format(max(test_acc))+"\n")
                         #f.write("Average Top 10 Accuracy:{:06.5f}".format(np.mean(np.sort(np.array(test_acc))[-5:]))+"\n")
