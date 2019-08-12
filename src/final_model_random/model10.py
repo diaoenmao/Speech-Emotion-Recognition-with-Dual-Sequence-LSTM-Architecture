@@ -73,7 +73,7 @@ class FTLSTMCell(nn.Module):
         self.inputy_dim=inputy_dim
         # BN parameters
         self.batch = SeparatedBatchNorm1d(num_features=4 * self.hidden_dim, max_length=max_length)
-        self.batchhT = nn.SeparatedBatchNorm1d(num_features=self.hidden_dim,max_length=max_length)
+        self.batchhT = SeparatedBatchNorm1d(num_features=self.hidden_dim,max_length=max_length)
 
         self.W=nn.Linear(self.inputx_dim+self.inputy_dim+self.hidden_dim,4*self.hidden_dim,bias=True)
         self.WTc=nn.Linear(self.inputx_dim+self.hidden_dim,self.hidden_dim,bias=True)
