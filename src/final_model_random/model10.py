@@ -57,7 +57,6 @@ class LFLB(nn.Module):
 
     def forward(self,input):
         input=input
-        print("input:{};cnn:{};device:{}".format(input.device,self.cnn.weight.device,self.device))
         out=self.cnn(input)
         out=self.batch(out)
         out=self.relu(out)
@@ -87,7 +86,6 @@ class FTLSTMCell(nn.Module):
         self.batch.bias.data.fill_(0)
         self.batch.weight.data.fill_(0.1)
     def forward(self, x,y,hT,CT,time_step):
-        pdb.set_trace()
         gates=self.batch(torch.sigmoid(self.W(torch.cat([x,y,hT],dim=1))),time=time_step)
         fT, iT, oT,iF= (gates[:,:self.hidden_dim],gates[:,self.hidden_dim:2*self.hidden_dim],
                                 gates[:,2*self.hidden_dim:3*self.hidden_dim],gates[:,3*self.hidden_dim:4*self.hidden_dim])
@@ -258,7 +256,6 @@ class CNN_FTLSTM(nn.Module):
         input_lstm=input_lstm
         target=target
         seq_length=seq_length
-        print(self.weight.device)
         inputx,inputy=getattr(self,"cnn_multi")(input1,input2)
         outT=getattr(self,"ftlstm")(inputx,inputy)
 
