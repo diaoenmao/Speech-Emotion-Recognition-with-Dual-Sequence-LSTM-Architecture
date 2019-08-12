@@ -48,7 +48,7 @@ def train_model(args):
     if args.model=="base4": from base4 import CNN_FTLSTM
     if args.model=="base5": from base5 import CNN_FTLSTM
     if args.model=="base6": from base5 import CNN_FTLSTM
-    device = torch.device('cuda:1')
+    device = torch.device('cuda:'+str(args.gpu))
     experiment=args.experiment
     device_ids=[args.gpu]
     num_devices=len(device_ids)
