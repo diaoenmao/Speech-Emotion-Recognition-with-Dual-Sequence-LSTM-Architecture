@@ -90,7 +90,7 @@ def train_model(args):
             file_path="/scratch/speech/models/final_classification_random/"+args.file_path+".txt"
             with open(file_path,"a+") as f:
                 f.write("\n"+"============ model starts, fold {} , experiment {}===========".format(fold,e)+"\n")
-            model.cuda()
+            model.cuda(1)
             model=DataParallel(model,device_ids=device_ids)
             model.train()
             ## optimizer
