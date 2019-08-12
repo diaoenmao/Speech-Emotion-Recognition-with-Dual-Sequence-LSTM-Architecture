@@ -71,6 +71,8 @@ def train_model(args):
     best_test_acc=[]
     best_class_acc=[]
     for fold in range(5):
+        best_class_acc_this_fold=[]
+        best_test_acc_this_fold=[]
         for e in range(experiment):
             #if torch.cuda.is_available():torch.cuda.manual_seed_all(e*10)
             np.random.seed(e*10)
@@ -187,9 +189,9 @@ def train_model(args):
 
                 print("Epoch: {}-----------Training Loss: {:06.5f} -------- Testing Loss: {:06.5f} -------- Training Acc: {:06.5f} -------- Testing Acc: {:06.5f} -------- Class Acc: {:06.5f}".format(epoch+1,losses,losses_test, accuracy, accuracy_test, class_accuracy_test)+"\n")
                 with open(file_path,"a+") as f:
-                    #f.write("Epoch: {}-----------Training Loss: {:06.5f} -------- Testing Loss: {:06.5f} -------- Training Acc: {:06.5f} -------- Testing Acc: {:06.5f} -------- Class Acc: {:06.5f}".format(epoch+1,losses,losses_test, accuracy, accuracy_test, class_accuracy_test)+"\n")
-                    #f.write("confusion_matrix:"+"\n")
-                    #np.savetxt(f,cm_normalized,delimiter=' ',fmt="%6.5f")
+                    f.write("Epoch: {}-----------Training Loss: {:06.5f} -------- Testing Loss: {:06.5f} -------- Training Acc: {:06.5f} -------- Testing Acc: {:06.5f} -------- Class Acc: {:06.5f}".format(epoch+1,losses,losses_test, accuracy, accuracy_test, class_accuracy_test)+"\n")
+                    f.write("confusion_matrix:"+"\n")
+                    np.savetxt(f,cm_normalized,delimiter=' ',fmt="%6.5f")
                     if epoch==epoch_num-1:
                         f.write("Best Accuracy:{:06.5f}".format(max(test_acc))+"\n")
                         #f.write("Average Top 10 Accuracy:{:06.5f}".format(np.mean(np.sort(np.array(test_acc))[-5:]))+"\n")
@@ -199,8 +201,16 @@ def train_model(args):
             print(file_path)
             #all_test_acc+=np.sort(np.array(test_acc))[-5:].tolist()
             #all_class_acc+=np.sort(np.array(class_acc))[-5:].tolist()
-            best_class_acc.append(max(class_acc))
-            best_test_acc.append(max(test_acc))
+            best_class_acc_this_fold.append(max(class_acc))
+            best_test_acc_this_fold.append(max(test_acc))
+        best_class_acc+=best_class_acc_this_fold
+        best_test_acc+=best_test_acc_this_fold
+        with open(file_path,'a+') as f:
+            f.write("Best test acc for this fold: {:06.5f}".format(np.max(best_test_acc_this_fold)))
+            f.write("\n")
+            f.write("Best class acc for this fold: {:06.5f}".format(np.max(best_class_acc_this_fold)))
+            f.write("\n")
+            f.write("==================================== fold {} ends ===========================================".format(fold)+"\n")
     with open(file_path, 'a+') as f:
         #f.write(path+"\n")
         f.write("\n"+"model_parameters: "+str(sum(p.numel() for p in model.parameters() if p.requires_grad))+"\n"+path+"\n")
