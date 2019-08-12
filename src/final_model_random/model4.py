@@ -77,7 +77,7 @@ class LFLB(nn.Module):
         return out
 
 class FTLSTMCell(nn.Module):
-    def __init__(self,  inputx_dim,inputy_dim,hidden_dim, max_length, dropout=0):
+    def __init__(self,  inputx_dim,inputy_dim,hidden_dim,max_length,device dropout=0):
         # inputx, inputy should be one single time step, B*D
         super(FTLSTMCell, self).__init__()
         self.max_length = max_length
@@ -92,7 +92,7 @@ class FTLSTMCell(nn.Module):
         self.WTc=nn.Linear(self.inputx_dim+self.hidden_dim,self.hidden_dim,bias=True)
         self.WFc=nn.Linear(self.inputy_dim+self.hidden_dim,self.hidden_dim,bias=True)
         self.dropout=nn.Dropout(p=dropout, inplace=False)
-        self.device=torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        self.device=device
         self.reset_parameters()
     def reset_parameters(self):
         self.batch.reset_parameters()
@@ -219,9 +219,9 @@ class FTLSTM(nn.Module):
         for i in range(num_layers_ftlstm):
             name = 'ftlstm_cell{}'.format(i)
             if i==num_layers_ftlstm-1:
-                cell = FTLSTMCell(hidden_dim,inputy_dim,hidden_dim,self.time)
+                cell = FTLSTMCell(hidden_dim,inputy_dim,hidden_dim,self.time,device)
             else:
-                cell = FTLSTMCell(inputx_dim,inputy_dim,hidden_dim,self.time)
+                cell = FTLSTMCell(inputx_dim,inputy_dim,hidden_dim,self.time,device)
             setattr(self, name, cell)
             self._all_layers.append(cell)
     def forward(self,inputx,inputy):
