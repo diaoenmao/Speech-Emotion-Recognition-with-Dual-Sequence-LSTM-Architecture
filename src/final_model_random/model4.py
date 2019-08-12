@@ -77,7 +77,7 @@ class LFLB(nn.Module):
         return out
 
 class FTLSTMCell(nn.Module):
-    def __init__(self,  inputx_dim,inputy_dim,hidden_dim,max_length,device dropout=0):
+    def __init__(self,  inputx_dim,inputy_dim,hidden_dim,max_length,device ,dropout=0):
         # inputx, inputy should be one single time step, B*D
         super(FTLSTMCell, self).__init__()
         self.max_length = max_length
