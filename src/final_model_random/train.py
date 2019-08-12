@@ -139,7 +139,6 @@ def train_model(args):
                     correct_batch=torch.sum(correct_batch,dim=0)
                     losses += loss.item() * (int(num-num%num_devices))
                     loss.backward()
-                    weight=model.module.state_dict()["weight"]
                     optimizer.step()
                     correct += correct_batch.item()
                 scheduler3.step()
