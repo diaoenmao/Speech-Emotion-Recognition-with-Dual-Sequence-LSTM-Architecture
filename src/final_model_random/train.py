@@ -29,6 +29,7 @@ def init_parser():
     parser.add_argument('--epoch_num','-n',default=50,type=int,dest='epoch_num')
     parser.add_argument('--learning_rate', '-lr', default=0.001, type=float, dest='lr')
     parser.add_argument('--experiment','-e',default=1,type=int,dest='experiment')
+    parser.add_argument('--gpu','g',default=1,type=int,dest='gpu')
     return parser.parse_args()
 
 def train_model(args):
@@ -49,7 +50,7 @@ def train_model(args):
     if args.model=="base6": from base5 import CNN_FTLSTM
     device = torch.device('cuda:1')
     experiment=args.experiment
-    device_ids=[1]
+    device_ids=[args.gpu]
     num_devices=len(device_ids)
     batch_size=args.batch_size
     input_channels = 1
@@ -87,11 +88,11 @@ def train_model(args):
             print("============================ fold " + str(fold) + " =============================")
 
             path="model:{};batch_size:{};out_channels:{};kernel_size_cnn:{};weight:{};lr:{}".format(args.model,args.batch_size,out_channels,kernel_size_cnn,weight,args.lr)
-            file_path="/scratch/speech/models/final_classification_random/"+args.file_path+".txt"
+            file_path="/scratch/speech/models/final_classification_random/"+args.file_path+"_"+str(args.gpu)+".txt"
             with open(file_path,"a+") as f:
                 f.write("\n"+"============ model starts, fold {} , experiment {}===========".format(fold,e)+"\n")
             model.to(device)
-            model=DataParallel(model,device_ids=device_ids)
+            #model=DataParallel(model,device_ids=device_ids)
             model.train()
             ## optimizer
             # Use Adam as the optimizer with learning rate 0.01 to make it fast for testing purposes
@@ -137,6 +138,7 @@ def train_model(args):
                     weight=model.module.state_dict()["weight"]
                     optimizer.step()
                     correct += correct_batch.item()
+                scheduler3.step()
                 accuracy=correct*1.0/(j*batch_size+int(num-num%num_devices))
                 losses=losses / (j*batch_size+int(num-num%num_devices))
                 losses_test = 0
