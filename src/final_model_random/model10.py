@@ -91,6 +91,7 @@ class FTLSTMCell(nn.Module):
                                 gates[:,2*self.hidden_dim:3*self.hidden_dim],gates[:,3*self.hidden_dim:4*self.hidden_dim])
         C_T=torch.tanh(self.WTc(torch.cat([x,hT],dim=1)))
         C_F=torch.tanh(self.WFc(torch.cat([y,hT],dim=1)))
+        print("fT:{};CT:{}".format(fT.device,CT.device()))
         CT=fT*CT+iT*C_T+iF*C_F
         hT=oT*torch.tanh(CT)
         outT=self.batchhT(hT)
