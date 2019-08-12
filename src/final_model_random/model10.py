@@ -57,7 +57,7 @@ class LFLB(nn.Module):
 
     def forward(self,input):
         input=input.to(self.device)
-        pdb.set_trace()
+        print("input:{};cnn:{};device:{}".format(input.device,self.cnn.device,self.device))
         out=self.cnn(input)
         out=self.batch(out)
         out=self.relu(out)
