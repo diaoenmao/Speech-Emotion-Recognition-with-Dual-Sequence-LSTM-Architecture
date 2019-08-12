@@ -72,9 +72,9 @@ def train_model(args):
     best_class_acc=[]
     test_temp=[]
     class_temp=[]
-    for fold in range(5):
-        best_class_acc_this_fold=[]
-        best_test_acc_this_fold=[]
+    for session in range(5):
+        best_class_acc_this_session=[]
+        best_test_acc_this_session=[]
         for e in range(experiment):
             #if torch.cuda.is_available():torch.cuda.manual_seed_all(e*10)
             np.random.seed(e*10)
@@ -84,17 +84,17 @@ def train_model(args):
                                 hidden_dim,num_layers_ftlstm,weight,device)
             print("============================ Number of parameters ====================================")
             print(str(sum(p.numel() for p in model.parameters() if p.requires_grad)))
-            training_data = IEMOCAP(fold=fold, train=True)
+            training_data = IEMOCAP(session=session, train=True)
             train_loader = DataLoader(dataset=training_data, batch_size=batch_size, shuffle=True, collate_fn=my_collate, num_workers=0, drop_last=False)
-            testing_data = IEMOCAP(fold=fold, train=False)
+            testing_data = IEMOCAP(session=session, train=False)
             test_loader = DataLoader(dataset=testing_data, batch_size=batch_size, shuffle=True, collate_fn=my_collate, num_workers=0,drop_last=False)
 
-            print("============================ fold " + str(fold) + " =============================")
+            print("============================ session " + str(session) + " =============================")
 
             path="model:{};batch_size:{};out_channels:{};kernel_size_cnn:{};weight:{};lr:{}".format(args.model,args.batch_size,out_channels,kernel_size_cnn,weight,args.lr)
             file_path="/scratch/speech/models/final_classification_random/"+args.file_path+"_"+str(args.gpu)+".txt"
             with open(file_path,"a+") as f:
-                f.write("\n"+"============ model starts, fold {} , experiment {}===========".format(fold,e)+"\n")
+                f.write("\n"+"============ model starts, session {} , experiment {}===========".format(session,e)+"\n")
             model.to(device)
             model=DataParallel(model,device_ids=device_ids)
             model.train()
@@ -151,7 +151,7 @@ def train_model(args):
                 output = []
                 y_true = []
                 y_pred = []
-                #torch.save(model.module.state_dict(), "/scratch/speech/models/final_checkpoint_random/fold_{}_path_{}_epoch_{}.pt".format(fold,path,epoch+1))
+                #torch.save(model.module.state_dict(), "/scratch/speech/models/final_checkpoint_random/session_{}_path_{}_epoch_{}.pt".format(session,path,epoch+1))
                 model.eval()
                 with torch.no_grad():
                     for j,(input_lstm, input1, input2, target, seq_length) in enumerate(test_loader):
@@ -203,18 +203,18 @@ def train_model(args):
             print(file_path)
             #all_test_acc+=np.sort(np.array(test_acc))[-5:].tolist()
             #all_class_acc+=np.sort(np.array(class_acc))[-5:].tolist()
-            best_class_acc_this_fold.append(max(class_acc))
-            best_test_acc_this_fold.append(max(test_acc))
-        best_class_acc+=best_class_acc_this_fold
-        best_test_acc+=best_test_acc_this_fold
-        test_temp.append(np.max(best_test_acc_this_fold))
-        class_temp.append(np.max(best_class_acc_this_fold))
+            best_class_acc_this_session.append(max(class_acc))
+            best_test_acc_this_session.append(max(test_acc))
+        best_class_acc+=best_class_acc_this_session
+        best_test_acc+=best_test_acc_this_session
+        test_temp.append(np.max(best_test_acc_this_session))
+        class_temp.append(np.max(best_class_acc_this_session))
         with open(file_path,'a+') as f:
-            f.write("Best test acc for this fold: {:06.5f}".format(np.max(best_test_acc_this_fold)))
+            f.write("Best test acc for this session: {:06.5f}".format(np.max(best_test_acc_this_session)))
             f.write("\n")
-            f.write("Best class acc for this fold: {:06.5f}".format(np.max(best_class_acc_this_fold)))
+            f.write("Best class acc for this session: {:06.5f}".format(np.max(best_class_acc_this_session)))
             f.write("\n")
-            f.write("==================================== fold {} ends ===========================================".format(fold)+"\n")
+            f.write("==================================== session {} ends ===========================================".format(session)+"\n")
     with open(file_path, 'a+') as f:
         #f.write(path+"\n")
         f.write("\n"+"model_parameters: "+str(sum(p.numel() for p in model.parameters() if p.requires_grad))+"\n"+path+"\n")
@@ -226,9 +226,9 @@ def train_model(args):
         f.write("\n")
         f.write("Mean Best class acc: {:06.5f}; Std. Best class acc: {:06.5f}; Highest Best class acc: {:06.5f}".format(np.mean(best_class_acc),np.std(best_class_acc),np.max(best_class_acc)))
         f.write("\n")
-        f.write("Mean Best test acc over fold: {:06.5f}; Std. Best test acc over fold: {:06.5f}; Highest Best test acc over fold: {:06.5f}".format(np.mean(test_temp),np.std(test_temp),np.max(test_temp)))
+        f.write("Mean Best test acc over session: {:06.5f}; Std. Best test acc over session: {:06.5f}; Highest Best test acc over session: {:06.5f}".format(np.mean(test_temp),np.std(test_temp),np.max(test_temp)))
         f.write("\n")
-        f.write("Mean Best class acc over fold: {:06.5f}; Std. Best class acc over fold: {:06.5f}; Highest Best class acc over fold: {:06.5f}".format(np.mean(class_temp),np.std(class_temp),np.max(class_temp)))
+        f.write("Mean Best class acc over session: {:06.5f}; Std. Best class acc over session: {:06.5f}; Highest Best class acc over session: {:06.5f}".format(np.mean(class_temp),np.std(class_temp),np.max(class_temp)))
         f.write("\n")
         f.write("================================= LOSO Ends ======================================="+"\n")
 if __name__ == '__main__':
