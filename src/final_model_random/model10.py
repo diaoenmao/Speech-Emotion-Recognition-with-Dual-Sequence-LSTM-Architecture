@@ -86,12 +86,12 @@ class FTLSTMCell(nn.Module):
         self.batch.bias.data.fill_(0)
         self.batch.weight.data.fill_(0.1)
     def forward(self, x,y,hT,CT,time_step):
+        print("y:{};hT:{};con:{}".format(y.device,hT.device,torch.cat([y,hT],dim=1)))
         gates=self.batch(torch.sigmoid(self.W(torch.cat([x,y,hT],dim=1))),time=time_step)
         fT, iT, oT,iF= (gates[:,:self.hidden_dim],gates[:,self.hidden_dim:2*self.hidden_dim],
                                 gates[:,2*self.hidden_dim:3*self.hidden_dim],gates[:,3*self.hidden_dim:4*self.hidden_dim])
         C_T=torch.tanh(self.WTc(torch.cat([x,hT],dim=1)))
         C_F=torch.tanh(self.WFc(torch.cat([y,hT],dim=1)))
-        print("fT:{};CT:{}".format(fT.device,CT.device))
         CT=fT*CT+iT*C_T+iF*C_F
         hT=oT*torch.tanh(CT)
         outT=self.batchhT(hT)
