@@ -105,7 +105,7 @@ def train_model(args):
             scheduler = ReduceLROnPlateau(optimizer=optimizer,factor=0.5, patience=2, threshold=1e-3)
             #scheduler2=ReduceLROnPlateau(optimizer=optimizer2, factor=0.5, patience=2, threshold=1e-3)
             #scheduler2 =CosineAnnealingLR(optimizer2, T_max=300, eta_min=0.0001)
-            scheduler3 =MultiStepLR(optimizer, [10,15,20,25],gamma=0.5)
+            scheduler3 =MultiStepLR(optimizer, [10,20,30],gamma=0.5)
 
             print("=================")
             print(len(training_data))
