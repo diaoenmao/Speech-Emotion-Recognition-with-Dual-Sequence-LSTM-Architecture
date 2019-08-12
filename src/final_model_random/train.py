@@ -70,6 +70,8 @@ def train_model(args):
     all_class_acc=[]
     best_test_acc=[]
     best_class_acc=[]
+    test_temp=[]
+    class_temp=[]
     for fold in range(5):
         best_class_acc_this_fold=[]
         best_test_acc_this_fold=[]
@@ -205,6 +207,8 @@ def train_model(args):
             best_test_acc_this_fold.append(max(test_acc))
         best_class_acc+=best_class_acc_this_fold
         best_test_acc+=best_test_acc_this_fold
+        test_temp.append(np.max(best_test_acc_this_fold))
+        class_temp.append(np.max(best_class_acc_this_fold))
         with open(file_path,'a+') as f:
             f.write("Best test acc for this fold: {:06.5f}".format(np.max(best_test_acc_this_fold)))
             f.write("\n")
@@ -221,6 +225,10 @@ def train_model(args):
         f.write("Mean Best test acc: {:06.5f}; Std. Best test acc: {:06.5f}; Highest Best test acc: {:06.5f}".format(np.mean(best_test_acc),np.std(best_test_acc),np.max(best_test_acc)))
         f.write("\n")
         f.write("Mean Best class acc: {:06.5f}; Std. Best class acc: {:06.5f}; Highest Best class acc: {:06.5f}".format(np.mean(best_class_acc),np.std(best_class_acc),np.max(best_class_acc)))
+        f.write("\n")
+        f.write("Mean Best test acc over fold: {:06.5f}; Std. Best test acc over fold: {:06.5f}; Highest Best test acc over fold: {:06.5f}".format(np.mean(test_temp),np.std(test_temp),np.max(test_temp)))
+        f.write("\n")
+        f.write("Mean Best class acc over fold: {:06.5f}; Std. Best class acc over fold: {:06.5f}; Highest Best class acc over fold: {:06.5f}".format(np.mean(class_temp),np.std(class_temp),np.max(class_temp)))
         f.write("\n")
         f.write("================================= LOSO Ends ======================================="+"\n")
 if __name__ == '__main__':
