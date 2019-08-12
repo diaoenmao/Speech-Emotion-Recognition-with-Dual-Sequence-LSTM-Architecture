@@ -96,7 +96,7 @@ class FTLSTMCell(nn.Module):
         C_F=torch.tanh(self.WFc(torch.cat([y,hT],dim=1)))
         CT=fT*CT+iT*C_T+iF*C_F
         hT=oT*torch.tanh(CT)
-        outT=self.batchhT(hT)
+        outT=self.batchhT(hT,time=time_step)
         return outT,hT,CT
     def init_hidden(self, batch_size):
         return (nn.Parameter(torch.zeros(batch_size, self.hidden_dim)).to(self.device),
