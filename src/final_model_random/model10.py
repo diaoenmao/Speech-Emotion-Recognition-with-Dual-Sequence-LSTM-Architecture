@@ -50,13 +50,13 @@ class LFLB(nn.Module):
         self.kernel_size_pool = kernel_size_pool
         self.stride_pool = stride_pool
 
-        self.cnn = nn.Conv2d(self.in_channels, self.out_channels, self.kernel_size_cnn, stride=self.stride_cnn, padding=self.padding_cnn).to(self.device)
+        self.cnn = nn.Conv2d(self.in_channels, self.out_channels, self.kernel_size_cnn, stride=self.stride_cnn, padding=self.padding_cnn)
         self.batch = nn.BatchNorm2d(self.out_channels)
         self.max_pool = nn.MaxPool2d(self.kernel_size_pool, stride=self.stride_pool,padding=self.padding_pool)
         self.relu = nn.ReLU()
 
     def forward(self,input):
-        input=input.to(self.device)
+        input=input
         print("input:{};cnn:{};device:{}".format(input.device,self.cnn.weight.device,self.device))
         out=self.cnn(input)
         out=self.batch(out)
@@ -97,8 +97,8 @@ class FTLSTMCell(nn.Module):
         outT=self.batchhT(hT)
         return outT,hT,CT
     def init_hidden(self, batch_size):
-        return (nn.Parameter(torch.zeros(batch_size, self.hidden_dim)).to(self.device),
-                nn.Parameter(torch.zeros(batch_size, self.hidden_dim)).to(self.device))
+        return (nn.Parameter(torch.zeros(batch_size, self.hidden_dim)),
+                nn.Parameter(torch.zeros(batch_size, self.hidden_dim)))
 class SpectrogramModel(nn.Module):
     def cnn_shape(self,x,kc,sc,pc,km,sm,pm):
         temp = int((x+2*pc-kc)/sc+1)
@@ -138,7 +138,7 @@ class SpectrogramModel(nn.Module):
         self.strideF=strideF
         self.time=time
     def forward(self, input):
-        x = input.to(self.device)
+        x = input
         for i in range(self.num_layers_cnn):
             name = 'lflb_cell{}'.format(i)
             x = getattr(self, name)(x)
@@ -182,8 +182,8 @@ class MultiSpectrogramModel(nn.Module):
         inputy=input2
         return inputx,inputy
     def forward(self, input1, input2):
-        input1 = input1.to(self.device)
-        input2 = input2.to(self.device)
+        input1 = input1
+        input2 = input2
         name = 'spec_cell{}'
         input1 = getattr(self, name.format("0"))(input1)
         input2 = getattr(self, name.format("1"))(input2)
@@ -249,14 +249,14 @@ class CNN_FTLSTM(nn.Module):
         cell=FTLSTM(time,inputx_dim,inputy_dim,hidden_dim,num_layers_ftlstm,device)
         setattr(self,"ftlstm",cell)
         self.weight=nn.Parameter(torch.FloatTensor([weight]),requires_grad=False)
-        self.classification_raw=nn.Linear(hidden_dim,self.num_labels).to(self.device)
+        self.classification_raw=nn.Linear(hidden_dim,self.num_labels)
 
     def forward(self,input_lstm,input1,input2,target,seq_length,train=True):
-        input1=input1.to(self.device)
-        input2=input2.to(self.device)
-        input_lstm=input_lstm.to(self.device)
-        target=target.to(self.device)
-        seq_length=seq_length.to(self.device)
+        input1=input1
+        input2=input2
+        input_lstm=input_lstm
+        target=target
+        seq_length=seq_length
 
         inputx,inputy=getattr(self,"cnn_multi")(input1,input2)
         outT=getattr(self,"ftlstm")(inputx,inputy)
@@ -265,8 +265,8 @@ class CNN_FTLSTM(nn.Module):
         out = self.classification_raw(out)
         p = self.weight
         out_final = out
-        target_index = torch.argmax(target, dim=1).to(self.device)
-        pred_index = torch.argmax(out_final, dim=1).to(self.device)
+        target_index = torch.argmax(target, dim=1)
+        pred_index = torch.argmax(out_final, dim=1)
         correct_batch=torch.sum(target_index==torch.argmax(out_final,dim=1))
         losses_batch=F.cross_entropy(out_final,torch.max(target,1)[1])
         correct_batch=torch.unsqueeze(correct_batch,dim=0)
