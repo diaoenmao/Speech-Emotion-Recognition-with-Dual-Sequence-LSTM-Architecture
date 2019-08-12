@@ -29,7 +29,7 @@ def init_parser():
     parser.add_argument('--epoch_num','-n',default=50,type=int,dest='epoch_num')
     parser.add_argument('--learning_rate', '-lr', default=0.001, type=float, dest='lr')
     parser.add_argument('--experiment','-e',default=1,type=int,dest='experiment')
-    parser.add_argument('--gpu','g',default=1,type=int,dest='gpu')
+    parser.add_argument('--gpu','-g',default=1,type=int,dest='gpu')
     return parser.parse_args()
 
 def train_model(args):
