@@ -71,7 +71,7 @@ def train_model(args):
     best_class_acc=[]
     for fold in range(5):
         for e in range(experiment):
-            if torch.cuda.is_available():torch.cuda.manual_seed_all(e*10)
+            if torch.cuda.is_available(1):torch.cuda.manual_seed_all(e*10)
             np.random.seed(e*10)
             torch.manual_seed(e*10)
             model = CNN_FTLSTM(input_channels, out_channels, kernel_size_cnn,
