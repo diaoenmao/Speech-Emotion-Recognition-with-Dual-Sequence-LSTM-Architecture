@@ -252,11 +252,11 @@ class CNN_FTLSTM(nn.Module):
         self.classification_raw=nn.Linear(hidden_dim,self.num_labels)
 
     def forward(self,input_lstm,input1,input2,target,seq_length,train=True):
-        input1=input1
-        input2=input2
-        input_lstm=input_lstm
-        target=target
-        seq_length=seq_length
+        input1=input1.to(self.device)
+        input2=input2.to(self.device)
+        input_lstm=input_lstm.to(self.device)
+        target=target.to(self.device)
+        seq_length=seq_length.to(self.device)
 
         inputx,inputy=getattr(self,"cnn_multi")(input1,input2)
         outT=getattr(self,"ftlstm")(inputx,inputy)
