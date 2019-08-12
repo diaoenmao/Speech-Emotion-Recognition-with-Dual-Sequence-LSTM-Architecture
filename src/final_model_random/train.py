@@ -92,7 +92,7 @@ def train_model(args):
             with open(file_path,"a+") as f:
                 f.write("\n"+"============ model starts, fold {} , experiment {}===========".format(fold,e)+"\n")
             model.to(device)
-            #model=DataParallel(model,device_ids=device_ids)
+            model=DataParallel(model,device_ids=device_ids)
             model.train()
             ## optimizer
             # Use Adam as the optimizer with learning rate 0.01 to make it fast for testing purposes
