@@ -17,9 +17,9 @@ This is an implementation of [Speech Emotion Recognition with Dual-Sequence LSTM
 |           M<sub>DS-LSTM</sub>          | 69.4 | 69.5 |
 | M<sub>LSTM</sub> + M<sub>DS-LSTM</sub> | 72.7 | 73.3 |
 ## Acknowledgement
-*Jianyou Wang
+*Jianyou Wang  
 Michael Xue  
-Ryan Culhane
-Enmao Diao
-Jie Ding
+Ryan Culhane  
+Enmao Diao  
+Jie Ding  
 Vahid Tarokh*
