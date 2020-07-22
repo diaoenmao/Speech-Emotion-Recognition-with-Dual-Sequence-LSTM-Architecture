@@ -1,7 +1,7 @@
 # Restricted Recurrent Neural Networks
 
 This is an implementation of [Speech Emotion Recognition with Dual-Sequence LSTM Architecture](https://arxiv.org/abs/1910.08874) (DS-LSTM)
- - Dual-Sequence LSTM
+ - Dual-Sequence LSTM (DS-LSTM)
 ![ds-lstm](/img/ds-lstm.png)
  - Dual-level model with DS-LSTM cell
  ![diagram](/img/diagram.png)
