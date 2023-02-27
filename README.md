@@ -1,6 +1,6 @@
 # Speech Emotion Recognition with Dual-Sequence LSTM Architecture
 
-This is an implementation of [Speech Emotion Recognition with Dual-Sequence LSTM Architecture](https://arxiv.org/abs/1910.08874) (DS-LSTM)
+[ICASSP 2020] This is an implementation of [Speech Emotion Recognition with Dual-Sequence LSTM Architecture](https://arxiv.org/abs/1910.08874) (DS-LSTM)
  - Dual-Sequence LSTM (DS-LSTM)
 ![ds-lstm](/img/ds-lstm.png)
  - Dual-level model with DS-LSTM cell
