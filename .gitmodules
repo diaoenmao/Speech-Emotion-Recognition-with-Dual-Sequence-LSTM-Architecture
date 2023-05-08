@@ -1,3 +1,0 @@
-[submodule "tacotron/tacotron2_sub"]
-	path = tacotron/tacotron2_sub
-	url = git@github.com:NVIDIA/tacotron2.git
