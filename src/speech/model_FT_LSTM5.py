@@ -3,7 +3,38 @@ import torch.nn as nn
 import torch.nn.functional as F
 import pdb
 import numpy as np
-
+class SeparatedBatchNorm1d(nn.Module):
+    def __init__(self, num_features, max_length, eps=1e-5, momentum=0.1):
+        super(SeparatedBatchNorm1d, self).__init__()
+        self.num_features = num_features
+        self.max_length = max_length
+        self.eps = eps
+        self.momentum = momentum
+        self.weight = nn.Parameter(torch.FloatTensor(num_features))
+        self.bias = nn.Parameter(torch.FloatTensor(num_features))
+        for i in range(max_length):
+            self.register_buffer(
+                'running_mean_{}'.format(i), torch.zeros(num_features))
+            self.register_buffer(
+                'running_var_{}'.format(i), torch.ones(num_features))
+        self.reset_parameters()
+    def reset_parameters(self):
+        for i in range(self.max_length):
+            running_mean_i = getattr(self, 'running_mean_{}'.format(i))
+            running_var_i = getattr(self, 'running_var_{}'.format(i))
+            running_mean_i.zero_()
+            running_var_i.fill_(1)
+        self.weight.data.uniform_()
+        self.bias.data.zero_()
+    def forward(self, input_, time):
+        if time >= self.max_length:
+            time = self.max_length - 1
+        running_mean = getattr(self, 'running_mean_{}'.format(time))
+        running_var = getattr(self, 'running_var_{}'.format(time))
+        return F.batch_norm(
+            input=input_, running_mean=running_mean, running_var=running_var,
+            weight=self.weight, bias=self.bias, training=self.training,
+            momentum=self.momentum, eps=self.eps)
 class LSTM_Audio(nn.Module):
     def __init__(self, hidden_dim, num_layers, device,dropout_rate=0 ,bidirectional=False):
         super(LSTM_Audio, self).__init__()
@@ -45,48 +76,46 @@ class LFLB(nn.Module):
         out=self.relu(out)
         out=self.max_pool(out)
         return out
+
 class FTLSTMCell(nn.Module):
-    def __init__(self,  inputx_dim,inputy_dim,hidden_dim, dropout=0):
+    def __init__(self,  inputx_dim,inputy_dim,hidden_dim, max_length, dropout=0):
         # inputx, inputy should be one single time step, B*D
         super(FTLSTMCell, self).__init__()
+        self.max_length = max_length
         self.hidden_dim=hidden_dim
         self.inputx_dim=inputx_dim
         self.inputy_dim=inputy_dim
-        self.WTf=nn.Linear(self.inputx_dim+self.inputy_dim+self.hidden_dim,self.hidden_dim,bias=True)
-        self.WFf=nn.Linear(self.inputx_dim+self.inputy_dim+self.hidden_dim,self.hidden_dim,bias=True)
-        self.WTi=nn.Linear(self.inputx_dim+self.inputy_dim+self.hidden_dim,self.hidden_dim,bias=True)
-        self.WFi=nn.Linear(self.inputx_dim+self.inputy_dim+self.hidden_dim,self.hidden_dim,bias=True)
-        self.WTo=nn.Linear(self.inputx_dim+self.inputy_dim+self.hidden_dim,self.hidden_dim,bias=True)
-        self.WFo=nn.Linear(self.inputx_dim+self.inputy_dim+self.hidden_dim,self.hidden_dim,bias=True)
-        self.WTc=nn.Linear(self.inputx_dim+self.hidden_dim,self.hidden_dim,bias=True)
-        self.WFc=nn.Linear(self.inputy_dim+self.hidden_dim,self.hidden_dim,bias=True)
+        # BN parameters
+        self.batch = SeparatedBatchNorm1d(num_features=3*self.hidden_dim, max_length=max_length)
+        #self.batchhT = SeparatedBatchNorm1d(num_features=self.hidden_dim, max_length=max_length)
+        self.batchhT=nn.BatchNorm1d(self.hidden_dim)
 
-        self.batchF=nn.BatchNorm1d(num_features=self.hidden_dim)
-        self.batchT=nn.BatchNorm1d(num_features=self.hidden_dim)
+        self.W=nn.Linear(self.inputx_dim+self.inputy_dim+self.hidden_dim,3*self.hidden_dim,bias=True)
+        self.WTc=nn.Linear(self.inputy_dim+self.hidden_dim,self.hidden_dim,bias=True)
+        #self.WFc=nn.Linear(self.inputy_dim+self.hidden_dim,self.hidden_dim,bias=True)
+
         self.dropout=nn.Dropout(p=dropout, inplace=False)
         self.device=torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
-    def forward(self, x,y,hT,hF,CT,CF):
-        fT=torch.sigmoid(self.WTf(torch.cat([x,y,hT],dim=1)))
-        fF=torch.sigmoid(self.WFf(torch.cat([x,y,hF],dim=1)))
-        iT=torch.sigmoid(self.WTi(torch.cat([x,y,hT],dim=1)))
-        iF=torch.sigmoid(self.WFi(torch.cat([x,y,hF],dim=1)))
-        C_T=torch.tanh(self.WTc(torch.cat([x,hT],dim=1)))
-        C_F=torch.tanh(self.WFc(torch.cat([y,hF],dim=1)))
-        oT=torch.sigmoid(self.WTo(torch.cat([x,y,hT],dim=1)))
-        oF=torch.sigmoid(self.WFo(torch.cat([x,y,hF],dim=1)))
+        self.reset_parameters()
+    def reset_parameters(self):
+        self.batch.reset_parameters()
+        #self.batchhT.reset_parameters()
+        self.batch.bias.data.fill_(0)
+        #self.batchhT.bias.data.fill_(0)
+        self.batch.weight.data.fill_(0.1)
+        #self.batchhT.weight.data.fill_(0.1)
+    def forward(self, x,y,hT,CT,time_step):
+        gates=self.batch(torch.sigmoid(self.W(torch.cat([y,x,hT],dim=1))),time=time_step)
+        fT, iT, oT= (gates[:,:self.hidden_dim],gates[:,self.hidden_dim:2*self.hidden_dim],
+                        gates[:,2*self.hidden_dim:3*self.hidden_dim])
+        C_T=torch.tanh(self.WTc(torch.cat([y,hT],dim=1)))
+        #C_F=torch.tanh(self.WFc(torch.cat([y,hT],dim=1)))
         CT=fT*CT+iT*C_T
-        CF=fF*CF+iF*C_F
         hT=oT*torch.tanh(CT)
-        hF=oF*torch.tanh(CF)
-        outT=self.batchT(hT)
-        outF=self.batchF(hF)
-        return outT,outF,hT,hF,CT,CF
-
+        outT=self.batchhT(hT)
+        return outT,hT,CT
     def init_hidden(self, batch_size):
         return (nn.Parameter(torch.zeros(batch_size, self.hidden_dim)).to(self.device),
-                nn.Parameter(torch.zeros(batch_size, self.hidden_dim)).to(self.device),
-                nn.Parameter(torch.zeros(batch_size, self.hidden_dim)).to(self.device),
                 nn.Parameter(torch.zeros(batch_size, self.hidden_dim)).to(self.device))
 class SpectrogramModel(nn.Module):
     def cnn_shape(self,x,kc,sc,pc,km,sm,pm):
@@ -163,9 +192,12 @@ class MultiSpectrogramModel(nn.Module):
     def alignment(self,input1,input2):
         # input2 has less time steps
         temp=[]
-        input2=input2[:,:,:((input1.shape[2])//2-1)]
+        #input2=input2[:,:,:((input1.shape[2])//2-1)]
         for i in range(input2.shape[2]):
-            temp1=torch.mean(input1[:,:,(2*i):(2*i+3)],dim=2)
+            if 2*i+2<=input1.shape[2]:
+                temp1=torch.mean(input1[:,:,(2*i):(2*i+3)],dim=2)
+            else:
+                temp1=torch.mean(input1[:,:,-3:],dim=2)
             temp.append(temp1)
         inputx=torch.stack(temp,dim=2)
         inputy=input2
@@ -187,7 +219,7 @@ class MultiSpectrogramModel(nn.Module):
     def dimension(self):
         return self.input_dims[0],self.input_dims[1]
     def dimension_time(self):
-        temp=(self.time_dims[0])//2-1
+        temp=self.time_dims[1]
         return temp
 class FTLSTM(nn.Module):
     def __init__(self,time,inputx_dim,inputy_dim,hidden_dim,num_layers_ftlstm,device):
@@ -201,13 +233,12 @@ class FTLSTM(nn.Module):
         self.num_layers_ftlstm=num_layers_ftlstm
         for i in range(num_layers_ftlstm):
             name = 'ftlstm_cell{}'.format(i)
-            cell = FTLSTMCell(inputx_dim,inputy_dim,hidden_dim)
+            cell = FTLSTMCell(inputx_dim,inputy_dim,hidden_dim,self.time)
             setattr(self, name, cell)
             self._all_layers.append(cell)
     def forward(self,inputx,inputy):
         internal_state = []
         outputT = []
-        outputF=[]
         for t in range(self.time):
             x=inputx[:,:,t]
             y=inputy[:,:,t]
@@ -215,14 +246,13 @@ class FTLSTM(nn.Module):
                 name = 'ftlstm_cell{}'.format(i)
                 if t==0:
                     bsize,_=x.size()
-                    (hT,hF,CT,CF)=getattr(self, name).init_hidden(bsize)
-                    internal_state.append((hT,hF,CT,CF))
-                (hT,hF,CT,CF)=internal_state[i]
-                outT,outF,hT,hF,CT,CF=getattr(self,name)(x,y,hT,hF,CT,CF)
-                internal_state[i]=hT,hF,CT,CF
+                    (hT,CT)=getattr(self, name).init_hidden(bsize)
+                    internal_state.append((hT,CT))
+                (hT,CT)=internal_state[i]
+                outT,hT,CT=getattr(self,name)(x,y,hT,CT,t)
+                internal_state[i]=hT,CT
             outputT.append(outT)
-            outputF.append(outF)
-        return torch.stack(outputT,dim=2),torch.stack(outputF,dim=2)
+        return torch.stack(outputT,dim=2)
 class CNN_FTLSTM(nn.Module):
     def __init__(self,in_channels, out_channels, kernel_size_cnn, 
                     stride_cnn, kernel_size_pool, stride_pool,nfft,
@@ -247,7 +277,7 @@ class CNN_FTLSTM(nn.Module):
         self.classification_hand = nn.Linear(self.hidden_dim_lstm, self.num_labels).to(self.device)
         self.special=special
         if self.special=="concat":
-            self.classification_raw=nn.Linear(hidden_dim*2,self.num_labels).to(self.device)
+            self.classification_raw=nn.Linear(hidden_dim,self.num_labels).to(self.device)
         elif self.special=="attention":
             self.classification_raw=nn.Linear(hidden_dim,self.num_labels).to(self.device)
             self.attention=nn.Sequential(nn.Linear(hidden_dim*2,hidden_dim),
@@ -262,12 +292,12 @@ class CNN_FTLSTM(nn.Module):
         target=target.to(self.device)
         seq_length=seq_length.to(self.device)
         inputx,inputy=getattr(self,"cnn_multi")(input1,input2)
-        outT,outF=getattr(self,"ftlstm")(inputx,inputy)
+        outT=getattr(self,"ftlstm")(inputx,inputy)
         out_lstm = self.LSTM_Audio(input_lstm).permute(0,2,1)
         temp = [torch.unsqueeze(torch.mean(out_lstm[k,:,:int(s.item())],dim=1),dim=0) for k,s in enumerate(seq_length)]
         out_lstm = torch.cat(temp,dim=0)
         if self.special=="concat":
-            out=torch.mean(torch.cat([outT,outF],dim=1),dim=2)
+            out=torch.mean(outT,dim=2)
             out = self.classification_raw(out)
         elif self.special=="attention":
             alpha=self.attention(torch.cat([outT,outF],dim=1).permute(0,2,1)).permute(0,2,1)
@@ -277,24 +307,15 @@ class CNN_FTLSTM(nn.Module):
             out=self.classification_raw(torch.mean(outT+outF,dim=2))
         out_lstm = self.classification_hand(out_lstm)
         p = self.weight
-        out_final = p*out + (1-p)*out_lstm
+        out_final = p*out+(1-p)*out_lstm 
         target_index = torch.argmax(target, dim=1).to(self.device)
         pred_index = torch.argmax(out_final, dim=1).to(self.device)
         correct_batch=torch.sum(target_index==torch.argmax(out_final,dim=1))
-        losses_batch_raw=F.cross_entropy(out,torch.max(target,1)[1])
         losses_batch_hand=F.cross_entropy(out_lstm,torch.max(target,1)[1])
-        losses_batch=p*losses_batch_raw+(1-p)*losses_batch_hand
-        #losses_batch=F.cross_entropy(out_final,torch.max(target,1)[1]) 
+        losses_batch_raw=F.cross_entropy(out,torch.max(target,1)[1])
+        losses_batch=p*losses_batch_raw+(1-p)*losses_batch_hand  
         correct_batch=torch.unsqueeze(correct_batch,dim=0)
         losses_batch=torch.unsqueeze(losses_batch, dim=0)
         if train:
             return losses_batch,correct_batch
         return losses_batch, correct_batch, (target_index, pred_index)
-
-
-
-
-
-
-
-

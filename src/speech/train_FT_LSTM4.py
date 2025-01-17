@@ -1,6 +1,6 @@
 import torch
 from torch import optim
-from model_FT_LSTM5 import CNN_FTLSTM
+from model_FT_LSTM4 import CNN_FTLSTM
 from process_FT_LSTM import IEMOCAP, my_collate
 from torch.utils.data import DataLoader
 from torch.optim.lr_scheduler import ReduceLROnPlateau, CosineAnnealingLR, MultiStepLR
@@ -59,8 +59,8 @@ def train_model(args):
     print(str(sum(p.numel() for p in model.parameters() if p.requires_grad)))
 
 
-    path="batch_size:{};out_channels:{};kernel_size_cnn:{};stride_size_cnn:{};kernel_size_pool:{};stride_size_pool:{};weight:{};special:{}".format(args.batch_size,out_channels,kernel_size_cnn,stride_size_cnn,kernel_size_pool,stride_size_pool, weight,args.special)
-    file_path="/scratch/speech/models/classification/FT_LSTM_"+args.file_path+".txt"
+    path="4batch_size:{};out_channels:{};kernel_size_cnn:{};stride_size_cnn:{};kernel_size_pool:{};stride_size_pool:{};weight:{};special:{}".format(args.batch_size,out_channels,kernel_size_cnn,stride_size_cnn,kernel_size_pool,stride_size_pool, weight,args.special)
+    file_path="/scratch/speech/models/classification/FT_LSTM4_"+args.file_path+".txt"
     with open(file_path,"a+") as f:
         f.write("\n"+"============ model starts ===========")
         f.write("\n"+"model_parameters: "+str(sum(p.numel() for p in model.parameters() if p.requires_grad))+"\n"+path+"\n")
@@ -119,7 +119,7 @@ def train_model(args):
         output = []
         y_true = []
         y_pred = []
-        torch.save(model.module.state_dict(), "/scratch/speech/models/classification/FT_LSTM_"+path+"_epoch_{}.pt".format(epoch+1))
+        torch.save(model.module.state_dict(), "/scratch/speech/models/classification/FT_LSTM4_"+path+"_epoch_{}.pt".format(epoch+1))
         model.eval()
         with torch.no_grad():
             for j,(input_lstm, input1, input2, target, seq_length) in enumerate(test_loader):
